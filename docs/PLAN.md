@@ -28,9 +28,10 @@ This repository's track of `docs/shared/ROADMAP.md`, with entries in the templat
   3. The smoke test passes, and fails when broken (seen once).
   4. Coverage below the floor fails the gate (seen once).
   5. CI is green on the pull request.
-- **Files:** ~12: root `package.json`, lockfile, `tsconfig.base.json`, `biome.json`, `vitest.config.ts`,
-  `packages/core/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`, `ci.yml`, `README.md`;
-  then PLAN, STATE, CONVENTIONS and ARCHITECTURE "Stack".
+- **Files:** 15 (lockfile excluded): root `package.json`, `tsconfig.json`, `biome.json`, `.gitignore`,
+  `packages/core/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`, `ci.yml`, `README.md`,
+  PLAN, STATE, CONVENTIONS, ARCHITECTURE "Stack", GOTCHAS. Coverage is set by CLI flags, with no
+  Vitest config file.
 - **References:** ARCHITECTURE "Stack", GOTCHAS.
 
 ## Later

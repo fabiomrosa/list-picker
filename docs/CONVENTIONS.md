@@ -51,5 +51,4 @@ it and lowered only with the owner's ok. A floor proves tests exist, not that th
 
 ## 6. Formatting and style
 Biome's formatter and its recommended lint rules, configured in `biome.json` **[lint]**. Markdown
-and `.claude/` are outside Biome. No `any` without a
-comment saying why.
+and `.claude/` are outside Biome. No `any` without a comment saying why.
