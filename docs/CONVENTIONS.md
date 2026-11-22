@@ -37,8 +37,6 @@ packages/<name>/
 - Nothing is logged with `console` in library code.
 
 ## 5. Tests
-L0.1 confirms this table; M1 and M2 extend it.
-
 | Behaviour | Seam | Test |
 |---|---|---|
 | A model operation | the `core` public API | `packages/core/test/<thing>.test.ts`, `it('<does what> when <case>')` |
@@ -46,11 +44,11 @@ L0.1 confirms this table; M1 and M2 extend it.
 | An engine behaviour | the engine with `happy-dom` and synthetic pointer events | `packages/vanilla/test/<thing>.test.ts` |
 | A real drag | the demo page in Playwright | `e2e/<flow>.spec.ts` (from M2) |
 
-**Coverage floor:** <!-- n: L0.1 sets it --> % of lines, measured by the gate over the code this
-repository writes (generated files and configuration excluded). It is raised when coverage grows past
-it and lowered only with the owner's ok. A floor proves tests exist, not that they came first: the
-"Seen red" line of the pull request does that.
+**Coverage floor:** 80% of lines (`--coverage.thresholds.lines` in the root `test:coverage` script),
+measured by the gate over `packages/*/src` (tests and configuration excluded). It is raised when
+coverage grows past it and lowered only with the owner's ok. A floor proves tests exist, not that
+they came first: the "Seen red" line of the pull request does that.
 
 ## 6. Formatting and style
-Biome's formatter and linter with the repository's `biome.json` **[lint]**. No `any` without a
-comment saying why.
+Biome's formatter and its recommended lint rules, configured in `biome.json` **[lint]**. Markdown
+and `.claude/` are outside Biome. No `any` without a comment saying why.

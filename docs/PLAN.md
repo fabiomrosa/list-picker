@@ -6,7 +6,7 @@ This repository's track of `docs/shared/ROADMAP.md`, with entries in the templat
 ---
 
 ### L0.1 · Runnable skeleton
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** an empty project that builds, formats, tests and runs, with its gate in CI.
 - **Depends on:** DEC-12 (accepted), P1.
 - **In scope:**
@@ -15,8 +15,7 @@ This repository's track of `docs/shared/ROADMAP.md`, with entries in the templat
   - Vitest and Biome at the ARCHITECTURE versions, pinned.
   - The formatter and linter, wired into the gate.
   - One smoke test in `packages/core/test/`.
-  - Coverage in the gate, failing below the floor of `docs/CONVENTIONS.md` §5 (fill it in: start
-    at 80% of lines, or what the skeleton reaches if higher).
+  - Coverage in the gate, failing below the floor of `docs/CONVENTIONS.md` §5 (80% of lines).
   - CI: the `gate` job in `.github/workflows/ci.yml` running `npm run verify`.
   - `README.md`: Tech references, Requirements, Running locally, Config (as far as the skeleton
     goes).
@@ -29,9 +28,10 @@ This repository's track of `docs/shared/ROADMAP.md`, with entries in the templat
   3. The smoke test passes, and fails when broken (seen once).
   4. Coverage below the floor fails the gate (seen once).
   5. CI is green on the pull request.
-- **Files:** ~12: root `package.json`, lockfile, `tsconfig.base.json`, `biome.json`, `vitest.config.ts`,
-  `packages/core/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`, `ci.yml`, `README.md`;
-  then PLAN, STATE, CONVENTIONS and ARCHITECTURE "Stack".
+- **Files:** 15 (lockfile excluded): root `package.json`, `tsconfig.json`, `biome.json`,
+  `.gitignore`, `packages/core/{package.json,tsconfig.json,src/index.ts,test/smoke.test.ts}`,
+  `ci.yml`, `README.md`, PLAN, STATE, CONVENTIONS, ARCHITECTURE "Stack", GOTCHAS. Coverage is set
+  by CLI flags, with no Vitest config file.
 - **References:** ARCHITECTURE "Stack", GOTCHAS.
 
 ## Later

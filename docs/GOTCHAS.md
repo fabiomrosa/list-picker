@@ -5,6 +5,10 @@ before you start; it saves hours. Add new ones as you learn them (SESSION §3.7)
 
 ## Toolchain
 Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
+- Biome 2.6 formats Markdown too: `biome check --write .` rewrapped every doc until `**/*.md` was
+  excluded in `biome.json`.
+- TypeScript 7 is the native (Go) compiler; the binary is still `tsc`. Source imports use the `.ts`
+  extension (`rewriteRelativeImportExtensions` turns them into `.js` in `dist/`).
 
 ## DOM and drag
 - Reading layout (`getBoundingClientRect`, `offsetTop`, `offsetHeight`) right after a DOM write

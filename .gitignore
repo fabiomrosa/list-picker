@@ -8,3 +8,8 @@
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Build and test output
+node_modules/
+dist/
+coverage/
