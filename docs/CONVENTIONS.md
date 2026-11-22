@@ -45,9 +45,9 @@ packages/<name>/
 | A real drag | the demo page in Playwright | `e2e/<flow>.spec.ts` (from M2) |
 
 **Coverage floor:** 80% of lines (`--coverage.thresholds.lines` in the root `test:coverage` script),
-measured by the gate over `packages/*/src` (tests and configuration excluded). It is raised when coverage grows past
-it and lowered only with the owner's ok. A floor proves tests exist, not that they came first: the
-"Seen red" line of the pull request does that.
+measured by the gate over `packages/*/src` (tests and configuration excluded). It is raised when
+coverage grows past it and lowered only with the owner's ok. A floor proves tests exist, not that
+they came first: the "Seen red" line of the pull request does that.
 
 ## 6. Formatting and style
 Biome's formatter and its recommended lint rules, configured in `biome.json` **[lint]**. Markdown
