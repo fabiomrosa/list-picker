@@ -5,13 +5,15 @@ and thin adapters on top of both. Behaviour is written and tested once, in the l
 adapters only bind it to a UI layer (DEC-09, DEC-12).
 
 ## Stack
-L0.1 pins the versions in `package.json` and updates this section.
-- **Language:** TypeScript, `strict`, ES modules. Node 26 locally (npm 11).
-- **Workspace:** npm workspaces, packages under `packages/`.
-- **Tests:** Vitest; `happy-dom` for engine unit tests; Playwright for real-browser drag tests from
-  M2. Property-based tests (`fast-check`) for the model invariants from M1.
-- **Format and lint:** Biome (one tool for both).
-- **Build:** each package to ESM plus type declarations.
+Exact versions are pinned in the root `package.json`.
+- **Language:** TypeScript 7, `strict` plus `noUncheckedIndexedAccess` and
+  `exactOptionalPropertyTypes`, ES modules (`nodenext`), target ES2024. Node 26 (npm 11).
+- **Workspace:** npm workspaces, packages under `packages/`. The root `tsconfig.json` type-checks
+  every package's `src` and `test`; each package's `tsconfig.json` extends it to build its `src`.
+- **Tests:** Vitest 5 with V8 coverage. Added when first needed: `happy-dom` for engine unit tests
+  (M2), Playwright for real-browser drag tests (M2), `fast-check` for the model invariants (M1).
+- **Format and lint:** Biome 2.
+- **Build:** `tsc` per package, to ESM plus type declarations in `dist/`.
 
 ## Modules
 

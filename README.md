@@ -1,10 +1,13 @@
 <!-- INITIATE VARS --->
 
-<!-- One link and one badge per environment and per technology, e.g.
-[PRD__URL]: https://example.com
-[PRD__BADGE]: https://img.shields.io/badge/Production-00AB68?style=flat
+[TS__URL]: https://www.typescriptlang.org
+[TS__BADGE]: https://img.shields.io/badge/TypeScript_7-3178C6?style=flat&logo=typescript&logoColor=fff
 [NODE__URL]: https://nodejs.org/en/download
-[NODE__BADGE]: https://img.shields.io/badge/Node-5FA04E?style=flat&logo=nodedotjs&logoColor=fff -->
+[NODE__BADGE]: https://img.shields.io/badge/Node_26-5FA04E?style=flat&logo=nodedotjs&logoColor=fff
+[VITEST__URL]: https://vitest.dev
+[VITEST__BADGE]: https://img.shields.io/badge/Vitest_5-6E9F18?style=flat&logo=vitest&logoColor=fff
+[BIOME__URL]: https://biomejs.dev
+[BIOME__BADGE]: https://img.shields.io/badge/Biome_2-60A5FA?style=flat&logo=biome&logoColor=fff
 
 <!-- END VARS --->
 
@@ -18,18 +21,26 @@ Agents: start with `AGENTS.md`.
 
 ## Tech references
 
-<!-- L0.1: TypeScript, Node, Vitest, Biome badges. -->
+[![typescript][TS__BADGE]][TS__URL] [![node][NODE__BADGE]][NODE__URL] [![vitest][VITEST__BADGE]][VITEST__URL]
+[![biome][BIOME__BADGE]][BIOME__URL]
 
 ## Requirements
 
-<!-- L0.1: Node and npm, pinned. -->
+- [Node](https://nodejs.org/en/download) 26 or later, with npm 11.
 
 ## Running locally
 
-Nothing runs yet: slice L0.1 in `docs/PLAN.md` adds the skeleton, and with it this section:
-clone, install, configure, start the dependencies, run.
+There is no app or demo yet (M3); the packages build and test.
 
-Check everything CI checks:
+```sh
+git clone git@github.com:fabiomrosa/list-picker.git
+cd list-picker
+npm ci
+npm test            # the tests once
+npm run format      # format and apply safe lint fixes
+```
+
+Check everything CI checks (lint and format, types, tests with the coverage floor, build):
 
 ```sh
 npm run verify
