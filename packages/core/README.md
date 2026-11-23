@@ -1,7 +1,8 @@
 # @list-picker/core
 
 The model of a kanban-style board: ordered lists of ordered cards, kept as doubly linked lists with
-an index, so finding, adding, removing and moving a card or a list is O(1). No DOM, no framework,
+an index, so finding, adding, removing and moving a card or a list is O(1) (removing a list is
+O(its cards)). No DOM, no framework,
 no runtime dependencies. To draw a Board and drag its cards, add
 [`@list-picker/vanilla`](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla).
 

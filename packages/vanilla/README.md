@@ -1,9 +1,9 @@
 # @list-picker/vanilla
 
 Draws a [`@list-picker/core`](https://github.com/fabiomrosa/list-picker/tree/main/packages/core)
-Board in the page and lets people reorder its cards and lists, by pointer (mouse, touch, pen) or keyboard, with screen reader announcements.
-It is headless: you render each card and each list header; it owns the containers, the dragging
-and the order, and ships no styles. No framework, no runtime dependencies besides the core.
+Board in the page and lets people reorder its cards and lists, by pointer (mouse, touch, pen) or
+keyboard, with screen reader announcements. It is headless: you render each card and each list
+header; it owns the containers, the dragging and the order, and ships no styles. No framework, no runtime dependencies besides the core.
 
 ## Install
 
@@ -30,21 +30,23 @@ board.addList({ id: "done", title: "Done" }, null);
 board.addCard("todo", { id: "a", text: "Write the README" }, null);
 board.addCard("todo", { id: "b", text: "Publish" }, null);
 
-const view = mount(document.getElementById("board") as HTMLElement, board, {
-  renderList(list) {
+const root = document.getElementById("board") as HTMLElement;
+const renderers = {
+  renderList(list: List) {
     const header = document.createElement("h2");
     header.textContent = list.title;
     return header;
   },
-  renderCard(card) {
+  renderCard(card: Card) {
     const element = document.createElement("div");
     element.textContent = card.text;
     return element;
   },
-});
+};
+const view = mount(root, board, renderers);
 
 board.on("move", (move) => console.log(move)); // save the new order
-// Later: view.destroy();
+window.addEventListener("pagehide", () => view.destroy());
 ```
 
 Every Board change (yours, or a drag's drop) shows in the page; a Renderer runs once per list or
@@ -87,6 +89,7 @@ The drag engine alone, for markup you draw yourself (keep it in line with the Bo
 </div>
 ```
 
+Cards are direct children of their `[data-lp-cards]`, and lists direct children of one parent.
 Returns `{ destroy() }`. A drop moves the item on the Board and then its element.
 
 ## Markup and styling hooks
@@ -104,7 +107,7 @@ Returns `{ destroy() }`. A drop moves the item on the Board and then its element
 | `data-lp-live` | The live region (visually hidden, in `document.body`). |
 
 `mount` writes the first four; with `createDrag` you write them. Presses on a `button`, `input`,
-`select`, `textarea`, link or `contenteditable` inside a card start no drag.
+`select`, `textarea`, link or `contenteditable` inside a card or a list header start no drag.
 
 ## Keyboard
 
@@ -114,10 +117,10 @@ Returns `{ destroy() }`. A drop moves the item on the Board and then its element
 |---|---|
 | Space or Enter | Pick up; again to drop. |
 | ↑ ↓ | Move a card one place in its list. |
-| ← → | Move a card to the same position in the previous or next list; move a list one place. |
+| ← → | Move a card to the same position (or the end) in the previous or next list; move a list one place. |
 | Esc | Put it back where it was picked up. |
 
-Moving the focus away drops it where it is.
+Moving the focus away drops it where it is. During a pointer drag, Esc cancels the drag.
 
 ## Announcements
 
@@ -126,10 +129,11 @@ in English, for example "Moved Write the README. Done, position 1 of 1." An item
 `aria-label`, else its text; a list by its header's. Set an `aria-label` on a card or header whose
 text is long or holds controls.
 
-`options.messages` replaces any of the four messages, for another language for example:
+`options.messages` replaces any of the four messages, for another language for example (in the
+example above, instead of `mount(root, board, renderers)`):
 
 ```ts
-mount(root, board, renderers, {
+const view = mount(root, board, renderers, {
   messages: {
     move: ({ label, listLabel, position, count }) =>
       `${label} movido. ${listLabel ?? "Listas"}, posição ${position} de ${count}.`,
