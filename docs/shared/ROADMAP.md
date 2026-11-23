@@ -34,15 +34,23 @@ the model and grows with every slice; the owner checks it in the browser at the 
 |---|---|
 | `list-picker` | L1.1 → L1.2 → L1.3 → (L1.4 ∥ L1.5 → L1.6 → L1.7) → L1.8 → L1.9 → L1.10 → L1.11 |
 
+## M2 · Drag engine
+`@list-picker/vanilla`'s drag engine over the user's markup (DEC-10, DEC-13): pointer down and
+threshold, the Clone moved with `transform` in `requestAnimationFrame`, the Placeholder before or
+after the card under the pointer or at the end of a list, drop into `Board.moveCard`, Esc and
+`pointercancel` to cancel, browser tests, auto-scroll at the edges, dragging lists. The playground
+becomes draggable at L2.4.
+
+| Repository | Slices |
+|---|---|
+| `list-picker` | L2.1 → L2.2 → L2.3 → L2.4 → L2.5 → L2.6 → L2.7 → L2.8 |
+
 ## Prerequisites (only the owner can do these)
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
 - **P2** · The npm account and package names (DEC-12). Needed by the first publish (M4).
 
 ## Later milestones (split when they start)
-- **M2 · Drag engine.** Pointer down and threshold, the Clone moved with `transform` in
-  `requestAnimationFrame`, the Placeholder before/after the card under the pointer or at the end,
-  drop into `core` Move, Esc to cancel, auto-scroll at the edges, dragging Lists. Browser tests.
 - **M3 · Vanilla adapter and demo.** Mount a Board into a container with the user's Renderers,
   update on core events, destroy (every listener removed). The playground becomes the demo board,
   and a trace shows no forced layout per pointer move.
@@ -51,9 +59,9 @@ the model and grows with every slice; the owner checks it in the browser at the 
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-M2 next: "plan M2".
+L2.1 to L2.8 in order; the owner checks the drag in the browser after L2.4 and at the end of M2.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |
 |---|---|---|---|
-| – | None open | – | – |
+| DEC-13 | The engine finds elements by data attributes and applies drops itself | Proposed | L2.1 |
