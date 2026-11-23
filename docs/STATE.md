@@ -33,6 +33,8 @@ Every slice's pull request updates it (SESSION §3).
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
+- Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
+  Chrome: within a list, across lists, into an empty list; a click changes nothing.
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
@@ -62,8 +64,9 @@ None yet.
   no counterexample. A timeout set for property tests would remove the flake.
 
 ## Last session
+- **2026-11-23, L2.6:** Playwright browser tests in the gate, with the installed Chrome.
+- **Next:** L2.7 (auto-scroll).
 - **2026-11-23, L2.5:** Esc cancels a drag (`keydown` only during one).
-- **Next:** L2.6 (browser tests).
 - **2026-11-22, L2.4:** drop applies the move to the Board and the DOM; the playground's cards are
   draggable for real.
 - **2026-11-22, L2.3:** the Placeholder follows the drop target (read, then write, per frame).

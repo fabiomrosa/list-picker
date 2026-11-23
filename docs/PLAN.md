@@ -362,11 +362,11 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** AGENTS "Non-negotiable" (listeners).
 
 ### L2.6 · Browser tests
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** real drags in a real browser are checked by the gate.
 - **Depends on:** L2.5.
 - **In scope:** `@playwright/test` with the installed Chrome (`channel: "chrome"`; GitHub's Ubuntu
-  runner has it, so nothing is downloaded); its web server runs the playground; `e2e/drag.spec.ts`:
+  runner has it, so nothing is downloaded); its web server runs the playground; `e2e/drag.e2e.ts`:
   drag a card within a list, across lists, into an empty list; a click without moving changes
   nothing. Added to `npm run verify`.
 - **Out of scope:** other browsers.
@@ -374,12 +374,12 @@ styles the user must fight, except the Clone's position and `transform`.
 - **Acceptance criteria:**
   1. The four scenarios pass locally and in CI.
   2. One fails when the drop is broken on purpose (seen once).
-- **Files:** ~7: `playwright.config.ts`, `e2e/drag.spec.ts`, root `package.json`, lockfile, `ci.yml`,
+- **Files:** ~7: `playwright.config.ts`, `e2e/drag.e2e.ts`, root `package.json`, lockfile, `ci.yml`,
   `.gitignore`, ARCHITECTURE "Stack", PLAN, STATE.
 - **References:** CONVENTIONS §5.
 
 ### L2.7 · Auto-scroll
-- **Status:** waiting (L2.6)
+- **Status:** next
 - **Goal:** dragging near the edge of a scrollable list or the board scrolls it.
 - **Depends on:** L2.6.
 - **In scope:** during a drag, within 40 px of the edge of the nearest scrollable ancestor (a list
@@ -392,7 +392,7 @@ styles the user must fight, except the Clone's position and `transform`.
      scrolls (unit test with a stubbed scroll container).
   2. In the browser test, a card dragged to the bottom of a tall list reaches its last position.
   3. The playground has a tall list and a wide board to try it (seen in the browser).
-- **Files:** ~6: `src/drag.ts` (or `src/auto-scroll.ts`), tests, `e2e/drag.spec.ts`, playground,
+- **Files:** ~6: `src/drag.ts` (or `src/auto-scroll.ts`), tests, `e2e/drag.e2e.ts`, playground,
   PLAN, STATE.
 - **References:** DEC-08.
 
@@ -409,7 +409,7 @@ styles the user must fight, except the Clone's position and `transform`.
   1. Dragging a list's handle past another list's middle moves it there in the Board and the DOM.
   2. Pressing a card inside a list still drags the card, not the list.
   3. A browser test drags a list; the playground's lists have handles (seen in the browser).
-- **Files:** ~6: `src/drag.ts`, its test, `e2e/drag.spec.ts`, playground, PLAN, STATE.
+- **Files:** ~6: `src/drag.ts`, its test, `e2e/drag.e2e.ts`, playground, PLAN, STATE.
 - **References:** DEC-13.
 
 ## Later
