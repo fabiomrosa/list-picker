@@ -14,6 +14,7 @@ Exact versions are pinned in the root `package.json`.
   (M2), Playwright for real-browser drag tests (M2), `fast-check` for the model invariants (M1).
 - **Format and lint:** Biome 2.
 - **Build:** `tsc` per package, to ESM plus type declarations in `dist/`.
+- **Playground:** Vite (dev server only), from L1.1.
 
 ## Modules
 
@@ -21,6 +22,7 @@ Exact versions are pinned in the root `package.json`.
 |---|---|---|
 | `packages/core` | The doubly linked list and its Index, the Board, Move, the event emitter, the Snapshot. No DOM. | nothing |
 | `packages/vanilla` | The drag engine (pointer handling, Clone, Placeholder, hit-testing, auto-scroll) and the vanilla mount (containers, the user's Renderers, `destroy()`) | `core` |
+| `playground/` (L1.1) | A local page that draws the model and exercises it by hand; not a package, never published | `core` (source) |
 | `packages/react` (M5) | Hook and components over `core` and the engine | `core`, `vanilla`'s engine |
 | `packages/angular` (M6) | Directive and components over `core` and the engine | `core`, `vanilla`'s engine |
 

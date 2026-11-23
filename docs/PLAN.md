@@ -41,6 +41,13 @@ Everything in `packages/core`, no DOM. Values are any object with a string `id`
 (`T extends { id: string }`); positions are given DOM-style, by the id of the node to insert before,
 or `null` for the end. Bad input throws an `Error` starting with `list-picker:` (CONVENTIONS §4).
 
+**Playground and the owner's check.** L1.1 adds `playground/`, a local page (`npm run dev`) that
+draws the model: every node as a box with its `id`, `prev` and `next`, and buttons for the
+operations that exist. Every later M1 slice extends it with what it adds, as one more scope item and
+one more acceptance criterion ("visible and usable in the playground", run once by the agent).
+Slices merge as usual (SESSION §4); the owner checks the playground in the browser at the end of M1
+(`git pull && npm ci && npm run dev`).
+
 ### L1.1 · Linked list: insert at the end and read
 - **Status:** next
 - **Goal:** a `LinkedList<T>` that holds values in insertion order, finds any of them by id in O(1)
@@ -50,7 +57,12 @@ or `null` for the end. Bad input throws an `Error` starting with `list-picker:` 
   - `insertBefore(value, null)` appends; `get(id)` returns the Node (`value`, `prev`, `next`) or
     `undefined`; `has(id)`; `size`; `first`, `last`; iteration yields the values in order.
   - Inserting a value whose `id` is already in the list throws.
-- **Out of scope:** inserting before an existing node (L1.2), removing (L1.3).
+  - The playground: Vite as a dev dependency, `npm run dev`, `playground/index.html` and
+    `playground/main.ts` drawing a `LinkedList` as boxes (`id`, `prev`, `next`) with an id field and
+    an "append" button; errors shown on the page. Type-checked and linted like the packages,
+    outside the coverage floor and never published.
+- **Out of scope:** inserting before an existing node (L1.2), removing (L1.3); any styling beyond
+  legible boxes.
 - **Contract:** none. **Public API:** additive, `LinkedList`, `Node`.
 - **Acceptance criteria:**
   1. An empty list has `size` 0, no `first`/`last`, and iterates nothing.
@@ -58,8 +70,12 @@ or `null` for the end. Bad input throws an `Error` starting with `list-picker:` 
   3. `get(id)` returns the node whose `prev`/`next` are its neighbours; an unknown id gives
      `undefined`.
   4. Appending a duplicate id throws and leaves the list unchanged.
-- **Files:** ~5: `src/linked-list.ts`, `test/linked-list.test.ts`, `src/index.ts` (the real API
-  replaces `packageName`), `test/smoke.test.ts` (removed), PLAN, STATE: ~6.
+  5. `npm run dev` opens the playground; appending shows the new box with the right `prev`/`next`,
+     and a duplicate id shows the error.
+- **Files:** ~11 (lockfile excluded): `src/linked-list.ts`, `test/linked-list.test.ts`,
+  `src/index.ts` (the real API replaces `packageName`), `test/smoke.test.ts` (removed), root
+  `package.json`, `tsconfig.json` (include `playground`), `playground/index.html`,
+  `playground/main.ts`, README "Running locally", PLAN, STATE.
 - **References:** PRODUCT invariants, ARCHITECTURE "The model".
 
 ### L1.2 · Linked list: insert before a node

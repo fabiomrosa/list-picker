@@ -18,10 +18,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, M1 playground:** the owner wants to check each slice visually: L1.1 adds a Vite
+  playground, every M1 slice extends it, and the owner checks it at the end of M1.
 - **2026-11-22, plan M1:** M1 split into L1.1 to L1.11 in `docs/PLAN.md`; ROADMAP marks M0 done;
   ARCHITECTURE's model uses one `insertBefore(value, beforeId | null)`. `main` is protected
   (pull requests only; `gate`, `title`, `size`, `frozen`, `secrets` required).
-- **Next:** L1.1 once this plan merges.
+- **Next:** L1.1, with the playground.
 - **2026-11-22, L0.1 runnable skeleton:** npm workspace, `packages/core`, TypeScript 7, Vitest 5,
   Biome 2, the gate in CI. Seen red: the smoke test, a badly formatted file, coverage at 25%.
 - **2026-11-22, bootstrap:** the repository starts from the AI-flow boilerplate: `AGENTS.md`
