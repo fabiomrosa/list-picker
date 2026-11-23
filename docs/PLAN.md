@@ -49,7 +49,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 (`git pull && npm ci && npm run dev`).
 
 ### L1.1 · Linked list: insert at the end and read
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** a `LinkedList<T>` that holds values in insertion order, finds any of them by id in O(1)
   and iterates them in order.
 - **Depends on:** L0.1, DEC-06.
@@ -79,7 +79,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants, ARCHITECTURE "The model".
 
 ### L1.2 · Linked list: insert before a node
-- **Status:** waiting (L1.1)
+- **Status:** next
 - **Goal:** a value can be inserted anywhere, before an existing node.
 - **Depends on:** L1.1.
 - **In scope:** `insertBefore(value, beforeId)` for the first node, a middle node and the last
