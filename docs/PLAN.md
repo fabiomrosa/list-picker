@@ -163,7 +163,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.7 · Board: move a card
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** a card moves within its List or to another one, before a given card or at the end,
   in O(1).
 - **Depends on:** L1.6.
@@ -183,7 +183,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** DEC-06, DEC-08.
 
 ### L1.8 · Board: move a list, and the Board invariants
-- **Status:** waiting (L1.7, L1.4)
+- **Status:** next
 - **Goal:** Lists move like cards, and the Board's invariants hold under random operations.
 - **Depends on:** L1.7, L1.4.
 - **In scope:** `moveList(id, beforeListId | null)`, same rules as `moveCard`; a property test of

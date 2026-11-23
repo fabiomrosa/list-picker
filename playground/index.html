@@ -20,8 +20,13 @@
       .card { position: relative; background: #fff; border: 1px solid #cbd2d9; border-radius: 6px; padding: 0.45rem 0.6rem; }
       .card strong { display: block; }
       .card small { display: block; color: #616e7c; font-size: 0.8rem; }
-      .remove { position: absolute; top: 0.25rem; right: 0.35rem; border: 0; background: none; color: #9aa5b1; cursor: pointer; padding: 0 0.2rem; }
-      .remove:hover { color: #b42318; }
+      .list > .action { position: absolute; top: 0.25rem; right: 0.35rem; border: 0; background: none; color: #9aa5b1; cursor: pointer; padding: 0 0.2rem; }
+      .list > .action:hover { color: #b42318; }
+      .tools { display: flex; gap: 0.15rem; margin-top: 0.3rem; }
+      .tools .action { border: 1px solid #e4e7eb; background: #f5f7fa; border-radius: 4px; padding: 0 0.35rem; font-size: 0.8rem; cursor: pointer; color: #52606d; }
+      .tools .action:hover:enabled { background: #e4e7eb; }
+      .tools .action:disabled { opacity: 0.35; cursor: default; }
+      .status { color: #2f6f4f; min-height: 1.4em; margin: 0.25rem 0 0; }
     </style>
   </head>
   <body>
@@ -39,6 +44,14 @@
       <label>before <select name="before"></select></label>
       <button type="submit">Add</button>
     </form>
+    <form id="move-card">
+      <strong>Move card</strong>
+      <select name="card"></select>
+      <label>to <select name="list"></select></label>
+      <label>before <select name="before"></select></label>
+      <button type="submit">Move</button>
+    </form>
+    <p class="status" id="status"></p>
     <p class="error" id="error"></p>
     <div class="board" id="board"></div>
     <script type="module" src="./main.ts"></script>

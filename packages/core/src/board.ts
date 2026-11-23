@@ -46,6 +46,30 @@ export class Board<L extends Entity, C extends Entity> {
     return entry.list;
   }
 
+  /**
+   * Moves the card with `id` before `beforeCardId` in `toListId`, or to its end (`null`). Returns
+   * whether the order changed. Everything is checked before the card is unlinked.
+   */
+  moveCard(id: string, toListId: string, beforeCardId: string | null): boolean {
+    const from = this.#listOfCard.get(id);
+    if (!from) throw new Error(`list-picker: unknown id "${id}"`);
+    const to = this.#entry(toListId);
+    if (beforeCardId !== null && !to.cards.has(beforeCardId)) {
+      if (!this.#listOfCard.has(beforeCardId)) {
+        throw new Error(`list-picker: unknown id "${beforeCardId}"`);
+      }
+      throw new Error(`list-picker: card "${beforeCardId}" is not in list "${toListId}"`);
+    }
+    if (from === to) {
+      const next = from.cards.get(id)?.next?.value.id ?? null;
+      if (beforeCardId === id || beforeCardId === next) return false;
+    }
+    const card = from.cards.remove(id);
+    to.cards.insertBefore(card, beforeCardId);
+    this.#listOfCard.set(id, to);
+    return true;
+  }
+
   getList(id: string): L | undefined {
     return this.#lists.get(id)?.value.list;
   }

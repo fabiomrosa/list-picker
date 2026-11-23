@@ -146,3 +146,76 @@ describe("Board removal", () => {
     expect(cardIds(b, "done")).toEqual(["c3"]);
   });
 });
+
+describe("Board.moveCard", () => {
+  const sample = () => {
+    const b = new Board<List, Card>();
+    for (const id of ["todo", "doing", "done"]) b.addList({ id }, null);
+    for (const id of ["a", "b", "c", "d"]) b.addCard("todo", { id }, null);
+    b.addCard("done", { id: "x" }, null);
+    return b;
+  };
+  const all = (b: Board<List, Card>) => listIds(b).map((id) => `${id}:${cardIds(b, id).join("")}`);
+
+  it.each([
+    ["up", "c", "a", "todo:cabd"],
+    ["down", "a", "d", "todo:bcad"],
+    ["to the end", "b", null, "todo:acdb"],
+  ])("moves a card %s within its list", (_how, id, before, expected) => {
+    const b = sample();
+    expect(b.moveCard(id, "todo", before)).toBe(true);
+    expect(all(b)[0]).toBe(expected);
+  });
+
+  it("moves a card to another list, before a card or into an empty list", () => {
+    const b = sample();
+    expect(b.moveCard("b", "done", "x")).toBe(true);
+    expect(b.moveCard("c", "doing", null)).toBe(true);
+    expect(all(b)).toEqual(["todo:ad", "doing:c", "done:bx"]);
+    expect(b.listOf("b")?.id).toBe("done");
+    expect(b.listOf("c")?.id).toBe("doing");
+  });
+
+  it.each([
+    ["before its own next card", "b", "c"],
+    ["before itself", "b", "b"],
+    ["to the end when already last", "d", null],
+  ])("returns false and changes nothing when moved %s", (_how, id, before) => {
+    const b = sample();
+    expect(b.moveCard(id, "todo", before)).toBe(false);
+    expect(all(b)).toEqual(["todo:abcd", "doing:", "done:x"]);
+  });
+
+  it.each([
+    [
+      "an unknown card",
+      (b: Board<List, Card>) => b.moveCard("nope", "todo", null),
+      'list-picker: unknown id "nope"',
+    ],
+    [
+      "an unknown list",
+      (b: Board<List, Card>) => b.moveCard("a", "nope", null),
+      'list-picker: unknown list "nope"',
+    ],
+    [
+      "an unknown before card",
+      (b: Board<List, Card>) => b.moveCard("a", "todo", "nope"),
+      'list-picker: unknown id "nope"',
+    ],
+    [
+      "a before card in another list",
+      (b: Board<List, Card>) => b.moveCard("a", "todo", "x"),
+      'list-picker: card "x" is not in list "todo"',
+    ],
+    [
+      "a before card that is the card itself, in another list",
+      (b: Board<List, Card>) => b.moveCard("a", "done", "a"),
+      'list-picker: card "a" is not in list "done"',
+    ],
+  ])("throws on %s and changes nothing", (_name, act, message) => {
+    const b = sample();
+    expect(() => act(b)).toThrow(message);
+    expect(all(b)).toEqual(["todo:abcd", "doing:", "done:x"]);
+    expect(b.listOf("a")?.id).toBe("todo");
+  });
+});
