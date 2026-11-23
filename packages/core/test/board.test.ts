@@ -361,6 +361,7 @@ describe("Board.snapshot", () => {
       ],
     });
     expect(b.snapshot().lists[0]?.list).toBe(list);
+    expect(b.snapshot().lists[0]?.cards[0]).toBe(b.getCard("a"));
   });
 
   it("is frozen at every level the library creates", () => {
@@ -383,6 +384,32 @@ describe("Board.snapshot", () => {
     expect(second).not.toBe(first);
     expect(second.lists[1]?.cards).toEqual([{ id: "a" }]);
     expect(first.lists[1]?.cards).toEqual([]);
+  });
+
+  it("gives move and change listeners of one change the same fresh object", () => {
+    const b = sample();
+    const seen: unknown[] = [];
+    b.on("move", () => seen.push(b.snapshot()));
+    b.on("change", () => seen.push(b.snapshot()));
+    b.moveCard("b", "done", null);
+    expect(seen).toHaveLength(2);
+    expect(seen[0]).toBe(seen[1]);
+  });
+
+  it("is fresh inside a change listener after an add or a remove", () => {
+    const b = sample();
+    const seen: number[] = [];
+    b.on("change", () => seen.push(b.snapshot().lists.length));
+    b.addList({ id: "later" }, null);
+    b.removeList("later");
+    expect(seen).toEqual([3, 2]);
+  });
+
+  it("survives a call that throws", () => {
+    const b = sample();
+    const first = b.snapshot();
+    expect(() => b.addCard("todo", { id: "a" }, null)).toThrow();
+    expect(b.snapshot()).toBe(first);
   });
 
   it("is already fresh inside a move listener", () => {

@@ -182,7 +182,7 @@ export class Board<L extends Entity, C extends Entity> {
     let failure: { error: unknown } | undefined;
     for (const emit of [
       () => this.#events.emit("move", { kind, id, fromListId, toListId, prevId, nextId }),
-      () => this.#changed(),
+      () => this.#events.emit("change", undefined),
     ]) {
       try {
         emit();
