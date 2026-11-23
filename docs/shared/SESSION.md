@@ -32,7 +32,8 @@ owner to confirm.
 - **Contract:** operations (method path → status, body, specific error codes) and schemas; client
   slices list the operations they consume. "None" when there is no contract.
 - **Acceptance criteria:** numbered, observable; each becomes at least one test.
-- **Files:** the files it expects to add or change (an estimate; over 15 → split it).
+- **Files:** the files it expects to add or change, docs included (PLAN, STATE and any it updates);
+  an estimate; over 15 → split it.
 - **References:** design screens, decisions, docs sections.
 ```
 
@@ -70,6 +71,7 @@ owner to confirm.
 2. Every acceptance criterion has a test that was seen red, and coverage stays at or above the
    floor (`docs/CONVENTIONS.md` §5; the gate checks it).
 3. Run it once live (curl for an API; simulator or browser for a client; the binary for a CLI).
+   For a page, read it as it loads before any scripted input.
 4. The size check passes: `scripts/check-pr-size.py main`.
 5. Self-review with the repository's `list-picker-code-review` skill and fix what it finds.
 6. Run the `retro` skill; its proposals go in the pull request, never applied without the owner.
