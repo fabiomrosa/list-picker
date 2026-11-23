@@ -663,16 +663,19 @@ shows it in the demo.
 - **References:** DEC-12; ROADMAP P2, P3.
 
 ### L4.8 · Change a list's or a card's value
-- **Status:** waiting (DEC-17)
+- **Status:** done (2026-11-23)
 - **Goal:** an app renames a list (its display name is the app's own field; the id never changes)
   or edits a card, through the Board.
 - **Depends on:** DEC-17.
-- **In scope:** `board.updateList(id, list)` and `board.updateCard(id, card)`: replace the stored
-  value (same id, same position), emit `change` (no `move`), invalidate the Snapshot; an unknown
-  id, or a value whose `id` differs, throws and changes nothing. The Board property test gains both
+- **In scope:** `board.updateList(list)` and `board.updateCard(card)`: replace the stored value
+  with the same id (same position), return the old one, emit `change` (no `move`), invalidate the
+  Snapshot; an unknown id throws and changes nothing. The Board property test gains both
   operations. Core README.
 - **Out of scope:** changing an id; the DOM (L4.9).
-- **Contract:** none. **Public API:** two `Board` methods (additive).
+- **Deviation:** the id comes from the value (`updateCard(card)`, not `(id, card)`), so no
+  "different id" error exists; `LinkedList.replace(value)` (public, additive) does the card swap.
+- **Contract:** none. **Public API:** `Board.updateList`, `Board.updateCard`,
+  `LinkedList.replace` (additive).
 - **Acceptance criteria:**
   1. After `updateCard`, `getCard`, `cards()` and `snapshot()` return the new value in the same
      place; `change` fires once, `move` never.

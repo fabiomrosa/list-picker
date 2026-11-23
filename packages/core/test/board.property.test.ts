@@ -2,14 +2,17 @@ import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { Board } from "../src/index.ts";
 
-type Entity = { id: string };
+/** `v` counts the updates of an item, so a read shows whether it sees the latest value. */
+type Entity = { id: string; v: number };
 type Op =
   | { kind: "addList"; id: string; before: string | null }
   | { kind: "addCard"; list: string; id: string; before: string | null }
   | { kind: "removeCard"; id: string }
   | { kind: "removeList"; id: string }
   | { kind: "moveCard"; id: string; list: string; before: string | null }
-  | { kind: "moveList"; id: string; before: string | null };
+  | { kind: "moveList"; id: string; before: string | null }
+  | { kind: "updateCard"; id: string }
+  | { kind: "updateList"; id: string };
 
 const LISTS = ["L1", "L2", "L3"];
 const CARDS = ["a", "b", "c", "d", "e"];
@@ -46,6 +49,8 @@ const op: fc.Arbitrary<Op> = fc.oneof(
     weight: 2,
     arbitrary: fc.record({ kind: fc.constant("moveList" as const), id: list, before: beforeList }),
   },
+  { weight: 1, arbitrary: fc.record({ kind: fc.constant("updateCard" as const), id: card }) },
+  { weight: 1, arbitrary: fc.record({ kind: fc.constant("updateList" as const), id: list }) },
 );
 
 /** Every run starts from a populated Board: all lists, each card in a random list or absent. */
@@ -59,8 +64,12 @@ const setup: fc.Arbitrary<Op[]> = fc
     }),
   ]);
 
-/** The reference: an ordered array of [listId, cardIds[]], with the Board's rules written plainly. */
+/**
+ * The reference: an ordered array of [listId, cardIds[]], with the Board's rules written plainly,
+ * and each present item's update count.
+ */
 type Model = [string, string[]][];
+const versions = new Map<string, number>();
 type Result = "changed" | "same" | "error";
 
 function applyToModel(model: Model, o: Op): Result {
@@ -72,6 +81,7 @@ function applyToModel(model: Model, o: Op): Result {
       const i = o.before === null ? model.length : at(o.before);
       if (i < 0) return "error";
       model.splice(i, 0, [o.id, []]);
+      versions.set(o.id, 0);
       return "changed";
     }
     case "addCard": {
@@ -80,6 +90,7 @@ function applyToModel(model: Model, o: Op): Result {
       const i = o.before === null ? target[1].length : target[1].indexOf(o.before);
       if (i < 0) return "error";
       target[1].splice(i, 0, o.id);
+      versions.set(o.id, 0);
       return "changed";
     }
     case "removeCard": {
@@ -116,19 +127,34 @@ function applyToModel(model: Model, o: Op): Result {
       model.splice(j, 0, entry);
       return JSON.stringify(model) === before ? "same" : "changed";
     }
+    case "updateCard":
+    case "updateList": {
+      const present = o.kind === "updateCard" ? holder(o.id) : at(o.id) >= 0;
+      if (!present) return "error";
+      versions.set(o.id, (versions.get(o.id) ?? 0) + 1);
+      return "changed";
+    }
   }
 }
 
-/** Runs `o` on the Board. A removal returns the removed id so the caller can check it. */
+/** Runs `o` on the Board. A removal or update returns the replaced value's id to check it. */
 function applyToBoard(board: Board<Entity, Entity>, o: Op): [Result, string?] {
   try {
     switch (o.kind) {
       case "addList":
-        board.addList({ id: o.id }, o.before);
+        board.addList({ id: o.id, v: 0 }, o.before);
         return ["changed"];
       case "addCard":
-        board.addCard(o.list, { id: o.id }, o.before);
+        board.addCard(o.list, { id: o.id, v: 0 }, o.before);
         return ["changed"];
+      case "updateCard": {
+        const old = board.getCard(o.id);
+        return ["changed", board.updateCard({ id: o.id, v: (old?.v ?? -1) + 1 }).id];
+      }
+      case "updateList": {
+        const old = board.getList(o.id);
+        return ["changed", board.updateList({ id: o.id, v: (old?.v ?? -1) + 1 }).id];
+      }
       case "removeCard":
         return ["changed", board.removeCard(o.id).id];
       case "removeList":
@@ -151,10 +177,19 @@ function expectInvariants(board: Board<Entity, Entity>, model: Model): void {
   expect(actual).toEqual(model);
   const snapshot = board.snapshot();
   expect(snapshot.lists.map(({ list, cards }) => [list.id, cards.map((c) => c.id)])).toEqual(model);
+  const latest = (value: Entity | undefined) => value && value.v === versions.get(value.id);
+  for (const { list, cards } of snapshot.lists) {
+    expect(latest(list)).toBe(true);
+    for (const c of cards) expect(latest(c)).toBe(true);
+  }
   for (const id of CARDS) {
     const owner = model.find(([, cards]) => cards.includes(id));
     expect(board.listOf(id)?.id).toBe(owner?.[0]);
     expect(board.getCard(id)?.id).toBe(owner ? id : undefined);
+    if (owner) {
+      expect(latest(board.getCard(id))).toBe(true);
+      expect(board.listOf(id)).toBe(board.getList(owner[0]));
+    }
   }
   for (const id of LISTS) {
     expect(board.getList(id)?.id).toBe(model.some(([l]) => l === id) ? id : undefined);
@@ -168,6 +203,7 @@ describe("Board invariants", () => {
       fc.property(setup, fc.array(op, { minLength: 20, maxLength: 60 }), (start, ops) => {
         const board = new Board<Entity, Entity>();
         const model: Model = [];
+        versions.clear();
         for (const o of [...start, ...ops]) {
           const expected = applyToModel(model, o);
           const previous = board.snapshot();
@@ -184,7 +220,14 @@ describe("Board invariants", () => {
       { numRuns: 500, interruptAfterTimeLimit: 50_000, markInterruptAsFailure: true },
     );
     // The generator must keep reaching the interesting cases, or the property goes blind.
-    for (const key of ["moveCard:changed", "moveCard:same", "moveList:changed", "moveList:same"]) {
+    for (const key of [
+      "moveCard:changed",
+      "moveCard:same",
+      "moveList:changed",
+      "moveList:same",
+      "updateCard:changed",
+      "updateList:changed",
+    ]) {
       expect(reached.get(key) ?? 0, key).toBeGreaterThan(50);
     }
   }, 60_000);
