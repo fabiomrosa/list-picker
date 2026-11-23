@@ -54,7 +54,9 @@ Every slice's pull request updates it (SESSION §3).
   order, leaving the user's other
   children of `root`, the Clone and the Placeholder where they are. After a drop it writes nothing.
   A change that removes the dragged card or list, or the list under its Placeholder, abandons the
-  drag; a drop skips the items the DOM still shows but the Board no longer holds there.
+  drag; the Placeholder does not enter a list the Board no longer holds, a drop skips the items
+  the DOM still shows but the Board no longer holds there, and a card removed between the press
+  and the drag's start is not dragged.
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll (downward, and upward without ever being pushed back), a list by its title; a click

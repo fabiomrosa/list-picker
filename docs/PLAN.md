@@ -517,7 +517,9 @@ shows it in the demo.
     Built as an internal `startDrag` (not exported from the package) that `createDrag` wraps.
   - Found while building: a change that removes the dragged card or list, or the list its
     Placeholder is in, abandons the drag at once (the drop could only fail); a drop goes before the
-    next item the Board still holds there, past ones the DOM still shows but a change moved away.
+    next item the Board still holds there, past ones the DOM still shows but a change moved away;
+    the Placeholder does not enter a list the Board removed; a card removed between the press and
+    the threshold starts no drag (the last two from the review).
 - **Out of scope:** keyboard moving (L4.2).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**

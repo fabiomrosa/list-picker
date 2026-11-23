@@ -39,6 +39,9 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - During an active drag `mount` writes nothing: the DOM can show cards and lists the Board has
   moved or removed until the drag ends. Code that reads the mounted DOM after a `change` (the
   demo's `refresh`) must check each id against the Board; the engine's drop skips such items.
+- After a Renderer error the item stays on the Board (the operation is done; only its listener
+  failed): every later change runs that Renderer again and rethrows, a drop's from `pointerup`, and
+  `mount` writes nothing until the item is removed or the Renderer succeeds.
 - A `MutationObserver` with a callback hands its records to the callback in a microtask, so
   `takeRecords()` after an `await` returns nothing even when the DOM changed (it misled L3.2).
 - `mount` keys elements by id: a card removed and added again with the same id before `mount`

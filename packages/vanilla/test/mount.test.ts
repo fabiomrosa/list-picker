@@ -333,6 +333,36 @@ describe("mount: following the Board", () => {
     expect(domBoard()).toEqual(board());
   });
 
+  it("keeps the Placeholder out of a list the Board removed during the drag", async () => {
+    const release = await dragA();
+    const caught = catchErrors();
+    ctx.board.removeList("done");
+    const c = ctx.rendered.get("c") as HTMLElement;
+    c.getBoundingClientRect = () => new DOMRect(300, 20, 200, 40);
+    document.elementFromPoint = () => c;
+    pointer(ctx.rendered.get("a") as HTMLElement, "pointermove", 320, 30);
+    await frame();
+    release();
+    await settle();
+    expect(caught()).toEqual([]);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("starts no drag for a card removed between the press and the move", async () => {
+    const a = ctx.rendered.get("a") as HTMLElement;
+    const caught = catchErrors();
+    pointer(a, "pointerdown", 50, 30);
+    ctx.board.removeCard("a");
+    await settle();
+    // The removed card lost the capture: the events now reach `root` from what is under the pointer.
+    pointer(ctx.root, "pointermove", 70, 60);
+    await frame();
+    pointer(ctx.root, "pointerup", 70, 60);
+    expect(ctx.root.querySelector("[data-lp-clone], [data-lp-placeholder]")).toBeNull();
+    expect(caught()).toEqual([]);
+    expect(domBoard()).toEqual(board());
+  });
+
   it("drops before the next card the Board still holds there, past one it no longer does", async () => {
     ctx.board.addCard("todo", { id: "d", title: "D" }, null);
     await settle();

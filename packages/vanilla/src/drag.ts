@@ -130,6 +130,11 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     pointerAt = { x: event.clientX, y: event.clientY };
     if (!active) {
       if (Math.hypot(pointerAt.x - press.x, pointerAt.y - press.y) <= THRESHOLD) return;
+      // Removed since the press (`mount` follows the Board until a drag starts): nothing to drag.
+      if (!press.item.isConnected) {
+        end();
+        return;
+      }
       active = start(press.kind, press.item);
       // Only during a drag (AGENTS: no document listener outside one).
       document.addEventListener("keydown", onKeyDown);
@@ -204,6 +209,10 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
         ? drag.placeholder.parentElement
         : under.closest<HTMLElement>("[data-lp-cards]");
     if (!container || !root.contains(container)) return undefined;
+    // A list the Board no longer holds, still shown while `mount` waits for the drag to end.
+    if (drag.kind === CARD && !board.getList(container.getAttribute("data-lp-cards") ?? "")) {
+      return undefined;
+    }
     const { attribute, horizontal } = drag.kind;
     for (const item of container.querySelectorAll<HTMLElement>(`:scope > [${attribute}]`)) {
       if (item === drag.item) continue;
