@@ -21,6 +21,9 @@ Every slice's pull request updates it (SESSION §3).
   other listeners still run (the first error is rethrown).
 - `Board.snapshot()`: a frozen `{ lists: [{ list, cards }] }` in Board order holding the user's own
   values; the same object until the Board changes (already fresh inside listeners).
+- `npm run bench` compares the Board with an array board on seeded random moves; the result is in
+  `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
+  100, ~8× at 500).
 - The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
   adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
   (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
@@ -34,6 +37,7 @@ title, size, frozen-files and secret checks.
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
 - `playground/`: Vite page over `core`'s source; not published, outside coverage.
+- `bench/`: the array board, seeded move fixtures, their equivalence test, and the runner.
 
 ## Contract
 None yet.
@@ -42,9 +46,14 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L1.11:** benchmark against an array board; decision record 0001 (DEC-06 holds:
+  linked-list moves go from ~0.10 to ~0.18 µs as lists grow 50×, arrays from ~0.12 to ~1.46 µs; both
+  tiny next to layout). A plain Node runner instead of `vitest bench` (each sample needs a fresh
+  board); the review caught a warm-up and ordering bias in its first version.
+- **Next:** every M1 slice is done: the owner checks the playground in the browser, then
+  "close M1".
 - **2026-11-22, L1.10:** `Board.snapshot()`, cached and frozen; the Board property checks it and
   that it is replaced exactly when the Board changes; the playground renders from it.
-- **Next:** L1.11 (benchmark), the last M1 slice.
 - **2026-11-22, L1.9:** Board events (`move`, `change`) over a small internal emitter; the
   playground's event log.
 - **2026-11-22, L1.8:** `moveList`; the Board property test. A first version starting from an

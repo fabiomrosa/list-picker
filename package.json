@@ -11,6 +11,7 @@
   "scripts": {
     "verify": "npm run lint && npm run typecheck && npm run test:coverage && npm run build",
     "dev": "vite playground",
+    "bench": "node bench/run.ts",
     "lint": "biome ci .",
     "format": "biome check --write .",
     "typecheck": "tsc -p tsconfig.json",

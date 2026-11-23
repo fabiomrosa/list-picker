@@ -237,7 +237,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** DEC-06, DEC-09.
 
 ### L1.11 · Benchmark: linked lists against arrays
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** the lab's question gets a measured answer for the model.
 - **Depends on:** L1.10.
 - **In scope:** `vitest bench` comparing the Board with an array-based board (find by id, then

@@ -38,6 +38,7 @@ cd list-picker
 npm ci
 npm test            # the tests once
 npm run dev         # the playground at http://localhost:5173
+npm run bench       # linked lists against arrays (docs/decisions/0001)
 npm run format      # format and apply safe lint fixes
 ```
 

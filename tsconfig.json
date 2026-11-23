@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["packages/*/src", "packages/*/test", "playground"]
+  "include": ["packages/*/src", "packages/*/test", "playground", "bench"]
 }
