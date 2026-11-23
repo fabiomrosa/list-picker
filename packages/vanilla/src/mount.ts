@@ -1,5 +1,5 @@
 import type { Board } from "@list-picker/core";
-import { createDrag } from "./drag.ts";
+import { startDrag } from "./drag.ts";
 
 /** A mounted Board; `destroy()` removes what `mount` added and every listener. */
 export interface Mount {
@@ -68,10 +68,11 @@ function arrange(parent: HTMLElement, items: readonly HTMLElement[], attribute: 
 /**
  * Draws `board` into `root` from the user's Renderers, in the markup the drag engine reads
  * (DEC-13, DEC-14): per list a `[data-lp-list]` holding its header (`[data-lp-list-handle]`) and a
- * `[data-lp-cards]` container of its cards (`[data-lp-card]`). Then it follows the Board by id: after
- * each change (once the change's own DOM writes, such as a drop's, are done) a Renderer runs only for
- * a new list or card, and kept elements are moved, never redrawn. Every Renderer runs, and its
- * result is checked, before any element is marked or moved: bad input throws and changes nothing.
+ * `[data-lp-cards]` container of its cards (`[data-lp-card]`). Then it follows the Board by id: on
+ * each change a Renderer runs only for a new list or card, so its error throws from the Board
+ * operation and writes nothing; the DOM writes follow once the change's own writes (a drop's) are
+ * done, or once the active drag ends, and kept elements are moved, never redrawn. A drag whose card
+ * or list leaves the Board is abandoned.
  */
 export function mount<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
@@ -95,18 +96,21 @@ export function mount<L extends { id: string }, C extends { id: string }>(
   const lists = new Map<string, ListElements>();
 
   /**
-   * Brings the DOM in line with the Board's Snapshot, writing only what differs. Everything new is
-   * rendered and checked before the first write, so a Renderer error writes nothing.
+   * Runs the Renderers for every list and card of the Board not rendered yet, checking each
+   * result, before any DOM write: a Renderer error throws here and writes nothing.
    */
-  function reconcile(): void {
-    const snapshot = board.snapshot().lists;
-    for (const { list, cards: listCards } of snapshot) {
+  function render(): void {
+    for (const { list, cards: listCards } of board.snapshot().lists) {
       if (!headers.has(list.id)) headers.set(list.id, checked(renderers.renderList(list), list.id));
       for (const card of listCards) {
         if (!cards.has(card.id)) cards.set(card.id, checked(renderers.renderCard(card), card.id));
       }
     }
+  }
 
+  /** Brings the DOM in line with the Board's Snapshot, every element rendered, writing only what differs. */
+  function write(): void {
+    const snapshot = board.snapshot().lists;
     const listIds = new Set(snapshot.map(({ list }) => list.id));
     const cardIds = new Set(snapshot.flatMap((entry) => entry.cards.map((card) => card.id)));
     for (const id of headers.keys()) {
@@ -152,19 +156,50 @@ export function mount<L extends { id: string }, C extends { id: string }>(
     }
   }
 
-  reconcile();
+  render();
+  write();
   let queued = false;
+  /** A Renderer failed on the latest change: write nothing until a later change renders all. */
+  let failed = false;
+  /** A write found a drag active: it runs when the drag ends. */
+  let waiting = false;
   let destroyed = false;
-  // A drop changes the Board before the engine moves the element: reconcile after it, once.
-  const unsubscribe = board.on("change", () => {
+  // The DOM writes wait for the change's own writes (a drop's), once per tick, and for a drag's end.
+  const schedule = () => {
     if (queued) return;
     queued = true;
     queueMicrotask(() => {
       queued = false;
-      if (!destroyed) reconcile();
+      if (destroyed || failed) return;
+      waiting = drag.dragged() !== undefined;
+      if (!waiting) write();
     });
+  };
+  const drag = startDrag(root, board, () => {
+    if (waiting) schedule();
   });
-  const drag = createDrag(root, board);
+  /**
+   * Whether the active drag can still drop: its card or list, and the list its Placeholder is in,
+   * are still on the Board.
+   */
+  const droppable = (item: HTMLElement) => {
+    const card = item.getAttribute("data-lp-card");
+    if (card === null) return board.getList(item.getAttribute("data-lp-list") ?? "") !== undefined;
+    const into = root.querySelector("[data-lp-placeholder]")?.closest("[data-lp-cards]");
+    return (
+      board.getCard(card) !== undefined &&
+      board.getList(into?.getAttribute("data-lp-cards") ?? "") !== undefined
+    );
+  };
+  // The Renderers run in the listener, so their errors reach the caller of the Board operation.
+  const unsubscribe = board.on("change", () => {
+    const dragged = drag.dragged();
+    if (dragged && !droppable(dragged)) drag.cancel();
+    failed = true;
+    render();
+    failed = false;
+    schedule();
+  });
   return {
     destroy() {
       destroyed = true;

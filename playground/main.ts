@@ -153,6 +153,8 @@ function refresh(): void {
     scope.querySelector(`[data-role="${role}"]`) as HTMLButtonElement;
   for (const head of boardView.querySelectorAll<HTMLElement>("[data-lp-list-handle]")) {
     const id = head.closest("[data-lp-list]")?.getAttribute("data-lp-list") as string;
+    // During a drag `mount` writes nothing yet: the DOM may still hold what the Board removed.
+    if (!board.getList(id)) continue;
     const count = cardIds(id).length;
     (head.querySelector(".count") as HTMLElement).textContent =
       `${count} ${count === 1 ? "card" : "cards"}`;
@@ -162,6 +164,7 @@ function refresh(): void {
   }
   for (const box of boardView.querySelectorAll<HTMLElement>("[data-lp-card]")) {
     const id = box.getAttribute("data-lp-card") as string;
+    if (!board.getCard(id)) continue;
     const at = cardAt(id);
     (box.querySelector(".neighbours") as HTMLElement).textContent =
       `prev: ${at.up ?? "null"} · next: ${at.down ?? "null"}`;

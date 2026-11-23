@@ -216,7 +216,8 @@ describe("mount: following the Board", () => {
     ctx.board.addCard("todo", { id: "e", title: "E" }, null);
     await settle();
     expect(ctx.root.innerHTML).toBe("<p>kept</p>");
-    expect(ctx.renders.has("d") || ctx.renders.has("e")).toBe(false);
+    // d was rendered in its change's listener (L4.1), but never written.
+    expect(ctx.renders.has("e")).toBe(false);
   });
 
   it("moves only the element out of place, for a list or a card moved to the end", async () => {
@@ -235,26 +236,144 @@ describe("mount: following the Board", () => {
     expect(domBoard()).toEqual(board());
   });
 
-  it("renders nothing twice when a Renderer throws, and catches up on the next change", async () => {
-    const queued: (() => void)[] = [];
-    const microtask = vi.spyOn(globalThis, "queueMicrotask").mockImplementation((task) => {
-      queued.push(task);
-    });
+  it("throws a Renderer's error from the Board operation, writing and rendering nothing twice", async () => {
     let fail = true;
     const renderCard = ctx.renderers.renderCard;
     ctx.renderers.renderCard = (card) => {
       if (card.id === "bad" && fail) throw new Error("render failed");
       return renderCard(card);
     };
+    const before = ctx.root.innerHTML;
     ctx.board.addList({ id: "new", title: "New" }, null);
-    ctx.board.addCard("new", { id: "bad", title: "Bad" }, null);
-    expect(() => queued.shift()?.()).toThrow("render failed");
+    expect(() => ctx.board.addCard("new", { id: "bad", title: "Bad" }, null)).toThrow(
+      "render failed",
+    );
+    await settle();
+    expect(ctx.root.innerHTML).toBe(before);
     fail = false;
     ctx.board.addCard("new", { id: "good", title: "Good" }, null);
-    queued.shift()?.();
-    microtask.mockRestore();
+    await settle();
     expect(domBoard()).toEqual(board());
     expect(ctx.renders.get("new")).toBe(1);
+    expect(ctx.renders.get("bad")).toBe(1);
+  });
+
+  /**
+   * Starts dragging card a over card `over` (b by default: after it, the end of its list; above
+   * its middle at `y` 110); returns the release.
+   */
+  async function dragA(over = "b", y = 130) {
+    const a = ctx.rendered.get("a") as HTMLElement;
+    const target = ctx.rendered.get(over) as HTMLElement;
+    a.getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    target.getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    document.elementFromPoint = () => target;
+    pointer(a, "pointerdown", 50, 30);
+    pointer(a, "pointermove", 70, 30);
+    pointer(a, "pointermove", 60, y);
+    await frame();
+    return () => pointer(a, "pointerup", 60, y);
+  }
+  /** Collects the errors thrown from event listeners until the returned function is called. */
+  function catchErrors() {
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    return () => {
+      window.removeEventListener("error", onError);
+      return errors;
+    };
+  }
+  const elementFromPoint = document.elementFromPoint;
+  afterEach(() => {
+    document.elementFromPoint = elementFromPoint;
+  });
+
+  it("writes nothing while a drag is active, then matches the Board once it drops", async () => {
+    const release = await dragA();
+    const during = ctx.root.innerHTML;
+    ctx.board.moveCard("b", "done", null);
+    ctx.board.addCard("todo", { id: "d", title: "D" }, null);
+    ctx.board.moveList("done", "todo");
+    await settle();
+    expect(ctx.root.innerHTML).toBe(during);
+    release();
+    await settle();
+    expect([...ctx.board.cards("todo")].map((card) => card.id)).toEqual(["d", "a"]);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("cancels the drag when its card leaves the Board, and the release then does nothing", async () => {
+    const release = await dragA();
+    const caught = catchErrors();
+    ctx.board.removeCard("a");
+    await settle();
+    expect(ctx.root.querySelector("[data-lp-clone], [data-lp-placeholder]")).toBeNull();
+    expect(domBoard()).toEqual(board());
+    const before = ctx.root.innerHTML;
+    release();
+    await settle();
+    expect(caught()).toEqual([]);
+    expect(ctx.root.innerHTML).toBe(before);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("cancels the drag when the list it would drop into leaves the Board", async () => {
+    const release = await dragA("c");
+    const caught = catchErrors();
+    ctx.board.removeList("done");
+    await settle();
+    expect(ctx.root.querySelector("[data-lp-clone], [data-lp-placeholder]")).toBeNull();
+    release();
+    await settle();
+    expect(caught()).toEqual([]);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("keeps the Placeholder out of a list the Board removed during the drag", async () => {
+    const release = await dragA();
+    const caught = catchErrors();
+    ctx.board.removeList("done");
+    const c = ctx.rendered.get("c") as HTMLElement;
+    c.getBoundingClientRect = () => new DOMRect(300, 20, 200, 40);
+    document.elementFromPoint = () => c;
+    pointer(ctx.rendered.get("a") as HTMLElement, "pointermove", 320, 30);
+    await frame();
+    release();
+    await settle();
+    expect(caught()).toEqual([]);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("starts no drag for a card removed between the press and the move", async () => {
+    const a = ctx.rendered.get("a") as HTMLElement;
+    const caught = catchErrors();
+    pointer(a, "pointerdown", 50, 30);
+    ctx.board.removeCard("a");
+    await settle();
+    // The removed card lost the capture: the events now reach `root` from what is under the pointer.
+    pointer(ctx.root, "pointermove", 70, 60);
+    await frame();
+    pointer(ctx.root, "pointerup", 70, 60);
+    expect(ctx.root.querySelector("[data-lp-clone], [data-lp-placeholder]")).toBeNull();
+    expect(caught()).toEqual([]);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("drops before the next card the Board still holds there, past one it no longer does", async () => {
+    ctx.board.addCard("todo", { id: "d", title: "D" }, null);
+    await settle();
+    const release = await dragA("b", 110);
+    const caught = catchErrors();
+    ctx.board.moveCard("b", "done", null);
+    release();
+    await settle();
+    expect(caught()).toEqual([]);
+    expect([...ctx.board.cards("todo")].map((card) => card.id)).toEqual(["a", "d"]);
+    expect(domBoard()).toEqual(board());
   });
 
   it("matches the Board after any sequence of moves", async () => {

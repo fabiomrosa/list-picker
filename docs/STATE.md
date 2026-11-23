@@ -46,11 +46,17 @@ Every slice's pull request updates it (SESSION §3).
   (each marked `data-lp-card`), then starts `createDrag`. Every Renderer runs and is checked first: a
   missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
   document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
-  added. It follows the Board by id: after each `change` (in a microtask, so a drop's own DOM
-  write comes first; several changes reconcile once) it renders only new lists and cards, removes
+  added. It follows the Board by id: on each `change` it renders the new lists and cards at once
+  (a Renderer error throws from the Board operation and writes nothing); then, in a microtask (so a
+  drop's own DOM write comes first; several changes write once) and only when no drag is active (else
+  when it ends), it removes
   the gone ones, and moves into Board order only the elements outside the longest run already in
   order, leaving the user's other
   children of `root`, the Clone and the Placeholder where they are. After a drop it writes nothing.
+  A change that removes the dragged card or list, or the list under its Placeholder, abandons the
+  drag; the Placeholder does not enter a list the Board no longer holds, a drop skips the items
+  the DOM still shows but the Board no longer holds there, and a card removed between the press
+  and the drag's start is not dragged.
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll (downward, and upward without ever being pushed back), a list by its title; a click
@@ -87,19 +93,17 @@ title, size, frozen-files and secret checks.
 None yet.
 
 ## Known issues
-- A Board change made in code during an active drag is reconciled at once: it may move the hidden
-  dragged card (or its list) in the DOM, which in a real browser can release the pointer capture,
-  and removing the dragged card makes the drop throw `unknown id` (cleanup is correct). Deferring
-  the reconcile until the drag ends would fix it (L3.2 review).
-- A Renderer that throws during a reconcile after a change throws from a microtask (an uncaught
-  error the caller of the Board operation cannot catch); nothing is written until a later change
-  reconciles without error.
+None.
 
 ## Last session
+- **2026-11-23, L4.1:** `mount` runs the Renderers in the `change` listener (their errors reach
+  the caller) and writes nothing during a drag; a change that removes what the drag needs abandons
+  it. The live check found the demo reading cards from a DOM that now lags; it now checks
+  each id against the Board.
+- **Next:** L4.2 (move a card with the keyboard).
 - **2026-11-23, plan M4:** M4 split into L4.1–L4.7 in PLAN; DEC-15 (keyboard: pick up, arrows,
   drop) and DEC-16 (English announcements, replaceable) accepted; P3 (license) added for the owner.
   The five M3 retro proposals landed (#41–#43).
-- **Next:** L4.1 (Renderer errors reach the caller; no DOM writes during a drag).
 - **2026-11-23, close M3:** every M3 slice landed as planned (L3.1–L3.4, PRs #36–#39); the owner
   checked the demo. Five retro proposals and two known issues are open for the owner.
 - **2026-11-23, L3.4:** decision record 0002: a Chrome trace of real drags shows no forced layout
