@@ -4,14 +4,15 @@ What exists in this repository now. The code wins over this file: if they disagr
 Every slice's pull request updates it (SESSION §3).
 
 ## Capabilities
-- `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`, `get`, `has`, `size`, `first`, `last`, ordered
-  iteration; duplicate ids throw. A property test checks every PRODUCT invariant of the list
-  against an array model over 1000 random operation sequences.
+- `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`,
+  `get`, `has`, `size`, `first`, `last`, ordered iteration; duplicate ids throw. A property test
+  checks every PRODUCT invariant of the list against an array model over 1000 random operation
+  sequences.
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
   `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
-  everything before unlinking), `removeCard`, `removeList` (with its cards), `getList`, `getCard`, `listOf(cardId)`, `lists()`,
-  `cards(listId)`; card ids unique across the
-  Board, list ids across the Lists; bad input throws and changes nothing.
+  everything before unlinking), `removeCard`, `removeList` (with its cards), `getList`, `getCard`,
+  `listOf(cardId)`, `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
+  across the Lists; bad input throws and changes nothing.
 - The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
   adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
   (showing "same place" when nothing changed), and removes with ×.

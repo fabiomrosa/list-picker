@@ -161,6 +161,7 @@ describe("Board.moveCard", () => {
     ["up", "c", "a", "todo:cabd"],
     ["down", "a", "d", "todo:bcad"],
     ["to the end", "b", null, "todo:acdb"],
+    ["before its previous card", "c", "b", "todo:acbd"],
   ])("moves a card %s within its list", (_how, id, before, expected) => {
     const b = sample();
     expect(b.moveCard(id, "todo", before)).toBe(true);

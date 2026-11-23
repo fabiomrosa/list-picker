@@ -32,6 +32,7 @@ function action(text: string, title: string, onClick: () => void, disabled = fal
       error.textContent = "";
     } catch (e) {
       error.textContent = (e as Error).message;
+      status.textContent = "";
     }
     render();
   });
@@ -133,6 +134,7 @@ function submit(form: HTMLFormElement, act: (id: string) => void): void {
       input.value = "";
     } catch (e) {
       error.textContent = (e as Error).message;
+      status.textContent = "";
     }
     render();
   });
@@ -163,6 +165,7 @@ moveForm.addEventListener("submit", (event) => {
     error.textContent = "";
   } catch (e) {
     error.textContent = (e as Error).message;
+    status.textContent = "";
   }
   render();
 });
