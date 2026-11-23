@@ -28,7 +28,7 @@ roadmap) merge only after your explicit ok.
 - [x] Fill `docs/shared/PRODUCT.md` and `ROADMAP.md`.
 - [x] Fill `docs/ARCHITECTURE.md`, the `Non-negotiable` section and the language line of `AGENTS.md`.
 - [x] Accept or change DEC-10, DEC-11 and DEC-12 (`docs/shared/DECISIONS.md`).
-- [ ] Initial commit in each repository, with the message `Initial commit`: the boilerplate's
+- [x] Initial commit in each repository, with the message `Initial commit`: the boilerplate's
       docs with this project's definitions, and no application code (that starts in slice 0.1).
       Push `main` to GitHub. This is the only direct push and the only commit outside
       Conventional Commits, and you run it yourself: `guard-git.py` blocks an agent committing
@@ -36,8 +36,8 @@ roadmap) merge only after your explicit ok.
 - [ ] Protect `main` (pull requests only, the CI checks required) if the plan allows it: public
       repositories, or GitHub Pro/Team. On GitHub Free with private repositories it is not
       available; `guard-git.py` and the `main-via-pr` CI job stand in (DEC-04).
-- [ ] Create the `oversized-ok` and `hold` labels.
-- [ ] Squash merges only, with the pull request's title as the commit (without this, a one-commit
+- [x] Create the `oversized-ok` and `hold` labels.
+- [x] Squash merges only, with the pull request's title as the commit (without this, a one-commit
       pull request lands with its commit message, not its checked title):
       `gh repo edit <org>/<repo> --enable-squash-merge --enable-merge-commit=false
       --enable-rebase-merge=false --delete-branch-on-merge` and
@@ -45,7 +45,7 @@ roadmap) merge only after your explicit ok.
       -f squash_merge_commit_message=PR_BODY`.
 
 ## M0 · Foundations
-- [ ] **list-picker:** L0.1 runnable skeleton → then "plan M1"
+- [x] **list-picker:** L0.1 runnable skeleton → then "plan M1"
 
 ## Your prerequisites
 See `docs/shared/ROADMAP.md` "Prerequisites": P1 (GitHub repository, before L0.1), P2 (npm, before M4).
