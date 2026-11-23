@@ -33,7 +33,7 @@ roadmap) merge only after your explicit ok.
       Push `main` to GitHub. This is the only direct push and the only commit outside
       Conventional Commits, and you run it yourself: `guard-git.py` blocks an agent committing
       on `main`.
-- [ ] Protect `main` (pull requests only, the CI checks required) if the plan allows it: public
+- [x] Protect `main` (pull requests only, the CI checks required) if the plan allows it: public
       repositories, or GitHub Pro/Team. On GitHub Free with private repositories it is not
       available; `guard-git.py` and the `main-via-pr` CI job stand in (DEC-04).
 - [x] Create the `oversized-ok` and `hold` labels.

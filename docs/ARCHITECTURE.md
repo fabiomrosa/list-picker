@@ -28,13 +28,14 @@ Each package is created by the first slice that needs it. If the engine must be 
 framework adapters without the vanilla mount, it splits into its own package then, not before.
 
 ### The model (`core`)
-- `LinkedList<T>`: `head`, `tail`, `size`, and an Index `Map<id, Node<T>>`. `get(id)`, `append`,
-  `insertBefore(refId)`, `insertAfter(refId)`, `remove(id)`, iteration in order. All O(1) except
-  iteration.
+- `LinkedList<T extends { id: string }>`: `first`, `last`, `size`, and an Index
+  `Map<id, Node<T>>`. `get(id)`, `has(id)`, `insertBefore(value, beforeId | null)` (`null` appends,
+  like the DOM's `insertBefore`), `remove(id)`, iteration in order. All O(1) except iteration.
 - `Board`: a `LinkedList<List>`; each `List` holds a `LinkedList<Card>`. A card-to-list map gives
   the List of any card in O(1).
-- `move`: unlink the node, link it before or after the target (or at an end of the target List),
-  update both Indexes, emit one event. The same operation moves Lists on the Board.
+- `moveCard(id, toListId, beforeCardId | null)` and `moveList(id, beforeListId | null)`: remove
+  from one linked list and insert into another (or the same), update the card-to-list map, emit one
+  `move` event. A drop always knows the card below it, so `before` is the only position needed.
 - `snapshot()`: an immutable array view, in order, for renderers that need arrays.
 
 ## Request flow
