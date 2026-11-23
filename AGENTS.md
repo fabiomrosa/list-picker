@@ -65,4 +65,5 @@ Follow YAGNI and KISS strictly, in code and in communication.
   (gitleaks) checks.
 - **Pull requests:** push the slice branch, open the pull request with `gh`, and squash-merge it
   yourself once every check is green (SESSION §4). Nothing reaches `main` any other way (DEC-04).
-<!-- L0.1 adds: install (`npm ci`), test (`npm test`), format (`npm run format`), the demo. -->
+- **Install:** `npm ci`. **Test:** `npm test`. **Format and fix lint:** `npm run format`.
+- Packages live in `packages/<name>`; root scripts run over all of them.
