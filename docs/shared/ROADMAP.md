@@ -54,18 +54,26 @@ becomes the demo board; a recorded trace shows no forced layout per pointer move
 |---|---|
 | `list-picker` | L3.1 → L3.2 → L3.3 → L3.4 |
 
+## M4 · v1 release
+Keyboard moving for cards and lists (DEC-15), live announcements with overridable English defaults
+(DEC-16), the two M3 known issues fixed, a README per package, the lab write-up in the root README,
+and the first npm publish.
+
+| Repository | Slices |
+|---|---|
+| `list-picker` | L4.1 → L4.2 → L4.3 → L4.4 → L4.5 → L4.6 → L4.7 |
+
 ## Prerequisites (only the owner can do these)
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
-- **P2** · The npm account and package names (DEC-12). Needed by the first publish (M4).
+- **P2** · The npm account and package names (DEC-12). Needed by L4.7 (the first publish).
+- **P3** · The license of the packages. Needed by L4.5.
 
 ## Later milestones (split when they start)
-- **M4 · v1 release.** Keyboard dragging and ARIA live announcements, the docs, the lab write-up,
-  the first npm publish.
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-M4 next: "plan M4".
+L4.1 to L4.7 in order; P3 before L4.5, P2 before L4.7.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |

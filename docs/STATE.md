@@ -96,9 +96,12 @@ None yet.
   reconciles without error.
 
 ## Last session
+- **2026-11-23, plan M4:** M4 split into L4.1–L4.7 in PLAN; DEC-15 (keyboard: pick up, arrows,
+  drop) and DEC-16 (English announcements, replaceable) accepted; P3 (license) added for the owner.
+  The five M3 retro proposals landed (#41–#43).
+- **Next:** L4.1 (Renderer errors reach the caller; no DOM writes during a drag).
 - **2026-11-23, close M3:** every M3 slice landed as planned (L3.1–L3.4, PRs #36–#39); the owner
   checked the demo. Five retro proposals and two known issues are open for the owner.
-- **Next:** plan M4 (v1 release).
 - **2026-11-23, L3.4:** decision record 0002: a Chrome trace of real drags shows no forced layout
   in `pointermove`. Auto-scroll frames force one each (the `scrollTop` write after the
   Placeholder's move); scrolling first removed them but broke upward auto-scroll through scroll

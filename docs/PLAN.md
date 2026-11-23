@@ -498,6 +498,149 @@ the browser tests.
 - **Files:** ~3: `docs/decisions/0002-drag-layout-trace.md`, PLAN, STATE.
 - **References:** AGENTS "Non-negotiable" (layout reads, performance claims), decision 0001.
 
+## M4 · v1 release
+Keyboard moving (DEC-15) and live announcements (DEC-16) in `packages/vanilla`, the two M3 known
+issues fixed, the packages' READMEs, the lab write-up, and the first npm publish. Engine and mount
+tests run in `happy-dom`; keyboard moves also get browser tests. Every slice that adds behaviour
+shows it in the demo.
+
+### L4.1 · Mount: Renderer errors reach the caller, no DOM writes during a drag
+- **Status:** next
+- **Goal:** the two M3 known issues are gone.
+- **Depends on:** M3.
+- **In scope:**
+  - Renderers run synchronously in `mount`'s `change` listener, so a Renderer error reaches the
+    caller of the Board operation (the Board rethrows a listener's error); the DOM writes stay in
+    the microtask.
+  - While a drag is active, the DOM writes wait and run once when it ends (drop or cancel);
+    `createDrag` tells `mount` when a drag ends through an internal option, not public API.
+- **Out of scope:** keyboard moving (L4.2).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. A Renderer that throws makes the Board operation's call throw that error; nothing is written,
+     and nothing already rendered is rendered again.
+  2. A Board change made during a drag (including removing the dragged card) writes nothing until
+     the drag ends; then the DOM matches the Board, and the drop of a removed card changes nothing
+     and throws nothing.
+  3. STATE's two known issues are removed.
+- **Files:** ~6: `src/mount.ts`, `src/drag.ts`, `test/mount.test.ts`, GOTCHAS, PLAN, STATE.
+- **References:** DEC-13, DEC-14; decision 0002 (frame order).
+
+### L4.2 · Keyboard: move a card
+- **Status:** waiting (L4.1)
+- **Goal:** a card can be moved with the keyboard alone (DEC-15).
+- **Depends on:** L4.1, DEC-15.
+- **In scope:**
+  - `mount` gives each card element `tabindex="0"` unless it has one.
+  - One `keydown` listener on `root` (removed by `destroy()`). On a focused card: Space or Enter
+    picks it up (`data-lp-grabbed`); ↑ ↓ move it one place within its list, ← → to the same
+    position (or the end) in the neighbouring list, each a `board.moveCard` with the element moved
+    by the engine (DEC-13) and focus kept; Space or Enter drops; Esc moves it back to where it was
+    picked up; focus leaving the card drops it. Keys are ignored inside the card's controls.
+  - A pointer drag and a keyboard move never run at once.
+- **Out of scope:** lists (L4.3), announcements (L4.4), Esc reaching the page's other handlers
+  (PLAN "Later").
+- **Contract:** none. **Public API:** none (behaviour of `createDrag` and `mount`).
+- **Acceptance criteria:**
+  1. Space, ↓, ↓, Space moves a card two places down, in the Board and the DOM, with one `move`
+     event per step; focus stays on the card.
+  2. ← → move a card across lists, to the same position or the end; at the first or last list
+     nothing happens.
+  3. Esc after some moves puts the card back where it was picked up; focus leaving drops it.
+  4. A browser test moves a card with the keyboard on the demo.
+- **Files:** ~7: `src/drag.ts` (or a new `src/keyboard.ts`), `src/mount.ts`, their tests,
+  `e2e/drag.e2e.ts`, PLAN, STATE.
+- **References:** DEC-15; ARCHITECTURE "Lessons from list-picker-js".
+
+### L4.3 · Keyboard: move a list
+- **Status:** waiting (L4.2)
+- **Goal:** lists move with the keyboard by their handle.
+- **Depends on:** L4.2.
+- **In scope:** the same pick up, ← →, drop and Esc on a focused `[data-lp-list-handle]` (`mount`
+  gives it `tabindex="0"` unless it has one), each step a `board.moveList`.
+- **Out of scope:** announcements (L4.4).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Space, →, Space on a handle moves its list one place right, with its cards; focus stays on
+     the handle.
+  2. Esc puts the list back; ↑ ↓ do nothing to a list.
+  3. A browser test moves a list with the keyboard on the demo.
+- **Files:** ~5: the keyboard source, its test, `e2e/drag.e2e.ts`, PLAN, STATE.
+- **References:** DEC-15.
+
+### L4.4 · Live announcements
+- **Status:** waiting (L4.3)
+- **Goal:** screen-reader users hear what a drag or a keyboard move does (DEC-16).
+- **Depends on:** L4.3, DEC-16.
+- **In scope:**
+  - One visually hidden `aria-live="assertive"` region inside `root`, added by the engine and
+    removed by `destroy()`.
+  - Announcements for pick up, each move, drop and cancel, for cards and lists, by pointer and by
+    keyboard: the item's id-derived label, its list and position ("Picked up Design the model. To
+    do, position 1 of 2."). The label comes from the element's `aria-label` or text.
+  - A `messages` option on `createDrag` and `mount` replaces any default message (a function per
+    event receiving the label, list and position).
+  - AGENTS "Language" names this one exception to "no user-facing text".
+- **Out of scope:** translations shipped with the library.
+- **Contract:** none. **Public API:** additive: the `messages` option and its type.
+- **Acceptance criteria:**
+  1. Each event writes its default message to the live region; a `messages` entry replaces it.
+  2. Pointer drags announce pick up, drop and cancel (not every pointer move); keyboard moves also
+     announce each step.
+  3. After `destroy()`, the region is gone.
+- **Files:** ~8: `src/announce.ts`, `src/drag.ts`, `src/mount.ts`, `src/index.ts`, tests, AGENTS,
+  PLAN, STATE.
+- **References:** DEC-16, DEC-07.
+
+### L4.5 · Package READMEs and metadata
+- **Status:** waiting (L4.4)
+- **Goal:** each package explains itself on npm.
+- **Depends on:** L4.4, P3 (license).
+- **In scope:** `packages/core/README.md` and `packages/vanilla/README.md` (what it is, install,
+  a complete example, the API, the `data-lp-*` attributes and styling hooks, keyboard keys,
+  announcements); `package.json` fields `description`, `license`, `repository`, `keywords`,
+  `sideEffects: false`; the `LICENSE` file; `npm pack --dry-run` lists only `dist`, the README and
+  the license.
+- **Out of scope:** the version and the publish (L4.7).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Each README's example runs as written (pasted into the demo once).
+  2. `npm pack --dry-run` in each package lists exactly the expected files.
+- **Files:** ~6: two READMEs, two `package.json`, `LICENSE`, STATE.
+- **References:** DEC-12, DEC-07.
+
+### L4.6 · The lab write-up
+- **Status:** waiting (L4.5)
+- **Goal:** the lab's question gets its written answer (ROADMAP "The end goal").
+- **Depends on:** L4.5.
+- **In scope:** the root `README.md`: the question (do linked lists make a board simpler and faster
+  than arrays?), the answer with decisions 0001 and 0002 as data (model cost per move, layout per
+  pointer move), what was simpler and what was not, how to repeat the measurements, and links to
+  the packages and the demo (`npm run dev`).
+- **Out of scope:** new measurements.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Every number in the write-up is in decision 0001 or 0002, with the record linked.
+  2. A reader can repeat both measurements from the README alone.
+- **Files:** ~3: `README.md`, PLAN, STATE.
+- **References:** decisions 0001, 0002; DEC-06.
+
+### L4.7 · First npm publish
+- **Status:** waiting (L4.6)
+- **Goal:** v1 is on npm.
+- **Depends on:** L4.6, P2 (npm account and package names).
+- **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
+  core `^1.0.0`), `private` removed, `publishConfig.access: public` for a scope; the agent runs
+  `npm publish --dry-run` in each; the owner runs the publish from their account; tag `v1.0.0`.
+- **Out of scope:** a release workflow in CI.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. `npm install <vanilla name>` in an empty folder installs both packages, and the README example
+     runs against the installed packages.
+  2. The tag `v1.0.0` points at the published commit.
+- **Files:** ~4: two `package.json`, `package-lock.json`, STATE.
+- **References:** DEC-12; ROADMAP P2, P3.
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).
