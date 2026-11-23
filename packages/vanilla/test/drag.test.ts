@@ -175,4 +175,13 @@ describe("createDrag: the Clone follows the pointer", () => {
     await frame();
     expect(clone().style.transform).toBe("translate(24px, 0px)");
   });
+
+  it.each(["release", "destroy"])("cancels a pending frame on %s", (how) => {
+    const cancel = vi.spyOn(window, "cancelAnimationFrame");
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    if (how === "destroy") drag.destroy();
+    else pointer(ctx.card("a"), "pointerup", 70, 30);
+    expect(cancel).toHaveBeenCalledTimes(1);
+  });
 });
