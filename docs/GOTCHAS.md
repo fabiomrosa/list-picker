@@ -24,6 +24,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - Reading layout (`getBoundingClientRect`, `offsetTop`, `offsetHeight`) right after a DOM write
   forces a synchronous layout. In a `pointermove` loop that is the main cost of a board, far more
   than any list operation.
+- Writing `scrollTop` or `scrollLeft` needs an up-to-date layout (to clamp the offset), so a scroll
+  write after any DOM write in the same frame forces a synchronous layout: scroll first.
 - Without `touch-action: none` on the draggable element, a touch drag scrolls the page and fires
   `pointercancel`.
 - `setPointerCapture` keeps `pointermove` coming when the pointer leaves the card; without it, a

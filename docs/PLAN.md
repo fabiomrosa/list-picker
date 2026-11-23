@@ -482,7 +482,7 @@ the browser tests.
 - **References:** SESSION §3.3.
 
 ### L3.4 · Trace: no forced layout per pointer move
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** the claim that a drag forces no layout in `pointermove` is measured, not assumed.
 - **Depends on:** L3.3.
 - **In scope:** record a Chrome performance trace of card and list drags on the demo (with

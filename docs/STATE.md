@@ -54,6 +54,9 @@ Every slice's pull request updates it (SESSION §3).
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll, a list by its title; a click changes nothing.
+- `npm run trace` drags cards and a list on the demo in Chrome with a performance trace and counts
+  forced layouts by where they ran; the result is in `docs/decisions/0002-drag-layout-trace.md`
+  (none in `pointermove`; one per drag start in the first animation frame).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
@@ -76,7 +79,8 @@ title, size, frozen-files and secret checks.
   coverage.
 - `packages/vanilla`: `createDrag` (`src/drag.ts`), `mount` (`src/mount.ts`); imports only types
   from `core`.
-- `bench/`: the array board, seeded move fixtures, their equivalence test, and the runner.
+- `bench/`: the array board, seeded move fixtures, their equivalence test, the runner, and the drag
+  trace (`drag-trace.ts`).
 
 ## Contract
 None yet.
@@ -91,9 +95,12 @@ None yet.
   reconciles without error.
 
 ## Last session
+- **2026-11-23, L3.4:** decision record 0002: a Chrome trace of real drags shows no forced layout
+  in `pointermove`; auto-scroll frames forced one each (a `scrollTop` write after the Placeholder's
+  move), fixed by scrolling first (12 → 1 forced layouts per run). Every M3 slice is done.
+- **Next:** the owner checks the demo (`git pull && npm ci && npm run dev`), then "close M3".
 - **2026-11-23, L3.3:** the playground is the demo board, drawn by `mount`; the browser tests pass
   unchanged. The owner's check of the demo in the browser is pending.
-- **Next:** L3.4 (trace); the owner checks the demo (`git pull && npm ci && npm run dev`).
 - **2026-11-23, L3.2:** `mount` follows the Board by id (one reconcile per microtask); each
   Renderer runs once per list or card, and a drop costs no DOM write.
 - **2026-11-23, L3.1:** `mount` draws a Board from the user's Renderers into the DEC-13 markup and
