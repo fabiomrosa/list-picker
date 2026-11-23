@@ -140,7 +140,11 @@ export function mount<L extends { id: string }, C extends { id: string }>(
       }
       for (const card of listCards) {
         const element = cards.get(card.id) as HTMLElement;
-        if (!element.hasAttribute("data-lp-card")) element.setAttribute("data-lp-card", card.id);
+        if (!element.hasAttribute("data-lp-card")) {
+          element.setAttribute("data-lp-card", card.id);
+          // Focusable, for moving with the keyboard (DEC-15).
+          if (!element.hasAttribute("tabindex")) element.tabIndex = 0;
+        }
       }
     }
 

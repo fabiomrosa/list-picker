@@ -36,6 +36,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - On a drop the engine calls `board.moveCard` (which emits `change` synchronously) before it moves
   the card into the Placeholder's place; a `change` listener that writes the DOM at once races the
   engine, so `mount` writes in a microtask (its Renderers run in the listener itself).
+- Chrome fires `focusout` on a focused element moved in the DOM (`before`, `append`), and it loses
+  the focus; happy-dom does neither, so only the browser test catches a missing guard or refocus.
 - During an active drag `mount` writes nothing: the DOM can show cards and lists the Board has
   moved or removed until the drag ends. Code that reads the mounted DOM after a `change` (the
   demo's `refresh`) must check each id against the Board; the engine's drop skips such items.
