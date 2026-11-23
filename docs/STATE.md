@@ -74,6 +74,9 @@ None yet.
   no counterexample. A timeout set for property tests would remove the flake.
 
 ## Last session
+- **2026-11-23, hotfix (owner report):** a card's Placeholder copied the card's width, so it was
+  too wide in a list with a scrollbar and too narrow coming from one. It now takes only the card's
+  height (lists keep both). Browser tests now run with real scrollbars.
 - **2026-11-23, L2.8:** dragging lists by a handle (one engine, two kinds: card and list); every
   M2 slice is done.
 - **Next:** the owner checks the drag in the browser, then "close M2".

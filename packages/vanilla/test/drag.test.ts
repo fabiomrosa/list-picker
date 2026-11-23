@@ -74,7 +74,11 @@ describe("createDrag: drag start", () => {
     expect(clone.textContent).toContain("A");
     const placeholder = ctx.card("a").previousElementSibling as HTMLElement;
     expect(placeholder.hasAttribute("data-lp-placeholder")).toBe(true);
-    expect([placeholder.style.width, placeholder.style.height]).toEqual(["200px", "40px"]);
+    // Only the height is fixed: the width is the list's, like any card in it (lists differ, e.g.
+    // one with a scrollbar is narrower).
+    expect([placeholder.style.width, placeholder.style.height]).toEqual(["", "40px"]);
+    // …and stretches even in a flex column that does not stretch its children.
+    expect(placeholder.style.alignSelf).toBe("stretch");
     expect(ctx.card("a").style.display).toBe("none");
     expect(ctx.card("a").hasAttribute("data-lp-dragging")).toBe(true);
   });
