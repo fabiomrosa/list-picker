@@ -45,16 +45,16 @@ slowest case is 1.5 µs per move, and a drag makes one move per drop. What a dra
 and that comes from the engine, not the model: a Chrome trace of five real drags
 ([decision 0002](docs/decisions/0002-drag-layout-trace.md), three runs) found 0 forced layouts in
 333 – 335 `pointermove` dispatches, and 12 in 374 animation frames (10 of them from auto-scroll,
-one per frame while it scrolls).
+one per frame while it scrolls; the record shows how that breakdown was found).
 
 **Simpler: partly.**
-- Simpler: a position is "before this item" (or the end), never an index. That is what the DOM's
-  `insertBefore` takes, what a drop target finds under the pointer, and what the `move` event
-  reports (`prevId`, `nextId`), so no index arithmetic sits between the three, and a move is checked
-  in full before anything is unlinked.
-- Not simpler: a page still needs arrays to draw from, so `snapshot()` builds one per change
-  (O(n)); a position people hear ("position 2 of 3") is counted by walking the list; and removing a
-  list visits its cards to clear the index. Most of the work was never the model: the drag engine,
+- Simpler: in the Board's API a position is "before this item" (or the end), never an index. That
+  is what the DOM's `insertBefore` takes, what a drop target finds under the pointer, and what the
+  `move` event reports (`prevId`, `nextId`), so no index arithmetic sits between the three, and a
+  move is checked in full before anything is unlinked.
+- Not simpler: a page still needs arrays to draw from, so `snapshot()` builds at most one per
+  change (O(n)); a position people hear ("position 2 of 3") is counted by walking the list; and
+  removing a list visits its cards to clear the index. Most of the work was never the model: the drag engine,
   the browser's layout and focus rules, and drawing the Board without redrawing it.
 
 To repeat both measurements (Node 26 and Google Chrome installed):
