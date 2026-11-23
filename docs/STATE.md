@@ -48,7 +48,7 @@ None.
 ## Last session
 - **2026-11-22, plan M2:** M2 split into L2.1–L2.8 in PLAN; DEC-13 proposed (data attributes;
   the engine applies drops).
-- **Next:** the owner's ok on the M2 plan and DEC-13, then L2.1.
+- **Next:** L2.1 (the owner approved the M2 plan and DEC-13).
 - **2026-11-22, close M1:** every M1 slice landed as planned (L1.1–L1.11, PRs #5–#15); the owner
   checked the playground in the browser. Five retro proposals are open for the owner.
 - **2026-11-22, L1.11:** benchmark against an array board; decision record 0001 (DEC-06 holds:

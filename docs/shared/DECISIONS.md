@@ -104,11 +104,7 @@ the slice that first needs it, with one gate (`npm run verify`) over all of them
 - **Consequences:** DEC-05's one-name-per-repository applies to the repository; package names on npm
   are chosen when the first one is published.
 
----
-
-## Proposed (waiting for the owner)
-
-## DEC-13 · The engine finds elements by data attributes and applies drops itself — Proposed
+## DEC-13 · The engine finds elements by data attributes and applies drops itself — Accepted (owner, 2026-11-22)
 The drag engine (`createDrag(root, board)` in `@list-picker/vanilla`) finds cards by
 `data-lp-card="<id>"` inside list containers `data-lp-cards="<listId>"`, and lists by
 `data-lp-list="<id>"` dragged by a `data-lp-list-handle` inside them. On a drop it calls
@@ -118,3 +114,8 @@ The drag engine (`createDrag(root, board)` in `@list-picker/vanilla`) finds card
   a renderer that redraws from the Snapshot (M3, M5, M6) simply overwrites it.
 - **Consequences:** the user's markup must carry the attributes; the engine never creates cards,
   only the Clone and the Placeholder; if `moveCard` throws, the card goes back where it was.
+
+---
+
+## Proposed (waiting for the owner)
+None.

@@ -265,7 +265,7 @@ drag after L2.4 and at the end of M2. Styling hooks are attributes (`data-lp-*`)
 styles the user must fight, except the Clone's position and `transform`.
 
 ### L2.1 · Vanilla package and drag start
-- **Status:** waiting (DEC-13)
+- **Status:** next
 - **Goal:** pressing a card and moving past a small threshold starts a drag: the card's place is
   held by a Placeholder and a Clone appears over it.
 - **Depends on:** M1, DEC-10, DEC-13.

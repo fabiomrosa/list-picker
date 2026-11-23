@@ -64,4 +64,4 @@ L2.1 to L2.8 in order; the owner checks the drag in the browser after L2.4 and a
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |
 |---|---|---|---|
-| DEC-13 | The engine finds elements by data attributes and applies drops itself | Proposed | L2.1 |
+| – | None open | – | – |
