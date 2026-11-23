@@ -131,7 +131,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants, CONVENTIONS §5.
 
 ### L1.5 · Board: add lists and cards
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** a `Board` holds ordered Lists of ordered Cards, and finds any card and its List in O(1).
 - **Depends on:** L1.3.
 - **In scope:** `new Board()`; `addList(list, beforeListId | null)`; `addCard(listId, card,
@@ -148,7 +148,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT ubiquitous language, DEC-06.
 
 ### L1.6 · Board: remove cards and lists
-- **Status:** waiting (L1.5)
+- **Status:** next
 - **Goal:** cards and whole Lists can be removed, and the Board forgets them.
 - **Depends on:** L1.5.
 - **In scope:** `removeCard(id)` and `removeList(id)` return what they removed; removing a List
