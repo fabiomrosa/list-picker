@@ -22,9 +22,10 @@ Every slice's pull request updates it (SESSION §3).
 - `Board.snapshot()`: a frozen `{ lists: [{ list, cards }] }` in Board order holding the user's own
   values; the same object until the Board changes (already fresh inside listeners).
 - `@list-picker/vanilla`: `createDrag(root, board)` returns `{ destroy }`. A press on a
-  `[data-lp-card]` (not on a control inside it) that moves past 4 px shows a Clone over the card and
-  a Placeholder of its size in its place, and hides the card (`data-lp-dragging`); releasing shows
-  the card again (dropping comes in L2.4).
+  `[data-lp-card]` (not on a control inside it) captures the pointer; past 4 px it shows a Clone
+  (inside `root`, ids removed) over the card and a Placeholder of its size in its place, and hides
+  the card (inline `display: none`, `data-lp-dragging`). Release, `pointercancel` or `destroy()`
+  show the card again as it was (dropping comes in L2.4).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
