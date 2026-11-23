@@ -220,3 +220,44 @@ describe("Board.moveCard", () => {
     expect(b.listOf("a")?.id).toBe("todo");
   });
 });
+
+describe("Board.moveList", () => {
+  const sample = () => {
+    const b = new Board<List, Card>();
+    for (const id of ["a", "b", "c", "d"]) b.addList({ id }, null);
+    b.addCard("b", { id: "x" }, null);
+    return b;
+  };
+
+  it.each([
+    ["before the first", "c", "a", "cabd"],
+    ["before a later list", "a", "d", "bcad"],
+    ["to the end", "b", null, "acdb"],
+    ["before its previous list", "c", "b", "acbd"],
+  ])("moves a list %s, with its cards", (_how, id, before, expected) => {
+    const b = sample();
+    expect(b.moveList(id, before)).toBe(true);
+    expect(listIds(b).join("")).toBe(expected);
+    expect(cardIds(b, "b")).toEqual(["x"]);
+    expect(b.listOf("x")?.id).toBe("b");
+  });
+
+  it.each([
+    ["before itself", "b", "b"],
+    ["before its own next", "b", "c"],
+    ["to the end when already last", "d", null],
+  ])("returns false and changes nothing when moved %s", (_how, id, before) => {
+    const b = sample();
+    expect(b.moveList(id, before)).toBe(false);
+    expect(listIds(b).join("")).toBe("abcd");
+  });
+
+  it.each([
+    ["an unknown list", "nope", null, 'list-picker: unknown id "nope"'],
+    ["an unknown before list", "a", "nope", 'list-picker: unknown id "nope"'],
+  ])("throws on %s and changes nothing", (_name, id, before, message) => {
+    const b = sample();
+    expect(() => b.moveList(id, before)).toThrow(message);
+    expect(listIds(b).join("")).toBe("abcd");
+  });
+});
