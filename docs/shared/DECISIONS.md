@@ -127,14 +127,16 @@ moved, never redrawn.
 - **Consequences:** the Renderer's element is the card itself, with no wrapper; content changes to a
   card are out of v1 (the Board has no update operation).
 
-## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23)
-On a focused card, Space or Enter picks it up; ↑ ↓ move it within its list, ← → to the neighbouring
-list; Space or Enter drops; Esc puts it back where it was picked up. A list moves the same way by
+## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23; amended 2026-11-23)
+On a focused card, Space picks it up; ↑ ↓ move it within its list, ← → to the neighbouring
+list; Space drops; Esc puts it back where it was picked up. A list moves the same way by
 its focused handle, with ← →. Each step is a real Board move.
 - **Why:** the common pattern for accessible sortable lists, one card at a time like the pointer
   drag; it needs no multi-select, which PRODUCT keeps out of v1.
 - **Consequences:** `mount` makes cards and handles focusable; the engine listens to `keydown` on
   `root` and moves the element itself (DEC-13); the move events are the same as for a drag.
+- **Amended (owner, 2026-11-23):** Enter no longer picks up or drops; it activates the item
+  (DEC-17), as on a button or a link. Space alone picks up and drops.
 
 ## DEC-16 · Live announcements in English by default, replaceable — Accepted (owner, 2026-11-23)
 The engine announces pick up, moves, drop and cancel in an `aria-live` region, with short English
@@ -144,6 +146,19 @@ messages; a `messages` option replaces any of them.
 - **Consequences:** the one exception to "the library has no user-facing text of its own"
   (AGENTS); the default messages are part of the public behaviour, changed only with a note in the
   pull request.
+
+## DEC-17 · The v1 API is complete before the first publish — Accepted (owner, 2026-11-23)
+Before 1.0.0, the Board changes a list's or a card's value in place (`updateList`, `updateCard`;
+the id never changes, so a list's display name is the app's own field), and `mount` redraws just
+that item; `createDrag` and `mount` take `onActivate({ kind, id })` (a click that started no drag,
+or Enter) and `canMove({ kind, id, toListId, beforeId })` (refused places are never shown or
+applied). Drag start and end callbacks are left for a later 1.x.
+- **Why:** 1.0.0 is the base of the React and Angular adapters: what an app commonly needs (rename,
+  open a card, rules) must not change the API afterwards. A click on a card must open the app's
+  modal, and the click ending a drag must not. Start and end callbacks only add API (CSS already
+  sees `data-lp-dragging`), so they can come later without a break.
+- **Consequences:** DEC-15 amended (Enter activates); M4 gains L4.8–L4.13 and a site published
+  before the packages; the engine adds one capture-phase `click` listener on `root`.
 
 ---
 

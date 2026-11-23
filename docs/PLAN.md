@@ -500,7 +500,10 @@ the browser tests.
 
 ## M4 · v1 release
 Keyboard moving (DEC-15) and live announcements (DEC-16) in `packages/vanilla`, the two M3 known
-issues fixed, the packages' READMEs, the lab write-up, and the first npm publish. Engine and mount
+issues fixed, the packages' READMEs, the lab write-up; then, before the first npm publish (the base
+the React and Angular adapters build on), the rest of the v1 API (DEC-17): changing a list's or a
+card's value, activating an item, rules for where items may move; and the site with the docs and
+the demo. Engine and mount
 tests run in `happy-dom`; keyboard moves also get browser tests. Every slice that adds behaviour
 shows it in the demo.
 
@@ -636,8 +639,11 @@ shows it in the demo.
 - **Files:** ~3: `README.md`, PLAN, STATE.
 - **References:** decisions 0001, 0002; DEC-06.
 
-### L4.7 · First npm publish
+### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
+- **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
+  a site first (L4.8–L4.12). The publish, the tag and criterion 1 against the registry moved to
+  L4.13; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -656,6 +662,122 @@ shows it in the demo.
 - **Files:** ~4: two `package.json`, `package-lock.json`, STATE.
 - **References:** DEC-12; ROADMAP P2, P3.
 
+### L4.8 · Change a list's or a card's value
+- **Status:** waiting (DEC-17)
+- **Goal:** an app renames a list (its display name is the app's own field; the id never changes)
+  or edits a card, through the Board.
+- **Depends on:** DEC-17.
+- **In scope:** `board.updateList(id, list)` and `board.updateCard(id, card)`: replace the stored
+  value (same id, same position), emit `change` (no `move`), invalidate the Snapshot; an unknown
+  id, or a value whose `id` differs, throws and changes nothing. The Board property test gains both
+  operations. Core README.
+- **Out of scope:** changing an id; the DOM (L4.9).
+- **Contract:** none. **Public API:** two `Board` methods (additive).
+- **Acceptance criteria:**
+  1. After `updateCard`, `getCard`, `cards()` and `snapshot()` return the new value in the same
+     place; `change` fires once, `move` never.
+  2. A wrong or unknown id throws and leaves the Board, its Snapshot and its listeners untouched.
+- **Files:** ~6: `core/src/board.ts`, its tests and property test, core README, PLAN, STATE.
+- **References:** DEC-17, DEC-06.
+
+### L4.9 · Mount draws a changed value
+- **Status:** waiting (L4.8)
+- **Goal:** a renamed list or an edited card shows in the page at once.
+- **Depends on:** L4.8.
+- **In scope:** on `change`, `mount` runs the Renderer again for each list or card whose value is
+  no longer the one it drew (by identity), checks the result like a new one, and puts the new
+  element in the old one's place; the focus, a keyboard grab and the item's position stay. During a
+  pointer drag of that item the swap waits until the drag ends, like every other write. The demo
+  renames a list and edits a card. Vanilla README.
+- **Out of scope:** diffing the user's element (the Renderer returns a new one).
+- **Contract:** none. **Public API:** none (behaviour of `mount`).
+- **Acceptance criteria:**
+  1. `updateList` then a microtask: the list's header is the Renderer's new element, its cards
+     untouched (no other Renderer runs, no other element moves).
+  2. A focused (or keyboard-grabbed) card that is updated keeps the focus (and the grab) on its new
+     element; the announcements use the new label.
+  3. A Renderer error on update throws from `updateCard`, and the old element stays.
+- **Files:** ~7: `vanilla/src/mount.ts`, `keyboard.ts`, tests, demo, vanilla README, PLAN, STATE.
+- **References:** DEC-17, DEC-14.
+
+### L4.10 · Activate a card or a list
+- **Status:** waiting (L4.9)
+- **Goal:** clicking a card (or pressing Enter on it) opens the app's modal, and a drag never does.
+- **Depends on:** L4.9, DEC-17, DEC-15 (amended).
+- **In scope:** an `onActivate({ kind, id })` option of `createDrag` and `mount`, called on a click
+  on a card or a list handle that started no drag, and on Enter on a focused card or handle (not
+  while one is picked up). The click that ends a pointer drag never reaches the card or the page
+  (one capture-phase `click` listener on `root`, removed by `destroy()`). Clicks and Enter on
+  controls inside an item keep their own behaviour. Enter no longer picks up; Space does (DEC-15
+  amended); the e2e and the READMEs follow. The demo opens a dialog.
+- **Out of scope:** double-click, long press, a context menu.
+- **Contract:** none. **Public API:** `onActivate` in the options (additive); Enter's behaviour
+  changes (unreleased).
+- **Acceptance criteria:**
+  1. A click without a drag calls `onActivate` once; a drag and drop calls it never, and the user's
+     own `click` listener on the card does not fire either.
+  2. Enter on a focused card calls `onActivate`; Space picks it up; Enter on a button inside it
+     only presses the button.
+- **Files:** ~10: `drag.ts`, `keyboard.ts`, `announce.ts` (options), `mount.ts`, tests, e2e, demo,
+  both READMEs or vanilla's, PLAN, STATE.
+- **References:** DEC-17, DEC-15.
+
+### L4.11 · Rules for where items may move
+- **Status:** waiting (L4.10)
+- **Goal:** an app locks a card, keeps a list from receiving cards, or caps a list's cards.
+- **Depends on:** L4.10, DEC-17.
+- **In scope:** a `canMove({ kind, id, toListId, beforeId })` option of `createDrag` and `mount`
+  (`toListId` `null` for a list), asked before a move is shown or applied: the Placeholder never
+  enters a refused place (it stays at the last allowed one; the start place is always allowed), so
+  the drop applies only an allowed place, and a locked item drags but lands where it was; a
+  keyboard step to a refused place is skipped to the next allowed one in that
+  direction, or does nothing. The Board itself is not guarded (the app's own calls are the app's).
+  The demo caps "Doing".
+- **Out of scope:** async rules; visual hints beyond the existing attributes.
+- **Contract:** none. **Public API:** `canMove` in the options (additive).
+- **Acceptance criteria:**
+  1. With a rule refusing list B, a pointer drag over B leaves the Placeholder where it was and
+     the drop lands there; the arrow into B skips it.
+  2. A rule refusing every move of a card: pointer and keyboard leave it in place, with no
+     `move` event.
+  3. No `canMove`: behaviour unchanged (every existing test passes).
+- **Files:** ~9: `drag.ts`, `keyboard.ts`, `announce.ts` (options), tests, demo, vanilla README,
+  PLAN, STATE.
+- **References:** DEC-17.
+
+### L4.12 · The site
+- **Status:** waiting (L4.11)
+- **Goal:** one site introduces the project and documents each package, with the live demo.
+- **Depends on:** L4.11; the owner turns on GitHub Pages (source: GitHub Actions).
+- **In scope:** a Vite multi-page site in `site/`: home (what it is, the lab's answer, links), a
+  page per package built from its README (one source for npm and the site), the demo board; a
+  workflow that builds it on every merge to `main` and deploys to GitHub Pages
+  (`fabiomrosa.github.io/list-picker`); `homepage` in both `package.json`. Later adapters add one
+  page each.
+- **Out of scope:** a docs framework, versioned docs, search.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. After the merge the site is live, and every page and the demo work there.
+  2. A README change shows on the site after the next merge, with no other edit.
+- **Files:** ~10: `site/` (pages, build config), workflow, two `package.json`, root README,
+  PLAN, STATE; may split into skeleton plus deploy, and package pages.
+- **References:** DEC-12, DEC-07.
+
+### L4.13 · First npm publish
+- **Status:** waiting (L4.12)
+- **Goal:** v1 is on npm.
+- **Depends on:** L4.12, P2.
+- **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
+  first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
+- **Out of scope:** a release workflow in CI.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. `npm install @list-picker/vanilla` in an empty folder installs both packages, and the README
+     example runs against them.
+  2. The tag `v1.0.0` points at the published commit.
+- **Files:** ~2: PLAN, STATE.
+- **References:** DEC-12; ROADMAP P2.
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).
@@ -664,6 +786,8 @@ Ideas not planned yet; a milestone's planning picks from here.
 - A grab-side state attribute so the user can tilt the Clone (list-picker-js).
 - Fractional ranks (LexoRank-like) computed from a move event, as a helper for persistence.
 - Virtualised Lists for very long boards.
+- `addList` and `addCard` generating the id when the value has none (`crypto.randomUUID()`), and
+  returning it; additive, for prototypes without a backend (owner, 2026-11-23).
 - `mount` keeps the focus and keyboard grab of a card its writes move (Chrome blurs it; L4.2).
 - Esc during a drag also reaches the page's other Esc handlers (a dialog around the board would
   close too); stopping it needs a capture-phase listener (L2.5 review).

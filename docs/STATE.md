@@ -121,7 +121,7 @@ None.
   tarballs installed into an empty folder run both README examples). Not yet on npm: after the
   merge the owner creates the `list-picker` npm org and publishes from `main`, then the agent tags
   `v1.0.0` and checks criterion 1 against the registry.
-- **Next:** close M4 (SESSION §7).
+- **Next:** L4.8 (change a list's or a card's value), once the owner oks the extended M4 plan.
 - **2026-11-23, L4.6:** the root README answers the lab's question with decisions 0001 and 0002
   (faster for the model, irrelevant next to layout; simpler for positions and events, not for
   drawing), lists the packages and how to repeat both measurements (rerun: same ranges).
