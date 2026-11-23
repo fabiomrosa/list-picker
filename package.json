@@ -12,6 +12,7 @@
     "verify": "npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run e2e",
     "dev": "vite playground",
     "bench": "node bench/run.ts",
+    "trace": "node bench/drag-trace.ts",
     "lint": "biome ci .",
     "format": "biome check --write .",
     "typecheck": "tsc -p tsconfig.json",
