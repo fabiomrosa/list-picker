@@ -8,10 +8,11 @@ Every slice's pull request updates it (SESSION §3).
   iteration; duplicate ids throw. A property test checks every PRODUCT invariant of the list
   against an array model over 1000 random operation sequences.
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
-  `getList`, `getCard`, `listOf(cardId)`, `lists()`, `cards(listId)`; card ids unique across the
+  `removeCard`, `removeList` (with its cards), `getList`, `getCard`, `listOf(cardId)`, `lists()`,
+  `cards(listId)`; card ids unique across the
   Board, list ids across the Lists; bad input throws and changes nothing.
 - The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
-  adds lists and cards at the end or before a chosen one.
+  adds lists and cards at the end or before a chosen one, and removes them with ×.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -28,9 +29,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L1.6:** `removeCard`, `removeList` (its cards leave the card index); × buttons in
+  the playground.
+- **Next:** L1.7 (move a card): validate `before` before removing (L1.5 review).
 - **2026-11-22, L1.5:** `Board` with lists and cards, a card-to-list index; the playground now
   shows the Board (the plain linked-list view is gone; removing returns in L1.6).
-- **Next:** L1.6 (Board: remove cards and lists).
 - **2026-11-22, L1.4:** linked-list property test (`fast-check`), seen failing on three planted
   bugs. Nothing new in the playground (no new behaviour).
 - **2026-11-22, L1.3:** `remove(id)` in O(1), clearing the removed node's links; the playground's

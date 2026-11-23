@@ -100,3 +100,49 @@ describe("Board", () => {
     });
   });
 });
+
+describe("Board removal", () => {
+  const sample = () => {
+    const b = new Board<List, Card>();
+    b.addList({ id: "todo" }, null);
+    b.addList({ id: "done" }, null);
+    b.addCard("todo", { id: "c1" }, null);
+    b.addCard("todo", { id: "c2" }, null);
+    b.addCard("done", { id: "c3" }, null);
+    return b;
+  };
+
+  it("forgets a removed card, whose id can be added again", () => {
+    const b = sample();
+    expect(b.removeCard("c1")).toEqual({ id: "c1" });
+    expect(cardIds(b, "todo")).toEqual(["c2"]);
+    expect(b.getCard("c1")).toBeUndefined();
+    expect(b.listOf("c1")).toBeUndefined();
+    b.addCard("done", { id: "c1" }, null);
+    expect(cardIds(b, "done")).toEqual(["c3", "c1"]);
+  });
+
+  it("removes a list together with its cards", () => {
+    const b = sample();
+    expect(b.removeList("todo")).toEqual({ id: "todo" });
+    expect(listIds(b)).toEqual(["done"]);
+    expect(b.getList("todo")).toBeUndefined();
+    for (const id of ["c1", "c2"]) {
+      expect(b.getCard(id)).toBeUndefined();
+      expect(b.listOf(id)).toBeUndefined();
+    }
+    b.addCard("done", { id: "c1" }, null);
+    expect(cardIds(b, "done")).toEqual(["c3", "c1"]);
+  });
+
+  it.each([
+    ["card", (b: Board<List, Card>) => b.removeCard("nope"), 'list-picker: unknown id "nope"'],
+    ["list", (b: Board<List, Card>) => b.removeList("nope"), 'list-picker: unknown id "nope"'],
+  ])("throws on an unknown %s and changes nothing", (_kind, act, message) => {
+    const b = sample();
+    expect(() => act(b)).toThrow(message);
+    expect(listIds(b)).toEqual(["todo", "done"]);
+    expect(cardIds(b, "todo")).toEqual(["c1", "c2"]);
+    expect(cardIds(b, "done")).toEqual(["c3"]);
+  });
+});

@@ -13,13 +13,15 @@
       input { width: 7rem; }
       .error { color: #b42318; min-height: 1.4em; }
       .board { display: flex; align-items: flex-start; gap: 1rem; overflow-x: auto; padding-bottom: 1rem; }
-      .list { background: #e4e7eb; border-radius: 8px; padding: 0.6rem; width: 13rem; flex: none; }
+      .list { position: relative; background: #e4e7eb; border-radius: 8px; padding: 0.6rem; width: 13rem; flex: none; }
       .list h2 { font-size: 1rem; margin: 0 0 0.25rem; }
       .list > small { display: block; color: #616e7c; margin-bottom: 0.5rem; }
       .cards { display: flex; flex-direction: column; gap: 0.4rem; min-height: 2rem; }
       .card { position: relative; background: #fff; border: 1px solid #cbd2d9; border-radius: 6px; padding: 0.45rem 0.6rem; }
       .card strong { display: block; }
       .card small { display: block; color: #616e7c; font-size: 0.8rem; }
+      .remove { position: absolute; top: 0.25rem; right: 0.35rem; border: 0; background: none; color: #9aa5b1; cursor: pointer; padding: 0 0.2rem; }
+      .remove:hover { color: #b42318; }
     </style>
   </head>
   <body>
