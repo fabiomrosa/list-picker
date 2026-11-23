@@ -35,6 +35,9 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
 ): Drag {
   let press: Press | undefined;
   let active: Active | undefined;
+  /** The latest pointer position; read once per animation frame. */
+  let pointerAt = { x: 0, y: 0 };
+  let frame: number | undefined;
 
   function onPointerDown(event: PointerEvent): void {
     if (press || event.button !== 0 || !(event.target instanceof Element)) return;
@@ -55,9 +58,21 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   function onPointerMove(event: PointerEvent): void {
-    if (!press || event.pointerId !== press.pointerId || active) return;
-    if (Math.hypot(event.clientX - press.x, event.clientY - press.y) <= THRESHOLD) return;
-    active = start(press.card);
+    if (!press || event.pointerId !== press.pointerId) return;
+    pointerAt = { x: event.clientX, y: event.clientY };
+    if (!active) {
+      if (Math.hypot(pointerAt.x - press.x, pointerAt.y - press.y) <= THRESHOLD) return;
+      active = start(press.card);
+    }
+    // Only store the pointer here; the DOM is written once per frame (no layout thrashing).
+    frame ??= requestAnimationFrame(update);
+  }
+
+  /** Once per frame: moves the Clone with `transform` only. */
+  function update(): void {
+    frame = undefined;
+    if (!press || !active) return;
+    active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
   }
 
   function onPointerEnd(event: PointerEvent): void {
@@ -107,6 +122,8 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
 
   /** Ends the press or drag: the card is shown where it was (dropping comes in L2.4). */
   function end(): void {
+    if (frame !== undefined) cancelAnimationFrame(frame);
+    frame = undefined;
     root.removeEventListener("pointermove", onPointerMove);
     root.removeEventListener("pointerup", onPointerEnd);
     root.removeEventListener("pointercancel", onPointerEnd);

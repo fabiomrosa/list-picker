@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // The source, not the package: `core/dist` does not exist in a clean clone before the build.
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Board } from "../../core/src/index.ts";
 import { createDrag } from "../src/index.ts";
 
@@ -140,5 +140,48 @@ describe("createDrag: drag start", () => {
     pointer(ctx.card("a"), "pointermove", 70, 30);
     expect(document.querySelector("[data-lp-clone]")?.querySelector("[id]")).toBeNull();
     expect(document.querySelector("[data-lp-clone]")?.id).toBe("");
+  });
+});
+
+describe("createDrag: the Clone follows the pointer", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const clone = () => document.querySelector("[data-lp-clone]") as HTMLElement;
+  beforeEach(() => {
+    ctx = setup();
+    drag = createDrag(ctx.root, ctx.board);
+  });
+  afterEach(() => {
+    drag.destroy();
+    vi.restoreAllMocks();
+  });
+
+  it("moves the Clone by the pointer's offset from the press, on the next frame", async () => {
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    pointer(ctx.card("a"), "pointermove", 95, 12);
+    await frame();
+    expect(clone().style.transform).toBe("translate(45px, -18px)");
+  });
+
+  it("writes once per frame however many moves arrive", async () => {
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    await frame();
+    const raf = vi.spyOn(window, "requestAnimationFrame");
+    for (const x of [71, 72, 73, 74]) pointer(ctx.card("a"), "pointermove", x, 30);
+    expect(raf).toHaveBeenCalledTimes(1);
+    await frame();
+    expect(clone().style.transform).toBe("translate(24px, 0px)");
+  });
+
+  it.each(["release", "destroy"])("cancels a pending frame on %s", (how) => {
+    const cancel = vi.spyOn(window, "cancelAnimationFrame");
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    if (how === "destroy") drag.destroy();
+    else pointer(ctx.card("a"), "pointerup", 70, 30);
+    expect(cancel).toHaveBeenCalledTimes(1);
   });
 });

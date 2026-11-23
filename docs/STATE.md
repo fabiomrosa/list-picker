@@ -25,7 +25,8 @@ Every slice's pull request updates it (SESSION §3).
   `[data-lp-card]` (not on a control inside it) captures the pointer; past 4 px it shows a Clone
   (inside `root`, ids removed) over the card and a Placeholder of its size in its place, and hides
   the card (inline `display: none`, `data-lp-dragging`). Release, `pointercancel` or `destroy()`
-  show the card again as it was (dropping comes in L2.4).
+  show the card again as it was (dropping comes in L2.4). The Clone follows the pointer: moves only
+  store it, one `requestAnimationFrame` per frame writes `transform`.
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
@@ -53,9 +54,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L2.2:** the Clone follows the pointer (`transform`, one write per frame).
+- **Next:** L2.3 (the Placeholder follows the drop target).
 - **2026-11-22, L2.1:** `@list-picker/vanilla` and the drag start; `happy-dom` for engine tests; a
   `paths` entry lets the root typecheck see `core`'s source.
-- **Next:** L2.2 (the Clone follows the pointer).
 - **2026-11-22, plan M2:** M2 split into L2.1–L2.8 in PLAN; DEC-13 proposed (data attributes;
   the engine applies drops).
 - **2026-11-22, close M1:** every M1 slice landed as planned (L1.1–L1.11, PRs #5–#15); the owner
