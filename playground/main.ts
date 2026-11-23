@@ -37,8 +37,10 @@ function render(): void {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const input = form.elements.namedItem("id") as HTMLInputElement;
+  const id = input.value.trim();
+  if (!id) return;
   try {
-    list.insertBefore({ id: input.value.trim() }, null);
+    list.insertBefore({ id }, null);
     error.textContent = "";
     input.value = "";
   } catch (e) {
