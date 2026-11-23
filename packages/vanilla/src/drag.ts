@@ -69,6 +69,8 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     if (!active) {
       if (Math.hypot(pointerAt.x - press.x, pointerAt.y - press.y) <= THRESHOLD) return;
       active = start(press.card);
+      // Only during a drag (AGENTS: no document listener outside one).
+      document.addEventListener("keydown", onKeyDown);
     }
     // Only store the pointer here; the DOM is written once per frame (no layout thrashing).
     frame ??= requestAnimationFrame(update);
@@ -109,6 +111,11 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     if (placeholder.parentElement === list && next === before) return;
     if (before) before.before(placeholder);
     else list.append(placeholder);
+  }
+
+  /** Esc abandons the drag: everything goes back, nothing moves. */
+  function onKeyDown(event: KeyboardEvent): void {
+    if (event.key === "Escape") end();
   }
 
   function onPointerEnd(event: PointerEvent): void {
@@ -196,6 +203,7 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     root.removeEventListener("pointerup", onPointerEnd);
     root.removeEventListener("pointercancel", onPointerEnd);
     if (active) {
+      document.removeEventListener("keydown", onKeyDown);
       active.clone.remove();
       active.placeholder.remove();
       active.card.style.display = active.display;

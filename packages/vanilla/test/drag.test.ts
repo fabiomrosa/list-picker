@@ -443,3 +443,68 @@ describe("createDrag: drop positions and listener errors", () => {
     expect(document.querySelector("[data-lp-placeholder], [data-lp-clone]")).toBeNull();
   });
 });
+
+describe("createDrag: cancel", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  let moves: unknown[];
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const list = (id: string) => ctx.root.querySelector(`[data-lp-cards="${id}"]`) as HTMLElement;
+
+  beforeEach(() => {
+    ctx = setup();
+    under = null;
+    document.elementFromPoint = () => under;
+    moves = [];
+    ctx.board.on("move", (event) => moves.push(event));
+    drag = createDrag(ctx.root, ctx.board);
+  });
+  afterEach(() => {
+    drag.destroy();
+    vi.restoreAllMocks();
+  });
+
+  async function dragToDone() {
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    under = list("done");
+    pointer(ctx.card("a"), "pointermove", 60, 300);
+    await frame();
+  }
+  const pressEscape = () =>
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+
+  it.each(["Escape", "pointercancel", "destroy"])(
+    "restores the DOM and moves nothing on %s",
+    async (how) => {
+      const before = ctx.root.innerHTML;
+      await dragToDone();
+      expect(list("done").querySelector("[data-lp-placeholder]")).not.toBeNull();
+      if (how === "Escape") pressEscape();
+      else if (how === "destroy") drag.destroy();
+      else pointer(ctx.card("a"), "pointercancel", 60, 300);
+      expect(ctx.root.innerHTML).toBe(before);
+      pointer(ctx.card("a"), "pointerup", 60, 300);
+      expect(moves).toEqual([]);
+      expect([...ctx.board.cards("todo")].map((c) => c.id)).toEqual(["a", "b"]);
+    },
+  );
+
+  it("ignores other keys", async () => {
+    await dragToDone();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "a", bubbles: true }));
+    expect(document.querySelector("[data-lp-clone]")).not.toBeNull();
+  });
+
+  it("listens to keydown only during a drag", async () => {
+    const add = vi.spyOn(document, "addEventListener");
+    const remove = vi.spyOn(document, "removeEventListener");
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    expect(add.mock.calls.filter(([type]) => type === "keydown")).toEqual([]);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    expect(add.mock.calls.filter(([type]) => type === "keydown")).toHaveLength(1);
+    pointer(ctx.card("a"), "pointerup", 70, 30);
+    expect(remove.mock.calls.filter(([type]) => type === "keydown")).toHaveLength(1);
+  });
+});
