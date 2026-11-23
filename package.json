@@ -10,6 +10,7 @@
   },
   "scripts": {
     "verify": "npm run lint && npm run typecheck && npm run test:coverage && npm run build",
+    "dev": "vite playground",
     "lint": "biome ci .",
     "format": "biome check --write .",
     "typecheck": "tsc -p tsconfig.json",
@@ -21,6 +22,7 @@
     "@biomejs/biome": "2.6.8",
     "@vitest/coverage-v8": "5.1.1",
     "typescript": "7.0.2",
+    "vite": "8.3.8",
     "vitest": "5.1.1"
   }
 }

@@ -30,13 +30,14 @@ Agents: start with `AGENTS.md`.
 
 ## Running locally
 
-There is no app or demo yet (M3); the packages build and test.
+The packages build and test; the playground draws the model in the browser (the demo board comes in M3).
 
 ```sh
 git clone git@github.com:fabiomrosa/list-picker.git
 cd list-picker
 npm ci
 npm test            # the tests once
+npm run dev         # the playground at http://localhost:5173
 npm run format      # format and apply safe lint fixes
 ```
 
