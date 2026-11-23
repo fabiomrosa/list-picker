@@ -37,7 +37,11 @@ export class Board<L extends Entity, C extends Entity> {
   #listOfCard = new Map<string, ListEntry<L, C>>();
   #events = new Emitter<BoardEvents>();
 
-  /** Subscribes to `move` or `change`; the returned function unsubscribes. */
+  /**
+   * Subscribes to `move` or `change`; the returned function unsubscribes. Listeners run
+   * synchronously after the model is consistent. A listener must not change the Board while it
+   * runs: later listeners would receive the nested events before the outer one.
+   */
   on<K extends keyof BoardEvents>(
     event: K,
     listener: (payload: BoardEvents[K]) => void,
@@ -150,11 +154,18 @@ export class Board<L extends Entity, C extends Entity> {
     const node = list.get(id);
     const prevId = node?.prev?.value.id ?? null;
     const nextId = node?.next?.value.id ?? null;
-    try {
-      this.#events.emit("move", { kind, id, fromListId, toListId, prevId, nextId });
-    } finally {
-      this.#events.emit("change", undefined);
+    let failure: { error: unknown } | undefined;
+    for (const emit of [
+      () => this.#events.emit("move", { kind, id, fromListId, toListId, prevId, nextId }),
+      () => this.#events.emit("change", undefined),
+    ]) {
+      try {
+        emit();
+      } catch (error) {
+        failure ??= { error };
+      }
     }
+    if (failure) throw failure.error;
   }
 
   #entry(listId: string): ListEntry<L, C> {

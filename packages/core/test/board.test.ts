@@ -320,6 +320,17 @@ describe("Board events", () => {
     expect(moves).toEqual([]);
   });
 
+  it("rethrows the move listener's error when a change listener throws too", () => {
+    const { b } = sample();
+    b.on("move", () => {
+      throw new Error("move listener failed");
+    });
+    b.on("change", () => {
+      throw new Error("change listener failed");
+    });
+    expect(() => b.moveCard("a", "done", null)).toThrow("move listener failed");
+  });
+
   it("keeps the change when a listener throws", () => {
     const { b } = sample();
     b.on("move", () => {
