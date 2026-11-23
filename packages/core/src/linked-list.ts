@@ -37,19 +37,25 @@ export class LinkedList<T extends { id: string }> {
     return this.#index.has(id);
   }
 
-  /** Inserts `value` at the end (`null`). L1.2 adds inserting before an existing id. */
-  insertBefore(value: T, _beforeId: null): void {
+  /** Inserts `value` before the node with `beforeId`, or at the end when `beforeId` is `null`. */
+  insertBefore(value: T, beforeId: string | null): void {
     if (this.#index.has(value.id)) {
       throw new Error(`list-picker: duplicate id "${value.id}"`);
     }
-    const node: MutableNode<T> = { value, prev: this.#last, next: null };
-    if (this.#last) {
-      this.#last.next = node;
-    } else {
-      this.#first = node;
-    }
-    this.#last = node;
+    const next = beforeId === null ? null : this.#node(beforeId);
+    const prev = next ? next.prev : this.#last;
+    const node: MutableNode<T> = { value, prev, next };
+    if (prev) prev.next = node;
+    else this.#first = node;
+    if (next) next.prev = node;
+    else this.#last = node;
     this.#index.set(value.id, node);
+  }
+
+  #node(id: string): MutableNode<T> {
+    const node = this.#index.get(id);
+    if (!node) throw new Error(`list-picker: unknown id "${id}"`);
+    return node;
   }
 
   *[Symbol.iterator](): Iterator<T> {

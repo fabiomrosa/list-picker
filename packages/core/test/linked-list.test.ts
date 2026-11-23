@@ -52,4 +52,45 @@ describe("LinkedList", () => {
     expect(list.size).toBe(2);
     expect(list.last?.value.id).toBe("b");
   });
+
+  describe("insertBefore an existing node", () => {
+    const abc = () => {
+      const list = new LinkedList<Item>();
+      for (const id of ["a", "b", "c"]) list.insertBefore({ id }, null);
+      return list;
+    };
+    const links = (list: LinkedList<Item>) =>
+      [...list].map((item) => {
+        const node = list.get(item.id);
+        return `${node?.prev?.value.id ?? "-"}<${item.id}>${node?.next?.value.id ?? "-"}`;
+      });
+
+    it("makes the value first when inserted before the first node", () => {
+      const list = abc();
+      list.insertBefore({ id: "x" }, "a");
+      expect(ids(list)).toEqual(["x", "a", "b", "c"]);
+      expect(list.first?.value.id).toBe("x");
+      expect(links(list)).toEqual(["-<x>a", "x<a>b", "a<b>c", "b<c>-"]);
+    });
+
+    it("links the value between its neighbours before a middle or the last node", () => {
+      const list = abc();
+      list.insertBefore({ id: "x" }, "b");
+      list.insertBefore({ id: "y" }, "c");
+      expect(ids(list)).toEqual(["a", "x", "b", "y", "c"]);
+      expect(list.size).toBe(5);
+      expect(list.last?.value.id).toBe("c");
+      expect(links(list)).toEqual(["-<a>x", "a<x>b", "x<b>y", "b<y>c", "y<c>-"]);
+    });
+
+    it("throws on an unknown beforeId and stays unchanged", () => {
+      const list = abc();
+      expect(() => list.insertBefore({ id: "x" }, "nope")).toThrow(
+        'list-picker: unknown id "nope"',
+      );
+      expect(ids(list)).toEqual(["a", "b", "c"]);
+      expect(list.has("x")).toBe(false);
+      expect(links(list)).toEqual(["-<a>b", "a<b>c", "b<c>-"]);
+    });
+  });
 });
