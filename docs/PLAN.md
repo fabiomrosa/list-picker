@@ -379,7 +379,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** CONVENTIONS §5.
 
 ### L2.7 · Auto-scroll
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** dragging near the edge of a scrollable list or the board scrolls it.
 - **Depends on:** L2.6.
 - **In scope:** during a drag, within 40 px of the edge of the nearest scrollable ancestor (a list
@@ -397,7 +397,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** DEC-08.
 
 ### L2.8 · Drag lists
-- **Status:** waiting (L2.7)
+- **Status:** next
 - **Goal:** lists are reordered by dragging their handle.
 - **Depends on:** L2.7.
 - **In scope:** a press on `[data-lp-list-handle]` drags its `[data-lp-list]` with the same Clone,

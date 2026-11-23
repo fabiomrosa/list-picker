@@ -123,9 +123,14 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
       const canY = SCROLLS.test(style.overflowY) && el.scrollHeight > el.clientHeight;
       const canX = SCROLLS.test(style.overflowX) && el.scrollWidth > el.clientWidth;
       if (!canX && !canY) continue;
+      // Only the visible part counts: a list cut off by the window scrolls at the window's edge.
       const rect = el.getBoundingClientRect();
-      const dy = canY ? speed(rect.bottom - pointerAt.y) - speed(pointerAt.y - rect.top) : 0;
-      const dx = canX ? speed(rect.right - pointerAt.x) - speed(pointerAt.x - rect.left) : 0;
+      const top = Math.max(rect.top, 0);
+      const bottom = Math.min(rect.bottom, window.innerHeight);
+      const left = Math.max(rect.left, 0);
+      const right = Math.min(rect.right, window.innerWidth);
+      const dy = canY ? speed(bottom - pointerAt.y) - speed(pointerAt.y - top) : 0;
+      const dx = canX ? speed(right - pointerAt.x) - speed(pointerAt.x - left) : 0;
       if (dx !== 0 || dy !== 0) steps.push({ element: el, dx, dy });
     }
     return steps;

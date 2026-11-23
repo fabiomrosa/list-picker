@@ -562,6 +562,14 @@ describe("createDrag: auto-scroll", () => {
     expect(scroller.scrollTop).toBe(at);
   });
 
+  it("treats the window's edge as the edge of a list cut off by it", async () => {
+    // The list runs past the bottom of the window; its visible bottom is the window's.
+    scroller.getBoundingClientRect = () => new DOMRect(0, 0, 220, window.innerHeight + 300);
+    pointer(ctx.card("a"), "pointermove", 60, window.innerHeight - 5);
+    await frame();
+    expect(scroller.scrollTop).toBeGreaterThan(0);
+  });
+
   it("stops scrolling when the drag ends", async () => {
     pointer(ctx.card("a"), "pointermove", 60, 190);
     await frame();
