@@ -255,6 +255,163 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
   record, PLAN, STATE.
 - **References:** PRODUCT "Measured, not assumed", DEC-06.
 
+---
+
+## M2 · Drag engine
+Everything in `packages/vanilla` (`@list-picker/vanilla`), over the user's markup (DEC-13). Engine
+tests run in `happy-dom` with synthetic pointer events (CONVENTIONS §5); real drags are checked in
+the browser from L2.6. Every slice extends the playground with what it adds; the owner checks the
+drag after L2.4 and at the end of M2. Styling hooks are attributes (`data-lp-*`), never inline
+styles the user must fight, except the Clone's position and `transform`.
+
+### L2.1 · Vanilla package and drag start
+- **Status:** next
+- **Goal:** pressing a card and moving past a small threshold starts a drag: the card's place is
+  held by a Placeholder and a Clone appears over it.
+- **Depends on:** M1, DEC-10, DEC-13.
+- **In scope:**
+  - `packages/vanilla` with `createDrag(root, board)` returning `{ destroy }`; `happy-dom` (dev).
+  - Outside a drag, one `pointerdown` listener on `root`. On a card (`[data-lp-card]`): pointer
+    capture, then `pointermove`/`pointerup` on the card until the drag ends.
+  - Past 4 px: the Clone (`cloneNode(true)`, `data-lp-clone`, `position: fixed` at the card's rect,
+    `pointer-events: none`), the Placeholder (`data-lp-placeholder`, the card's width and height)
+    inserted before the card, the card hidden with `data-lp-dragging` and `hidden`.
+  - Released before the threshold: nothing changes (a click still works).
+  - `destroy()` removes every listener.
+- **Out of scope:** following the pointer (L2.2), retargeting (L2.3), dropping (L2.4).
+- **Contract:** none. **Public API:** additive, `createDrag`.
+- **Acceptance criteria:**
+  1. A press and release under 4 px leaves the DOM unchanged and adds no Clone.
+  2. Past 4 px there is one Clone at the card's rect and one Placeholder of the card's size in the
+     card's place; the card is hidden and marked `data-lp-dragging`.
+  3. After `destroy()`, pressing a card does nothing.
+  4. The playground's cards carry the attributes and show the Clone and Placeholder when pressed and
+     moved (seen in the browser).
+- **Files:** ~9: `packages/vanilla/{package.json,tsconfig.json,src/index.ts,src/drag.ts,test/drag.test.ts}`,
+  root `package.json` (happy-dom), playground, PLAN, STATE.
+- **References:** ARCHITECTURE "Request flow", GOTCHAS "DOM and drag", DEC-08.
+
+### L2.2 · The Clone follows the pointer
+- **Status:** waiting (L2.1)
+- **Goal:** the Clone moves with the pointer smoothly, without forcing layout.
+- **Depends on:** L2.1.
+- **In scope:** `pointermove` only stores the pointer; one `requestAnimationFrame` per frame sets the
+  Clone's `transform: translate(dx, dy)` from the press point; no layout read in the handler.
+- **Out of scope:** retargeting the Placeholder.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. After moves and one animation frame, the Clone's transform equals the pointer's offset from the
+     press point.
+  2. Several moves within one frame cause one transform write.
+  3. The Clone follows the pointer in the playground (seen in the browser).
+- **Files:** ~5: `src/drag.ts`, its test, playground, PLAN, STATE.
+- **References:** AGENTS "Non-negotiable" (layout reads).
+
+### L2.3 · The Placeholder follows the drop target
+- **Status:** waiting (L2.2)
+- **Goal:** while dragging, the Placeholder shows where the card would land.
+- **Depends on:** L2.2.
+- **In scope:** each frame, the element under the pointer (`elementFromPoint`; the Clone ignores the
+  pointer): over a card, the Placeholder goes before it when the pointer is above the card's
+  vertical middle and after it otherwise; over a list container's empty space or below its last
+  card, at the end; elsewhere it stays. The Placeholder moves only when its target changes.
+- **Out of scope:** auto-scroll (L2.7).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Above a card's middle the Placeholder is right before it; below, right after it.
+  2. Over an empty list, or below the last card, it is the list's last child.
+  3. Outside every list it stays where it was; the DOM is not written when the target is unchanged.
+  4. In the playground the Placeholder opens a gap where the card would land (seen in the browser).
+- **Files:** ~5: `src/drag.ts`, its test, playground, PLAN, STATE.
+- **References:** DEC-08, ARCHITECTURE "Request flow".
+
+### L2.4 · Drop
+- **Status:** waiting (L2.3)
+- **Goal:** releasing the pointer moves the card to the Placeholder's place, in the model and the DOM.
+- **Depends on:** L2.3.
+- **In scope:** on `pointerup` after a drag: `board.moveCard(cardId, listId, beforeCardId)` from the
+  Placeholder's list and its next card sibling (or `null`); the card element takes the
+  Placeholder's place and is shown again; the Clone and the Placeholder are removed; the drag
+  listeners are removed. If `moveCard` throws, the card goes back where it was and the error is
+  rethrown.
+- **Out of scope:** cancel (L2.5).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. A drop before a card or at the end of another list moves the card there in the Board and in the
+     DOM, with one `move` event.
+  2. A drop where the card was emits no `move` and leaves the DOM as it was.
+  3. After a drop there is no Clone, no Placeholder, no `data-lp-dragging`, no drag listener.
+  4. The playground's cards can be dragged within and across lists (seen in the browser).
+- **Files:** ~5: `src/drag.ts`, its test, playground, PLAN, STATE.
+- **References:** DEC-08, DEC-13.
+
+### L2.5 · Cancel
+- **Status:** waiting (L2.4)
+- **Goal:** a drag can be abandoned with nothing changed.
+- **Depends on:** L2.4.
+- **In scope:** Esc (a `keydown` listener only during a drag), `pointercancel`, and `destroy()`
+  during a drag: the card is shown where it was, the Clone and the Placeholder are removed, no move.
+- **Out of scope:** keyboard dragging (M4).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Esc, `pointercancel` and `destroy()` during a drag each restore the DOM to its state before the
+     drag, with no `move` event.
+  2. No `keydown` listener exists outside a drag.
+  3. Esc cancels a drag in the playground (seen in the browser).
+- **Files:** ~5: `src/drag.ts`, its test, playground, PLAN, STATE.
+- **References:** AGENTS "Non-negotiable" (listeners).
+
+### L2.6 · Browser tests
+- **Status:** waiting (L2.5)
+- **Goal:** real drags in a real browser are checked by the gate.
+- **Depends on:** L2.5.
+- **In scope:** `@playwright/test` with the installed Chrome (`channel: "chrome"`; GitHub's Ubuntu
+  runner has it, so nothing is downloaded); its web server runs the playground; `e2e/drag.spec.ts`:
+  drag a card within a list, across lists, into an empty list; a click without moving changes
+  nothing. Added to `npm run verify`.
+- **Out of scope:** other browsers.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. The four scenarios pass locally and in CI.
+  2. One fails when the drop is broken on purpose (seen once).
+- **Files:** ~7: `playwright.config.ts`, `e2e/drag.spec.ts`, root `package.json`, lockfile, `ci.yml`,
+  `.gitignore`, ARCHITECTURE "Stack", PLAN, STATE.
+- **References:** CONVENTIONS §5.
+
+### L2.7 · Auto-scroll
+- **Status:** waiting (L2.6)
+- **Goal:** dragging near the edge of a scrollable list or the board scrolls it.
+- **Depends on:** L2.6.
+- **In scope:** during a drag, within 40 px of the edge of the nearest scrollable ancestor (a list
+  container vertically, the board horizontally), scroll it each frame, faster closer to the edge;
+  the Placeholder retargets after scrolling.
+- **Out of scope:** window scrolling beyond what the browser does.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Holding the pointer near a scrollable list's bottom edge scrolls it; away from the edges, nothing
+     scrolls (unit test with a stubbed scroll container).
+  2. In the browser test, a card dragged to the bottom of a tall list reaches its last position.
+  3. The playground has a tall list and a wide board to try it (seen in the browser).
+- **Files:** ~6: `src/drag.ts` (or `src/auto-scroll.ts`), tests, `e2e/drag.spec.ts`, playground,
+  PLAN, STATE.
+- **References:** DEC-08.
+
+### L2.8 · Drag lists
+- **Status:** waiting (L2.7)
+- **Goal:** lists are reordered by dragging their handle.
+- **Depends on:** L2.7.
+- **In scope:** a press on `[data-lp-list-handle]` drags its `[data-lp-list]` with the same Clone,
+  Placeholder, cancel and auto-scroll machinery, horizontally: before a list when the pointer is
+  left of its middle, after it otherwise; drop calls `board.moveList`.
+- **Out of scope:** dragging several cards at once.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Dragging a list's handle past another list's middle moves it there in the Board and the DOM.
+  2. Pressing a card inside a list still drags the card, not the list.
+  3. A browser test drags a list; the playground's lists have handles (seen in the browser).
+- **Files:** ~6: `src/drag.ts`, its test, `e2e/drag.spec.ts`, playground, PLAN, STATE.
+- **References:** DEC-13.
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).

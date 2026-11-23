@@ -46,9 +46,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, plan M2:** M2 split into L2.1–L2.8 in PLAN; DEC-13 proposed (data attributes;
+  the engine applies drops).
+- **Next:** L2.1 (the owner approved the M2 plan and DEC-13).
 - **2026-11-22, close M1:** every M1 slice landed as planned (L1.1–L1.11, PRs #5–#15); the owner
   checked the playground in the browser. Five retro proposals are open for the owner.
-- **Next:** plan M2 (drag engine).
 - **2026-11-22, L1.11:** benchmark against an array board; decision record 0001 (DEC-06 holds:
   linked-list moves go from ~0.10 to ~0.18 µs as lists grow 50×, arrays from ~0.12 to ~1.46 µs; both
   tiny next to layout). A plain Node runner instead of `vitest bench` (each sample needs a fresh
