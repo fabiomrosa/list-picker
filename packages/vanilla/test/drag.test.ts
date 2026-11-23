@@ -534,7 +534,10 @@ describe("createDrag: auto-scroll", () => {
     pointer(ctx.card("a"), "pointerdown", 50, 30);
     pointer(ctx.card("a"), "pointermove", 70, 30);
   });
-  afterEach(() => drag.destroy());
+  afterEach(() => {
+    drag.destroy();
+    vi.restoreAllMocks();
+  });
 
   it("scrolls a list while the pointer is near its bottom edge, faster closer to it", async () => {
     pointer(ctx.card("a"), "pointermove", 60, 180);
@@ -568,6 +571,28 @@ describe("createDrag: auto-scroll", () => {
     pointer(ctx.card("a"), "pointermove", 60, window.innerHeight - 5);
     await frame();
     expect(scroller.scrollTop).toBeGreaterThan(0);
+  });
+
+  it("stops asking for frames once the list cannot scroll further that way", async () => {
+    // At the top already, with the pointer resting near the top edge: nothing left to scroll.
+    pointer(ctx.card("a"), "pointermove", 60, 5);
+    await frame();
+    const raf = vi.spyOn(window, "requestAnimationFrame");
+    await frame();
+    expect(raf.mock.calls.length).toBeLessThanOrEqual(1);
+    expect(scroller.scrollTop).toBe(0);
+  });
+
+  it("scrolls the board sideways near its right edge", async () => {
+    const board = ctx.root;
+    board.style.overflowX = "auto";
+    Object.defineProperty(board, "clientWidth", { value: 300 });
+    Object.defineProperty(board, "scrollWidth", { value: 900 });
+    board.getBoundingClientRect = () => new DOMRect(0, 0, 300, 400);
+    document.elementFromPoint = () => board;
+    pointer(ctx.card("a"), "pointermove", 295, 100);
+    await frame();
+    expect(board.scrollLeft).toBeGreaterThan(0);
   });
 
   it("stops scrolling when the drag ends", async () => {

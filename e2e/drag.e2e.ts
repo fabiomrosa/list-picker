@@ -72,8 +72,12 @@ test("a click without moving changes nothing", async ({ page }) => {
 
 test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
   const backlog = cardsOf(page, "Backlog");
+  // The board is narrower than its lists: bring Backlog into view first, as a user would.
+  await page.locator("#board").evaluate((board) => {
+    board.scrollLeft = board.scrollWidth;
+  });
   const box = await backlog.boundingBox();
-  const from = await card(page, "Design the model").locator("strong").boundingBox();
+  const from = await card(page, "Linked list").locator("strong").boundingBox();
   if (!box || !from) throw new Error("not visible");
   await page.mouse.move(from.x + 10, from.y + 5);
   await page.mouse.down();
@@ -84,5 +88,5 @@ test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
     .toBe(true);
   await page.mouse.move(box.x + box.width / 2, box.y + box.height - 6);
   await page.mouse.up();
-  await expect.poll(async () => (await lists(page)).Backlog?.at(-1)).toBe("Design the model");
+  await expect.poll(async () => (await lists(page)).Backlog?.at(-1)).toBe("Linked list");
 });

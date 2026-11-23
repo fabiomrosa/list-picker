@@ -18,10 +18,11 @@ function speed(distance: number): number {
   return distance < EDGE ? Math.ceil(((EDGE - Math.max(distance, 0)) / EDGE) * MAX_STEP) : 0;
 }
 
+/** Where to scroll a container this frame; an axis is absent when it does not move. */
 interface ScrollStep {
   readonly element: HTMLElement;
-  readonly dx: number;
-  readonly dy: number;
+  readonly left?: number;
+  readonly top?: number;
 }
 
 /** Presses on these start no drag, so controls inside a card keep working. */
@@ -102,9 +103,9 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     const steps = scrollSteps(under);
     active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
     if (target) place(active, target);
-    for (const { element, dx, dy } of steps) {
-      element.scrollLeft += dx;
-      element.scrollTop += dy;
+    for (const { element, left, top } of steps) {
+      if (left !== undefined) element.scrollLeft = left;
+      if (top !== undefined) element.scrollTop = top;
     }
     // Keep scrolling while the pointer rests near an edge; the Placeholder retargets each frame.
     if (steps.length > 0) frame = requestAnimationFrame(update);
@@ -131,7 +132,16 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
       const right = Math.min(rect.right, window.innerWidth);
       const dy = canY ? speed(bottom - pointerAt.y) - speed(pointerAt.y - top) : 0;
       const dx = canX ? speed(right - pointerAt.x) - speed(pointerAt.x - left) : 0;
-      if (dx !== 0 || dy !== 0) steps.push({ element: el, dx, dy });
+      // Targets are computed here, in the read phase; an axis already at its limit stays put, so
+      // the frame loop stops when there is nothing left to scroll.
+      const step: { element: HTMLElement; left?: number; top?: number } = { element: el };
+      if (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight : dy < 0 && el.scrollTop > 0) {
+        step.top = el.scrollTop + dy;
+      }
+      if (dx > 0 ? el.scrollLeft + el.clientWidth < el.scrollWidth : dx < 0 && el.scrollLeft > 0) {
+        step.left = el.scrollLeft + dx;
+      }
+      if (step.top !== undefined || step.left !== undefined) steps.push(step);
     }
     return steps;
   }

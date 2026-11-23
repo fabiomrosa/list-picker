@@ -31,7 +31,8 @@ Every slice's pull request updates it (SESSION §3).
   shown where it was and nothing moves.
   Auto-scroll: within 40 px of the visible edge of a scrollable container around the pointer (a list
   vertically, the board horizontally; a container cut off by the window uses the window's edge), it
-  scrolls each frame, faster closer to the edge, and keeps going while the pointer rests. The Clone follows the pointer: moves only
+  scrolls each frame, faster closer to the edge, and keeps going while the pointer rests, until
+  there is nothing left to scroll that way. The Clone follows the pointer: moves only
   store it, one `requestAnimationFrame` per frame writes `transform`. Each frame the Placeholder
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
@@ -47,7 +48,8 @@ Every slice's pull request updates it (SESSION §3).
   (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
   every `move` event and the `change` count. It renders from `snapshot()` and shows its version.
   Its cards can be dragged within and across lists (it redraws after every Board change); a tall
-  Backlog list (14 cards, lists scroll past 22rem) shows auto-scroll.
+  Backlog list (14 cards, lists scroll past 22rem) and a board narrower than its lists (52rem) show
+  auto-scroll both ways.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
