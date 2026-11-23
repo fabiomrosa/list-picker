@@ -46,6 +46,8 @@ describe("createDrag: drag start", () => {
     const before = ctx.root.innerHTML;
     pointer(ctx.card("a"), "pointerdown", 50, 30);
     pointer(ctx.card("a"), "pointermove", 52, 32);
+    expect(ctx.root.innerHTML).toBe(before);
+    expect(document.querySelector("[data-lp-clone]")).toBeNull();
     pointer(ctx.card("a"), "pointerup", 52, 32);
     expect(ctx.root.innerHTML).toBe(before);
     expect(document.querySelector("[data-lp-clone]")).toBeNull();
