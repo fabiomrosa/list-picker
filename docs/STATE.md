@@ -27,8 +27,9 @@ Every slice's pull request updates it (SESSION §3).
   the card (inline `display: none`, `data-lp-dragging`). Release, `pointercancel` or `destroy()`
   show the card again as it was (dropping comes in L2.4). The Clone follows the pointer: moves only
   store it, one `requestAnimationFrame` per frame writes `transform`. Each frame the Placeholder
-  moves before or after the card under the pointer (by its vertical middle) or to the end of the
-  list container under it, writing the DOM only when its place changes.
+  goes, in the list container under the pointer, before the first visible card whose vertical
+  middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
+  is written only when its place changes.
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).

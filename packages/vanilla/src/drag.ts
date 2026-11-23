@@ -17,9 +17,11 @@ interface Press {
   readonly y: number;
 }
 
-type Target =
-  | { readonly card: HTMLElement; readonly after: boolean }
-  | { readonly list: HTMLElement };
+/** A place in a list: before a card, or at the end (`before: null`). */
+interface Target {
+  readonly list: HTMLElement;
+  readonly before: HTMLElement | null;
+}
 
 interface Active {
   readonly card: HTMLElement;
@@ -82,39 +84,31 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   /**
-   * Where the Placeholder belongs: before or after the card under the pointer (by its vertical
-   * middle), or at the end of the list container under it; `undefined` to stay put.
+   * Where the Placeholder belongs: in the list container under the pointer (directly, or through a
+   * card or the Placeholder), before the first visible card whose vertical middle is below the
+   * pointer, or at the end. Gaps and padding between cards follow the same rule, so the
+   * Placeholder never jumps while crossing them. `undefined` outside every list: stay put.
    */
   function dropTarget(drag: Active): Target | undefined {
     const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
-    if (!under || !root.contains(under) || under.closest("[data-lp-placeholder]")) return undefined;
-    const card = under.closest<HTMLElement>("[data-lp-card]");
-    if (card && card !== drag.card && root.contains(card)) {
+    const list = under?.closest<HTMLElement>("[data-lp-cards]");
+    if (!list || !root.contains(list)) return undefined;
+    for (const card of list.querySelectorAll<HTMLElement>(":scope > [data-lp-card]")) {
+      if (card === drag.card) continue;
       const rect = card.getBoundingClientRect();
-      return { card, after: pointerAt.y >= rect.top + rect.height / 2 };
+      if (pointerAt.y < rect.top + rect.height / 2) return { list, before: card };
     }
-    const list = under.closest<HTMLElement>("[data-lp-cards]");
-    return list && root.contains(list) ? { list } : undefined;
+    return { list, before: null };
   }
 
   /** Moves the Placeholder to `target`, writing the DOM only when its place changes. */
-  function place({ placeholder, card: dragged }: Active, target: Target): void {
-    // The dragged card is hidden but still in the DOM: look through it.
-    const sibling = (el: Element | null, step: "previousElementSibling" | "nextElementSibling") => {
-      let next = el?.[step] ?? null;
-      while (next === dragged) next = next[step];
-      return next;
-    };
-    if ("list" in target) {
-      let last = target.list.lastElementChild;
-      while (last === dragged) last = last.previousElementSibling;
-      if (last !== placeholder) target.list.append(placeholder);
-    } else if (target.after) {
-      if (sibling(target.card, "nextElementSibling") !== placeholder)
-        target.card.after(placeholder);
-    } else if (sibling(target.card, "previousElementSibling") !== placeholder) {
-      target.card.before(placeholder);
-    }
+  function place({ placeholder, card: dragged, clone }: Active, { list, before }: Target): void {
+    // The hidden dragged card and the Clone may sit next to it in the DOM: look through them.
+    let next = placeholder.nextElementSibling;
+    while (next === dragged || next === clone) next = next.nextElementSibling;
+    if (placeholder.parentElement === list && next === before) return;
+    if (before) before.before(placeholder);
+    else list.append(placeholder);
   }
 
   function onPointerEnd(event: PointerEvent): void {

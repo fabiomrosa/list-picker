@@ -213,9 +213,9 @@ describe("createDrag: the Placeholder follows the drop target", () => {
   });
   afterEach(() => drag.destroy());
 
-  async function moveTo(target: Element | null, y: number) {
+  async function moveTo(target: Element | null, y: number, from: Element = ctx.card("a")) {
     under = target;
-    pointer(ctx.card("a"), "pointermove", 60, y);
+    pointer(from, "pointermove", 60, y);
     await frame();
   }
 
@@ -234,18 +234,57 @@ describe("createDrag: the Placeholder follows the drop target", () => {
     expect(order("todo")).toEqual(["b", "_"]);
   });
 
-  it("stays where it is outside every list, without writing the DOM", async () => {
-    await moveTo(ctx.card("b"), 130);
+  it("follows the nearest card's middle across the gaps between cards", async () => {
+    // The pointer is over the list itself (a gap), above card b's middle (120).
+    await moveTo(list("todo"), 95);
+    expect(order("todo")).toEqual(["_", "b"]);
+    await moveTo(list("todo"), 145);
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
+  it("does not write the DOM while the place is unchanged, nor outside every list", async () => {
     const writes: MutationRecord[] = [];
     const observer = new MutationObserver((records) => writes.push(...records));
     observer.observe(ctx.root, { childList: true, subtree: true });
+    const settle = () => new Promise((resolve) => setTimeout(resolve));
+    // Already before b, with the hidden dragged card in between: no write.
+    await moveTo(ctx.card("b"), 105);
+    await moveTo(placeholder(), 60);
+    await settle();
+    expect(writes).toEqual([]);
+    // A real change is seen (the observer works)...
+    await moveTo(ctx.card("b"), 130);
+    await settle();
+    expect(writes.length).toBeGreaterThan(0);
+    writes.length = 0;
+    // ...then nothing outside the lists, or for a pointer still past b's middle.
     await moveTo(ctx.root, 500);
     await moveTo(null, 500);
     await moveTo(ctx.card("b"), 131);
+    await settle();
+    observer.disconnect();
+    expect(writes).toEqual([]);
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
+  it("does not rewrite the end of a list that is also the root holding the Clone", async () => {
+    drag.destroy();
+    const solo = list("done");
+    solo.innerHTML = '<li data-lp-card="x">X</li><li data-lp-card="y">Y</li>';
+    const x = solo.querySelector("[data-lp-card=x]") as HTMLElement;
+    x.getBoundingClientRect = () => new DOMRect(0, 0, 100, 20);
+    (solo.querySelector("[data-lp-card=y]") as HTMLElement).getBoundingClientRect = () =>
+      new DOMRect(0, 30, 100, 20);
+    drag = createDrag(solo, ctx.board);
+    pointer(x, "pointerdown", 5, 5);
+    pointer(x, "pointermove", 5, 15);
+    await moveTo(solo, 200, x);
+    const writes: MutationRecord[] = [];
+    const observer = new MutationObserver((records) => writes.push(...records));
+    observer.observe(solo, { childList: true });
+    await moveTo(solo, 210, x);
     await new Promise((resolve) => setTimeout(resolve));
     observer.disconnect();
-    expect(order("todo")).toEqual(["b", "_"]);
-    expect(writes.filter((r) => r.type === "childList")).toEqual([]);
-    expect(placeholder()).not.toBeNull();
+    expect(writes).toEqual([]);
   });
 });
