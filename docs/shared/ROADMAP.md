@@ -66,7 +66,8 @@ and the first npm publish.
 ## Prerequisites (only the owner can do these)
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
-- **P2** · The npm account and package names (DEC-12). Needed by L4.7 (the first publish).
+- **P2** · The npm account and package names (DEC-12). Done: `@list-picker/core` and
+  `@list-picker/vanilla`, published from the owner's account (2026-11-23).
 - **P3** · The license of the packages. Done: MIT (left to the agent by the owner, 2026-11-23).
 
 ## Later milestones (split when they start)
