@@ -44,9 +44,9 @@ or `null` for the end. Bad input throws an `Error` starting with `list-picker:` 
 **Playground and the owner's check.** L1.1 adds `playground/`, a local page (`npm run dev`) that
 draws the model: every node as a box with its `id`, `prev` and `next`, and buttons for the
 operations that exist. Every later M1 slice extends it with what it adds, as one more scope item and
-one more acceptance criterion ("visible and usable in the playground"). Each M1 pull request stops
-before the merge (SESSION §4, "needs the owner's explicit ok"): the owner runs `gh pr checkout <n>`
-and `npm run dev`, checks it in the browser, and says ok.
+one more acceptance criterion ("visible and usable in the playground", run once by the agent).
+Slices merge as usual (SESSION §4); the owner checks the playground in the browser at the end of M1
+(`git pull && npm ci && npm run dev`).
 
 ### L1.1 · Linked list: insert at the end and read
 - **Status:** next
@@ -71,7 +71,7 @@ and `npm run dev`, checks it in the browser, and says ok.
      `undefined`.
   4. Appending a duplicate id throws and leaves the list unchanged.
   5. `npm run dev` opens the playground; appending shows the new box with the right `prev`/`next`,
-     and a duplicate id shows the error (checked by the owner).
+     and a duplicate id shows the error.
 - **Files:** ~11 (lockfile excluded): `src/linked-list.ts`, `test/linked-list.test.ts`,
   `src/index.ts` (the real API replaces `packageName`), `test/smoke.test.ts` (removed), root
   `package.json`, `tsconfig.json` (include `playground`), `playground/index.html`,

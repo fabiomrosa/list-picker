@@ -19,7 +19,7 @@ None.
 
 ## Last session
 - **2026-11-22, M1 playground:** the owner wants to check each slice visually: L1.1 adds a Vite
-  playground, every M1 slice extends it, and each M1 pull request waits for the owner's ok.
+  playground, every M1 slice extends it, and the owner checks it at the end of M1.
 - **2026-11-22, plan M1:** M1 split into L1.1 to L1.11 in `docs/PLAN.md`; ROADMAP marks M0 done;
   ARCHITECTURE's model uses one `insertBefore(value, beforeId | null)`. `main` is protected
   (pull requests only; `gate`, `title`, `size`, `frozen`, `secrets` required).

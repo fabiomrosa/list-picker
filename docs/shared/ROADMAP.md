@@ -28,7 +28,7 @@ build, and the gate in CI.
 ## M1 · Core model
 The doubly linked list with its Index, the Board, moves, events, the Snapshot, property tests of the
 PRODUCT invariants, and a benchmark against arrays. No DOM in `core`; a local playground page draws
-the model and grows with every slice, and the owner checks each slice there before its merge.
+the model and grows with every slice; the owner checks it in the browser at the end of M1.
 
 | Repository | Slices |
 |---|---|
