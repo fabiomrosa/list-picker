@@ -1,5 +1,6 @@
 // A hand-test page for @list-picker/core (`npm run dev`). Not published, not covered.
 import { Board, type Snapshot } from "../packages/core/src/index.ts";
+import { createDrag } from "../packages/vanilla/src/index.ts";
 
 type Entity = { id: string };
 
@@ -101,8 +102,10 @@ function render(): void {
       el("small", "", `${cards.length} ${cards.length === 1 ? "card" : "cards"}`),
     );
     const stack = el("div", "cards", "");
+    stack.dataset.lpCards = listId;
     cards.forEach((card, i) => {
       const box = el("div", "card", "");
+      box.dataset.lpCard = card.id;
       box.append(
         el("strong", "", card.id),
         el(
@@ -219,3 +222,4 @@ for (const id of ["To do", "Doing", "Done"]) board.addList({ id }, null);
 for (const id of ["Design the model", "Write the tests"]) board.addCard("To do", { id }, null);
 board.addCard("Doing", { id: "Linked list" }, null);
 render();
+createDrag(boardView, board);

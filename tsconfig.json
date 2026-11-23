@@ -9,7 +9,8 @@
     "rewriteRelativeImportExtensions": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": { "@list-picker/core": ["./packages/core/src/index.ts"] }
   },
   "include": ["packages/*/src", "packages/*/test", "playground", "bench"]
 }

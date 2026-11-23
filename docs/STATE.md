@@ -21,6 +21,11 @@ Every slice's pull request updates it (SESSION §3).
   other listeners still run (the first error is rethrown).
 - `Board.snapshot()`: a frozen `{ lists: [{ list, cards }] }` in Board order holding the user's own
   values; the same object until the Board changes (already fresh inside listeners).
+- `@list-picker/vanilla`: `createDrag(root, board)` returns `{ destroy }`. A press on a
+  `[data-lp-card]` (not on a control inside it) captures the pointer; past 4 px it shows a Clone
+  (inside `root`, ids removed) over the card and a Placeholder of its size in its place, and hides
+  the card (inline `display: none`, `data-lp-dragging`). Release, `pointercancel` or `destroy()`
+  show the card again as it was (dropping comes in L2.4).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
@@ -28,6 +33,7 @@ Every slice's pull request updates it (SESSION §3).
   adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
   (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
   every `move` event and the `change` count. It renders from `snapshot()` and shows its version.
+  Its cards carry the engine's attributes; pressing and dragging one shows the Clone and Placeholder.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -37,6 +43,7 @@ title, size, frozen-files and secret checks.
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
 - `playground/`: Vite page over `core`'s source; not published, outside coverage.
+- `packages/vanilla`: `createDrag` (`src/drag.ts`); imports only types from `core`.
 - `bench/`: the array board, seeded move fixtures, their equivalence test, and the runner.
 
 ## Contract
@@ -46,9 +53,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L2.1:** `@list-picker/vanilla` and the drag start; `happy-dom` for engine tests; a
+  `paths` entry lets the root typecheck see `core`'s source.
+- **Next:** L2.2 (the Clone follows the pointer).
 - **2026-11-22, plan M2:** M2 split into L2.1–L2.8 in PLAN; DEC-13 proposed (data attributes;
   the engine applies drops).
-- **Next:** L2.1 (the owner approved the M2 plan and DEC-13).
 - **2026-11-22, close M1:** every M1 slice landed as planned (L1.1–L1.11, PRs #5–#15); the owner
   checked the playground in the browser. Five retro proposals are open for the owner.
 - **2026-11-22, L1.11:** benchmark against an array board; decision record 0001 (DEC-06 holds:

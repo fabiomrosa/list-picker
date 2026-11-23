@@ -265,7 +265,7 @@ drag after L2.4 and at the end of M2. Styling hooks are attributes (`data-lp-*`)
 styles the user must fight, except the Clone's position and `transform`.
 
 ### L2.1 · Vanilla package and drag start
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** pressing a card and moving past a small threshold starts a drag: the card's place is
   held by a Placeholder and a Clone appears over it.
 - **Depends on:** M1, DEC-10, DEC-13.
@@ -292,7 +292,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** ARCHITECTURE "Request flow", GOTCHAS "DOM and drag", DEC-08.
 
 ### L2.2 · The Clone follows the pointer
-- **Status:** waiting (L2.1)
+- **Status:** next
 - **Goal:** the Clone moves with the pointer smoothly, without forcing layout.
 - **Depends on:** L2.1.
 - **In scope:** `pointermove` only stores the pointer; one `requestAnimationFrame` per frame sets the
