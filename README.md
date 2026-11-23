@@ -17,7 +17,55 @@ A headless TypeScript library for kanban-style boards: lists of cards you can ad
 and drag, built on doubly linked lists. You bring the look of every card; it brings the behaviour.
 A lab rewriting [list-picker-js](https://github.com/fabiomrosa/list-picker-js) (2017).
 
+| Package | |
+| --- | --- |
+| [`@list-picker/core`](packages/core) | The Board model: ordered lists of ordered cards, events. No DOM. |
+| [`@list-picker/vanilla`](packages/vanilla) | Draws a Board from your Renderers; pointer and keyboard moves, announcements. |
+
+The demo board: `npm run dev` (see [Running locally](#running-locally)).
+
 Agents: start with `AGENTS.md`.
+
+## The lab's question
+
+Do doubly linked lists (with an id index) make a board simpler and faster than arrays?
+
+**Faster: yes for the model, and it does not matter for the page.** On the same 2000 seeded card
+moves ([decision 0001](docs/decisions/0001-linked-lists-vs-arrays.md), Apple M4 Pro, Node 26, three
+runs):
+
+| Board (lists × cards per list) | Linked list (µs/move) | Arrays (µs/move) | Arrays / linked |
+| --- | --- | --- | --- |
+| 10 × 10 | 0.097 – 0.105 | 0.121 – 0.122 | 1.1 – 1.3× |
+| 10 × 100 | 0.139 – 0.150 | 0.399 – 0.419 | 2.8 – 2.9× |
+| 20 × 500 | 0.180 – 0.183 | 1.44 – 1.48 | 7.9 – 8.2× |
+
+About equal on small lists, about 3× faster at 100 cards per list and 8× at 500. But even the
+slowest case is 1.5 µs per move, and a drag makes one move per drop. What a drag costs is layout,
+and that comes from the engine, not the model: a Chrome trace of five real drags
+([decision 0002](docs/decisions/0002-drag-layout-trace.md), three runs) found 0 forced layouts in
+333 – 335 `pointermove` dispatches, and 12 in 374 animation frames (10 of them from auto-scroll,
+one per frame while it scrolls; the record shows how that breakdown was found).
+
+**Simpler: partly.**
+- Simpler: in the Board's API a position is "before this item" (or the end), never an index. That
+  is what the DOM's `insertBefore` takes, what a drop target finds under the pointer, and what the
+  `move` event reports (`prevId`, `nextId`), so no index arithmetic sits between the three, and a
+  move is checked in full before anything is unlinked.
+- Not simpler: a page still needs arrays to draw from, so `snapshot()` builds at most one per
+  change (O(n)); a position people hear ("position 2 of 3") is counted by walking the list; and
+  removing a list visits its cards to clear the index. Most of the work was never the model: the drag engine,
+  the browser's layout and focus rules, and drawing the Board without redrawing it.
+
+To repeat both measurements (Node 26 and Google Chrome installed):
+
+```sh
+npm ci
+npm run bench   # decision 0001: linked lists against arrays, 2000 moves per board shape
+npm run trace   # decision 0002: forced layouts during five drags of the demo board, in Chrome
+```
+
+Each record explains its method and what it does not cover; numbers vary by machine.
 
 ## Tech references
 
@@ -30,7 +78,7 @@ Agents: start with `AGENTS.md`.
 
 ## Running locally
 
-The packages build and test; the playground draws the model in the browser (the demo board comes in M3).
+The packages build and test; the playground is the demo board.
 
 ```sh
 git clone git@github.com:fabiomrosa/list-picker.git
@@ -39,6 +87,7 @@ npm ci
 npm test            # the tests once
 npm run dev         # the playground at http://localhost:5173
 npm run bench       # linked lists against arrays (docs/decisions/0001)
+npm run trace       # forced layouts during real drags (docs/decisions/0002)
 npm run e2e         # real drags in Chrome (needs Google Chrome installed)
 npm run format      # format and apply safe lint fixes
 ```

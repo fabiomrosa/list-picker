@@ -115,10 +115,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.6:** the root README answers the lab's question with decisions 0001 and 0002
+  (faster for the model, irrelevant next to layout; simpler for positions and events, not for
+  drawing), lists the packages and how to repeat both measurements (rerun: same ranges).
+- **Next:** L4.7 (first npm publish; needs the owner's npm account and package names, P2).
 - **2026-11-23, L4.5:** READMEs, MIT license and npm metadata for both packages; every README
   example was run in Chrome once. The owner left P3 and the API names to the agent:
   `Announcement.list` is now `listLabel`.
-- **Next:** L4.6 (the lab write-up in the root README).
 - **2026-11-23, L4.4:** live announcements for drags and keyboard moves, English by default,
   replaceable with `messages` (public API, additive); the demo labels cards and lists.
 - **2026-11-23, L4.3:** lists move with the keyboard by their handle (← →, Esc back), through
