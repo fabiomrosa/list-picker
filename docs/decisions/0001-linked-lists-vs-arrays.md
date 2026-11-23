@@ -29,8 +29,8 @@ Machine: Apple M4 Pro, 24 GB, macOS 27.0.1, Node 26.13.1. Three runs:
 
 ## Decision
 Keep the linked-list model (DEC-06). A move costs the same, about 0.15–0.19 µs, whatever the list
-length, as O(1) predicts; the array board grows with the list length (`findIndex` and `splice`): even
-at 10 cards per list, 2.4–2.7× slower at 100, about 8× at 500.
+length, as O(1) predicts; the array board grows with the list length (`findIndex` and `splice`): level
+at 10 cards per list, 2.4–2.7× slower at 100, about 8× slower at 500.
 
 ## Consequences
 - The theory holds for the model, but the absolute numbers are tiny: even the slowest case is
