@@ -308,7 +308,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** AGENTS "Non-negotiable" (layout reads).
 
 ### L2.3 · The Placeholder follows the drop target
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** while dragging, the Placeholder shows where the card would land.
 - **Depends on:** L2.2.
 - **In scope:** each frame, the element under the pointer (`elementFromPoint`; the Clone ignores the
@@ -326,7 +326,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** DEC-08, ARCHITECTURE "Request flow".
 
 ### L2.4 · Drop
-- **Status:** waiting (L2.3)
+- **Status:** next
 - **Goal:** releasing the pointer moves the card to the Placeholder's place, in the model and the DOM.
 - **Depends on:** L2.3.
 - **In scope:** on `pointerup` after a drag: `board.moveCard(cardId, listId, beforeCardId)` from the

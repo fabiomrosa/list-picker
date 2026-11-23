@@ -185,3 +185,67 @@ describe("createDrag: the Clone follows the pointer", () => {
     expect(cancel).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("createDrag: the Placeholder follows the drop target", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const placeholder = () => document.querySelector("[data-lp-placeholder]") as HTMLElement;
+  const list = (id: string) => ctx.root.querySelector(`[data-lp-cards="${id}"]`) as HTMLElement;
+  /** Order of a list's children, by card id, "_" for the Placeholder, hidden card skipped. */
+  const order = (id: string) =>
+    [...list(id).children]
+      .filter((el) => (el as HTMLElement).style.display !== "none")
+      .map((el) =>
+        el.hasAttribute("data-lp-placeholder") ? "_" : el.getAttribute("data-lp-card"),
+      );
+
+  beforeEach(() => {
+    ctx = setup();
+    // Card b spans y 100–140; the engine asks what is under the pointer.
+    ctx.card("b").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    under = null;
+    document.elementFromPoint = () => under;
+    drag = createDrag(ctx.root, ctx.board);
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+  });
+  afterEach(() => drag.destroy());
+
+  async function moveTo(target: Element | null, y: number) {
+    under = target;
+    pointer(ctx.card("a"), "pointermove", 60, y);
+    await frame();
+  }
+
+  it("goes before a card above its middle and after it below", async () => {
+    await moveTo(ctx.card("b"), 130);
+    expect(order("todo")).toEqual(["b", "_"]);
+    await moveTo(ctx.card("b"), 110);
+    expect(order("todo")).toEqual(["_", "b"]);
+  });
+
+  it("goes to the end of an empty list, or below the last card", async () => {
+    await moveTo(list("done"), 300);
+    expect(order("done")).toEqual(["_"]);
+    expect(order("todo")).toEqual(["b"]);
+    await moveTo(list("todo"), 300);
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
+  it("stays where it is outside every list, without writing the DOM", async () => {
+    await moveTo(ctx.card("b"), 130);
+    const writes: MutationRecord[] = [];
+    const observer = new MutationObserver((records) => writes.push(...records));
+    observer.observe(ctx.root, { childList: true, subtree: true });
+    await moveTo(ctx.root, 500);
+    await moveTo(null, 500);
+    await moveTo(ctx.card("b"), 131);
+    await new Promise((resolve) => setTimeout(resolve));
+    observer.disconnect();
+    expect(order("todo")).toEqual(["b", "_"]);
+    expect(writes.filter((r) => r.type === "childList")).toEqual([]);
+    expect(placeholder()).not.toBeNull();
+  });
+});

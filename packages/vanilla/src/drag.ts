@@ -17,6 +17,10 @@ interface Press {
   readonly y: number;
 }
 
+type Target =
+  | { readonly card: HTMLElement; readonly after: boolean }
+  | { readonly list: HTMLElement };
+
 interface Active {
   readonly card: HTMLElement;
   readonly clone: HTMLElement;
@@ -68,11 +72,49 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     frame ??= requestAnimationFrame(update);
   }
 
-  /** Once per frame: moves the Clone with `transform` only. */
+  /** Once per frame: reads what is under the pointer, then writes (no read after a write). */
   function update(): void {
     frame = undefined;
     if (!press || !active) return;
+    const target = dropTarget(active);
     active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
+    if (target) place(active, target);
+  }
+
+  /**
+   * Where the Placeholder belongs: before or after the card under the pointer (by its vertical
+   * middle), or at the end of the list container under it; `undefined` to stay put.
+   */
+  function dropTarget(drag: Active): Target | undefined {
+    const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
+    if (!under || !root.contains(under) || under.closest("[data-lp-placeholder]")) return undefined;
+    const card = under.closest<HTMLElement>("[data-lp-card]");
+    if (card && card !== drag.card && root.contains(card)) {
+      const rect = card.getBoundingClientRect();
+      return { card, after: pointerAt.y >= rect.top + rect.height / 2 };
+    }
+    const list = under.closest<HTMLElement>("[data-lp-cards]");
+    return list && root.contains(list) ? { list } : undefined;
+  }
+
+  /** Moves the Placeholder to `target`, writing the DOM only when its place changes. */
+  function place({ placeholder, card: dragged }: Active, target: Target): void {
+    // The dragged card is hidden but still in the DOM: look through it.
+    const sibling = (el: Element | null, step: "previousElementSibling" | "nextElementSibling") => {
+      let next = el?.[step] ?? null;
+      while (next === dragged) next = next[step];
+      return next;
+    };
+    if ("list" in target) {
+      let last = target.list.lastElementChild;
+      while (last === dragged) last = last.previousElementSibling;
+      if (last !== placeholder) target.list.append(placeholder);
+    } else if (target.after) {
+      if (sibling(target.card, "nextElementSibling") !== placeholder)
+        target.card.after(placeholder);
+    } else if (sibling(target.card, "previousElementSibling") !== placeholder) {
+      target.card.before(placeholder);
+    }
   }
 
   function onPointerEnd(event: PointerEvent): void {
