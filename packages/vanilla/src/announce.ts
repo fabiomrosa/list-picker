@@ -6,7 +6,7 @@ export interface Announcement {
   /** The item's `aria-label`, else its text, else its id (a list's from its handle). */
   readonly label: string;
   /** A card's list, labelled the same way; `null` for a list. */
-  readonly list: string | null;
+  readonly listLabel: string | null;
   /** 1-based, among the cards of its list or among the lists. */
   readonly position: number;
   readonly count: number;
@@ -25,8 +25,8 @@ export interface DragOptions {
   readonly messages?: Partial<Messages>;
 }
 
-const where = ({ list, position, count }: Announcement) =>
-  `${list === null ? "Position" : `${list}, position`} ${position} of ${count}.`;
+const where = ({ listLabel, position, count }: Announcement) =>
+  `${listLabel === null ? "Position" : `${listLabel}, position`} ${position} of ${count}.`;
 
 const DEFAULTS: Messages = {
   pickUp: (item) => `Picked up ${item.label}. ${where(item)}`,
@@ -71,7 +71,7 @@ export function createAnnouncer<L extends { id: string }, C extends { id: string
   document.body.append(region);
 
   /** The label of list `id`, from its handle in `root` if there is one. */
-  const listLabel = (id: string) => {
+  const labelOfList = (id: string) => {
     const list = [...root.querySelectorAll("[data-lp-list]")].find(
       (element) => element.getAttribute("data-lp-list") === id,
     );
@@ -86,8 +86,8 @@ export function createAnnouncer<L extends { id: string }, C extends { id: string
       const ids = [...(list ? board.cards(list.id) : board.lists())].map((value) => value.id);
       region.textContent = (messages[event] ?? DEFAULTS[event])({
         kind,
-        label: kind === "card" ? labelOf(item, id) : listLabel(id),
-        list: list ? listLabel(list.id) : null,
+        label: kind === "card" ? labelOf(item, id) : labelOfList(id),
+        listLabel: list ? labelOfList(list.id) : null,
         position: ids.indexOf(id) + 1,
         count: ids.length,
       });

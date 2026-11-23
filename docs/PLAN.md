@@ -600,7 +600,7 @@ shows it in the demo.
 - **References:** DEC-16, DEC-07.
 
 ### L4.5 · Package READMEs and metadata
-- **Status:** waiting (L4.4)
+- **Status:** done (2026-11-23)
 - **Goal:** each package explains itself on npm.
 - **Depends on:** L4.4, P3 (license).
 - **In scope:** `packages/core/README.md` and `packages/vanilla/README.md` (what it is, install,
@@ -609,7 +609,11 @@ shows it in the demo.
   `sideEffects: false`; the `LICENSE` file; `npm pack --dry-run` lists only `dist`, the README and
   the license.
 - **Out of scope:** the version and the publish (L4.7).
-- **Contract:** none. **Public API:** none.
+- **Deviation:** the owner left P3 and the API names to the agent: MIT, and `Announcement.list`
+  became `listLabel` (it holds a label, not an id) before the README documents it; `DragOptions`
+  and `Messages` stay. The `LICENSE` is copied into each package, since `npm pack` takes only the
+  package's own.
+- **Contract:** none. **Public API:** `Announcement.list` renamed `listLabel` (breaking, unreleased).
 - **Acceptance criteria:**
   1. Each README's example runs as written (pasted into the demo once).
   2. `npm pack --dry-run` in each package lists exactly the expected files.

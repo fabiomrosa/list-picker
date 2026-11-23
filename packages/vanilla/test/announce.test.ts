@@ -83,7 +83,8 @@ describe("createDrag: live announcements", () => {
   it("replaces a default message with the `messages` option, keeping the others", () => {
     drag = createDrag(root, board, {
       messages: {
-        move: ({ label, list, position, count }) => `${label} in ${list}: ${position}/${count}`,
+        move: ({ label, listLabel, position, count }) =>
+          `${label} in ${listLabel}: ${position}/${count}`,
       },
     });
     press(card("a"), " ");
