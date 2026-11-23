@@ -25,7 +25,7 @@ build, and the gate in CI.
 |---|---|
 | `list-picker` | L0.1 runnable skeleton |
 
-## M1 · Core model
+## M1 · Core model · done (2026-11-22)
 The doubly linked list with its Index, the Board, moves, events, the Snapshot, property tests of the
 PRODUCT invariants, and a benchmark against arrays. No DOM in `core`; a local playground page draws
 the model and grows with every slice; the owner checks it in the browser at the end of M1.
@@ -51,7 +51,7 @@ the model and grows with every slice; the owner checks it in the browser at the 
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-L1.1 to L1.11 in order (L1.4 may run before or after L1.5 to L1.7); then plan M2.
+M2 next: "plan M2".
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |
