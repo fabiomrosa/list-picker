@@ -479,12 +479,18 @@ describe("createDrag: cancel", () => {
     "restores the DOM and moves nothing on %s",
     async (how) => {
       const before = ctx.root.innerHTML;
+      const remove = vi.spyOn(document, "removeEventListener");
       await dragToDone();
       expect(list("done").querySelector("[data-lp-placeholder]")).not.toBeNull();
       if (how === "Escape") pressEscape();
       else if (how === "destroy") drag.destroy();
       else pointer(ctx.card("a"), "pointercancel", 60, 300);
       expect(ctx.root.innerHTML).toBe(before);
+      expect(remove.mock.calls.filter(([type]) => type === "keydown")).toHaveLength(1);
+      // No ghost drag afterwards: moving and releasing the still-pressed pointer does nothing.
+      pointer(ctx.card("a"), "pointermove", 90, 320);
+      await frame();
+      expect(document.querySelector("[data-lp-clone]")).toBeNull();
       pointer(ctx.card("a"), "pointerup", 60, 300);
       expect(moves).toEqual([]);
       expect([...ctx.board.cards("todo")].map((c) => c.id)).toEqual(["a", "b"]);
