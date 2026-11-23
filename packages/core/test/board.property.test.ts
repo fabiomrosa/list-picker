@@ -181,11 +181,11 @@ describe("Board invariants", () => {
           reached.set(key, (reached.get(key) ?? 0) + 1);
         }
       }),
-      { numRuns: 500 },
+      { numRuns: 500, interruptAfterTimeLimit: 50_000, markInterruptAsFailure: true },
     );
     // The generator must keep reaching the interesting cases, or the property goes blind.
     for (const key of ["moveCard:changed", "moveCard:same", "moveList:changed", "moveList:same"]) {
       expect(reached.get(key) ?? 0, key).toBeGreaterThan(50);
     }
-  });
+  }, 60_000);
 });

@@ -69,9 +69,7 @@ title, size, frozen-files and secret checks.
 None yet.
 
 ## Known issues
-- The Board property test (500 runs, ~1 s) hit Vitest's default 5 s timeout twice on 2026-11-23
-  while the machine was under heavy load (load average 13–27); 50 000 runs with no shrinking found
-  no counterexample. A timeout set for property tests would remove the flake.
+None.
 
 ## Last session
 - **2026-11-23, close M2:** every M2 slice landed as planned (L2.1–L2.8, PRs #21–#28, plus the

@@ -79,7 +79,7 @@ describe("LinkedList invariants", () => {
           expectInvariants(list, model);
         }
       }),
-      { numRuns: 1000 },
+      { numRuns: 1000, interruptAfterTimeLimit: 50_000, markInterruptAsFailure: true },
     );
-  });
+  }, 60_000);
 });
