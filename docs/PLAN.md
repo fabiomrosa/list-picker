@@ -200,7 +200,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.9 · Board events
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** a renderer or a backend can subscribe to what changed.
 - **Depends on:** L1.8, DEC-11.
 - **In scope:** `on(event, listener)` returns an unsubscribe function. `move` carries
@@ -219,7 +219,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** DEC-09, DEC-11.
 
 ### L1.10 · Snapshot
-- **Status:** waiting (L1.9)
+- **Status:** next
 - **Goal:** renderers that need arrays (React, Angular) read the Board as one immutable value.
 - **Depends on:** L1.9.
 - **In scope:** `board.snapshot()` returns a frozen

@@ -1,6 +1,25 @@
+import { Emitter } from "./emitter.ts";
 import { LinkedList } from "./linked-list.ts";
 
 type Entity = { id: string };
+
+/** What a changing move did, in neighbours rather than indexes (DEC-11). */
+export interface MoveEvent {
+  readonly kind: "card" | "list";
+  readonly id: string;
+  /** The card's List before and after the move; `null` for a list move. */
+  readonly fromListId: string | null;
+  readonly toListId: string | null;
+  /** The new neighbours (cards, or lists for a list move); `null` at an end. */
+  readonly prevId: string | null;
+  readonly nextId: string | null;
+}
+
+/** `move` for persistence; `change`, with no payload, after every change, for renderers. */
+export interface BoardEvents extends Record<string, unknown> {
+  move: MoveEvent;
+  change: undefined;
+}
 
 /** A List on the Board: the user's list value and its linked list of cards. */
 interface ListEntry<L, C extends Entity> {
@@ -16,9 +35,23 @@ interface ListEntry<L, C extends Entity> {
 export class Board<L extends Entity, C extends Entity> {
   #lists = new LinkedList<ListEntry<L, C>>();
   #listOfCard = new Map<string, ListEntry<L, C>>();
+  #events = new Emitter<BoardEvents>();
+
+  /**
+   * Subscribes to `move` or `change`; the returned function unsubscribes. Listeners run
+   * synchronously after the model is consistent. A listener must not change the Board while it
+   * runs: later listeners would receive the nested events before the outer one.
+   */
+  on<K extends keyof BoardEvents>(
+    event: K,
+    listener: (payload: BoardEvents[K]) => void,
+  ): () => void {
+    return this.#events.on(event, listener);
+  }
 
   addList(list: L, beforeListId: string | null): void {
     this.#lists.insertBefore({ id: list.id, list, cards: new LinkedList<C>() }, beforeListId);
+    this.#events.emit("change", undefined);
   }
 
   addCard(listId: string, card: C, beforeCardId: string | null): void {
@@ -28,6 +61,7 @@ export class Board<L extends Entity, C extends Entity> {
     }
     entry.cards.insertBefore(card, beforeCardId);
     this.#listOfCard.set(card.id, entry);
+    this.#events.emit("change", undefined);
   }
 
   /** Removes the card with `id` from its List and the Board, and returns it. */
@@ -36,6 +70,7 @@ export class Board<L extends Entity, C extends Entity> {
     if (!entry) throw new Error(`list-picker: unknown id "${id}"`);
     const card = entry.cards.remove(id);
     this.#listOfCard.delete(id);
+    this.#events.emit("change", undefined);
     return card;
   }
 
@@ -43,6 +78,7 @@ export class Board<L extends Entity, C extends Entity> {
   removeList(id: string): L {
     const entry = this.#lists.remove(id);
     for (const card of entry.cards) this.#listOfCard.delete(card.id);
+    this.#events.emit("change", undefined);
     return entry.list;
   }
 
@@ -67,6 +103,7 @@ export class Board<L extends Entity, C extends Entity> {
     const card = from.cards.remove(id);
     to.cards.insertBefore(card, beforeCardId);
     this.#listOfCard.set(id, to);
+    this.#emitMove("card", id, from.id, to.id, to.cards);
     return true;
   }
 
@@ -82,6 +119,7 @@ export class Board<L extends Entity, C extends Entity> {
     }
     if (beforeListId === id || beforeListId === (node.next?.value.id ?? null)) return false;
     this.#lists.insertBefore(this.#lists.remove(id), beforeListId);
+    this.#emitMove("list", id, null, null, this.#lists);
     return true;
   }
 
@@ -103,6 +141,31 @@ export class Board<L extends Entity, C extends Entity> {
 
   cards(listId: string): Iterable<C> {
     return this.#entry(listId).cards;
+  }
+
+  /** Emits `move` with the node's new neighbours in `list`, then `change`. */
+  #emitMove<T extends Entity>(
+    kind: MoveEvent["kind"],
+    id: string,
+    fromListId: string | null,
+    toListId: string | null,
+    list: LinkedList<T>,
+  ): void {
+    const node = list.get(id);
+    const prevId = node?.prev?.value.id ?? null;
+    const nextId = node?.next?.value.id ?? null;
+    let failure: { error: unknown } | undefined;
+    for (const emit of [
+      () => this.#events.emit("move", { kind, id, fromListId, toListId, prevId, nextId }),
+      () => this.#events.emit("change", undefined),
+    ]) {
+      try {
+        emit();
+      } catch (error) {
+        failure ??= { error };
+      }
+    }
+    if (failure) throw failure.error;
   }
 
   #entry(listId: string): ListEntry<L, C> {

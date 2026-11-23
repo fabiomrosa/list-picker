@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Board } from "../src/index.ts";
+import { Board, type MoveEvent } from "../src/index.ts";
 
 type List = { id: string; title?: string };
 type Card = { id: string; text?: string };
@@ -259,5 +259,84 @@ describe("Board.moveList", () => {
     const b = sample();
     expect(() => b.moveList(id, before)).toThrow(message);
     expect(listIds(b).join("")).toBe("abcd");
+  });
+});
+
+describe("Board events", () => {
+  const sample = () => {
+    const b = new Board<List, Card>();
+    for (const id of ["todo", "done"]) b.addList({ id }, null);
+    for (const id of ["a", "b", "c"]) b.addCard("todo", { id }, null);
+    const moves: MoveEvent[] = [];
+    let changes = 0;
+    b.on("move", (event) => moves.push(event));
+    b.on("change", () => changes++);
+    return { b, moves, changes: () => changes };
+  };
+
+  it("emits one move with the new neighbours and one change for a card move", () => {
+    const { b, moves, changes } = sample();
+    b.moveCard("c", "todo", "a");
+    b.moveCard("a", "done", null);
+    expect(moves).toEqual([
+      { kind: "card", id: "c", fromListId: "todo", toListId: "todo", prevId: null, nextId: "a" },
+      { kind: "card", id: "a", fromListId: "todo", toListId: "done", prevId: null, nextId: null },
+    ]);
+    expect(changes()).toBe(2);
+  });
+
+  it("emits one move and one change for a list move", () => {
+    const { b, moves, changes } = sample();
+    b.moveList("done", "todo");
+    expect(moves).toEqual([
+      { kind: "list", id: "done", fromListId: null, toListId: null, prevId: null, nextId: "todo" },
+    ]);
+    expect(changes()).toBe(1);
+  });
+
+  it("emits nothing for a move to the same place or a call that throws", () => {
+    const { b, moves, changes } = sample();
+    b.moveCard("a", "todo", "b");
+    b.moveList("done", null);
+    expect(() => b.moveCard("nope", "todo", null)).toThrow();
+    expect(() => b.addCard("todo", { id: "a" }, null)).toThrow();
+    expect(() => b.removeList("nope")).toThrow();
+    expect(moves).toEqual([]);
+    expect(changes()).toBe(0);
+  });
+
+  it("emits one change per add and remove, and stops after unsubscribe", () => {
+    const { b, moves, changes } = sample();
+    b.addList({ id: "later" }, null);
+    b.addCard("later", { id: "d" }, null);
+    b.removeCard("d");
+    b.removeList("later");
+    expect(changes()).toBe(4);
+    const seen: string[] = [];
+    const off = b.on("change", () => seen.push("change"));
+    off();
+    b.addList({ id: "x" }, null);
+    expect(seen).toEqual([]);
+    expect(moves).toEqual([]);
+  });
+
+  it("rethrows the move listener's error when a change listener throws too", () => {
+    const { b } = sample();
+    b.on("move", () => {
+      throw new Error("move listener failed");
+    });
+    b.on("change", () => {
+      throw new Error("change listener failed");
+    });
+    expect(() => b.moveCard("a", "done", null)).toThrow("move listener failed");
+  });
+
+  it("keeps the change when a listener throws", () => {
+    const { b } = sample();
+    b.on("move", () => {
+      throw new Error("listener failed");
+    });
+    expect(() => b.moveCard("a", "done", null)).toThrow("listener failed");
+    expect(b.listOf("a")?.id).toBe("done");
   });
 });

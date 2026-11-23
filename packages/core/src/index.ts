@@ -1,3 +1,4 @@
+export type { BoardEvents, MoveEvent } from "./board.ts";
 export { Board } from "./board.ts";
 export type { Node } from "./linked-list.ts";
 export { LinkedList } from "./linked-list.ts";

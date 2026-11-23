@@ -191,6 +191,17 @@ moveForm.addEventListener("submit", (event) => {
   render();
 });
 
+const log = byId<HTMLOListElement>("log");
+const changesView = byId<HTMLElement>("changes");
+let changes = 0;
+board.on("change", () => {
+  changes++;
+  changesView.textContent = `· ${changes} change events`;
+});
+board.on("move", (event) => {
+  log.prepend(el("li", "", `move ${JSON.stringify(event)}`));
+});
+
 for (const id of ["To do", "Doing", "Done"]) board.addList({ id }, null);
 for (const id of ["Design the model", "Write the tests"]) board.addCard("To do", { id }, null);
 board.addCard("Doing", { id: "Linked list" }, null);
