@@ -35,7 +35,8 @@ framework adapters without the vanilla mount, it splits into its own package the
   `Map<id, Node<T>>`. `get(id)`, `has(id)`, `insertBefore(value, beforeId | null)` (`null` appends,
   like the DOM's `insertBefore`), `remove(id)`, iteration in order. All O(1) except iteration.
 - `Board`: a `LinkedList<List>`; each `List` holds a `LinkedList<Card>`. A card-to-list map gives
-  the List of any card in O(1).
+  the List of any card in O(1). The indexes key on `id` at insertion, so a value's `id` must not
+  change while it is on the Board.
 - `moveCard(id, toListId, beforeCardId | null)` and `moveList(id, beforeListId | null)`: remove
   from one linked list and insert into another (or the same), update the card-to-list map, emit one
   `move` event. A drop always knows the card below it, so `before` is the only position needed.

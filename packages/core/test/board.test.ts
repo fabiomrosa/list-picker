@@ -39,6 +39,11 @@ describe("Board", () => {
     expect(board.listOf("nope")).toBeUndefined();
   });
 
+  it("throws when asked for the cards of an unknown list, before any iteration", () => {
+    const board = new Board<List, Card>();
+    expect(() => board.cards("nope")).toThrow('list-picker: unknown list "nope"');
+  });
+
   describe("rejects bad input and changes nothing", () => {
     const board = () => {
       const b = new Board<List, Card>();

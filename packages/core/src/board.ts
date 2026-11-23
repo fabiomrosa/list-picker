@@ -46,8 +46,8 @@ export class Board<L extends Entity, C extends Entity> {
     for (const entry of this.#lists) yield entry.list;
   }
 
-  *cards(listId: string): Generator<C> {
-    yield* this.#entry(listId).cards;
+  cards(listId: string): Iterable<C> {
+    return this.#entry(listId).cards;
   }
 
   #entry(listId: string): ListEntry<L, C> {
