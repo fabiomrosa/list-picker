@@ -7,6 +7,23 @@ export interface Drag {
 
 /** How far (px) the pointer must move after a press before the press becomes a drag. */
 const THRESHOLD = 4;
+/** Auto-scroll: within this many px of a scrollable container's edge… */
+const EDGE = 40;
+/** …scroll up to this many px per frame, more the closer the pointer is to the edge. */
+const MAX_STEP = 20;
+const SCROLLS = /auto|scroll/;
+
+/** Pixels to scroll this frame for a pointer `distance` px inside an edge (0 beyond EDGE). */
+function speed(distance: number): number {
+  return distance < EDGE ? Math.ceil(((EDGE - Math.max(distance, 0)) / EDGE) * MAX_STEP) : 0;
+}
+
+interface ScrollStep {
+  readonly element: HTMLElement;
+  readonly dx: number;
+  readonly dy: number;
+}
+
 /** Presses on these start no drag, so controls inside a card keep working. */
 const INTERACTIVE = "button, input, select, textarea, a[href], [contenteditable]";
 
@@ -80,9 +97,38 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   function update(): void {
     frame = undefined;
     if (!press || !active) return;
-    const target = dropTarget(active);
+    const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
+    const target = dropTarget(active, under);
+    const steps = scrollSteps(under);
     active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
     if (target) place(active, target);
+    for (const { element, dx, dy } of steps) {
+      element.scrollLeft += dx;
+      element.scrollTop += dy;
+    }
+    // Keep scrolling while the pointer rests near an edge; the Placeholder retargets each frame.
+    if (steps.length > 0) frame = requestAnimationFrame(update);
+  }
+
+  /**
+   * For each scrollable container around the pointer (from the element under it up to `root`), how
+   * far to scroll this frame: within EDGE px of an edge, faster closer to it.
+   */
+  function scrollSteps(under: Element | null): ScrollStep[] {
+    if (!under || !root.contains(under)) return [];
+    const steps: ScrollStep[] = [];
+    for (let el: Element | null = under; el; el = el === root ? null : el.parentElement) {
+      if (!(el instanceof HTMLElement)) continue;
+      const style = getComputedStyle(el);
+      const canY = SCROLLS.test(style.overflowY) && el.scrollHeight > el.clientHeight;
+      const canX = SCROLLS.test(style.overflowX) && el.scrollWidth > el.clientWidth;
+      if (!canX && !canY) continue;
+      const rect = el.getBoundingClientRect();
+      const dy = canY ? speed(rect.bottom - pointerAt.y) - speed(pointerAt.y - rect.top) : 0;
+      const dx = canX ? speed(rect.right - pointerAt.x) - speed(pointerAt.x - rect.left) : 0;
+      if (dx !== 0 || dy !== 0) steps.push({ element: el, dx, dy });
+    }
+    return steps;
   }
 
   /**
@@ -91,8 +137,7 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
    * pointer, or at the end. Gaps and padding between cards follow the same rule, so the
    * Placeholder never jumps while crossing them. `undefined` outside every list: stay put.
    */
-  function dropTarget(drag: Active): Target | undefined {
-    const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
+  function dropTarget(drag: Active, under: Element | null): Target | undefined {
     const list = under?.closest<HTMLElement>("[data-lp-cards]");
     if (!list || !root.contains(list)) return undefined;
     for (const card of list.querySelectorAll<HTMLElement>(":scope > [data-lp-card]")) {

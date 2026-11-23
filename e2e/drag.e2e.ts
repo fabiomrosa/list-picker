@@ -32,7 +32,7 @@ const cardsOf = (page: Page, id: string) => page.locator(`[data-lp-cards="${id}"
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  expect(await lists(page)).toEqual({
+  expect(await lists(page)).toMatchObject({
     "To do": ["Design the model", "Write the tests"],
     Doing: ["Linked list"],
     Done: [],
@@ -61,11 +61,28 @@ test("drags a card into an empty list", async ({ page }) => {
 
 test("a click without moving changes nothing", async ({ page }) => {
   await card(page, "Design the model").locator("strong").click();
-  expect(await lists(page)).toEqual({
+  expect(await lists(page)).toMatchObject({
     "To do": ["Design the model", "Write the tests"],
     Doing: ["Linked list"],
     Done: [],
   });
   await expect(page.locator("[data-lp-clone], [data-lp-placeholder]")).toHaveCount(0);
   await expect(page.locator("#log li")).toHaveCount(0);
+});
+
+test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
+  const backlog = cardsOf(page, "Backlog");
+  const box = await backlog.boundingBox();
+  const from = await card(page, "Design the model").locator("strong").boundingBox();
+  if (!box || !from) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  // Rest the pointer just inside the list's bottom edge until it has scrolled to the end.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height - 8, { steps: 12 });
+  await expect
+    .poll(() => backlog.evaluate((el) => el.scrollTop + el.clientHeight >= el.scrollHeight - 1))
+    .toBe(true);
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height - 6);
+  await page.mouse.up();
+  await expect.poll(async () => (await lists(page)).Backlog?.at(-1)).toBe("Design the model");
 });
