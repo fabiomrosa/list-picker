@@ -163,7 +163,7 @@ function expectInvariants(board: Board<Entity, Entity>, model: Model): void {
 describe("Board invariants", () => {
   it("match a nested-array model after any sequence of operations", () => {
     fc.assert(
-      fc.property(setup, fc.array(op, { maxLength: 40 }), (start, ops) => {
+      fc.property(setup, fc.array(op, { minLength: 20, maxLength: 60 }), (start, ops) => {
         const board = new Board<Entity, Entity>();
         const model: Model = [];
         for (const o of [...start, ...ops]) {
