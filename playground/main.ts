@@ -40,6 +40,13 @@ function action(text: string, title: string, onClick: () => void, disabled = fal
 }
 
 /** Moves a card and says on the page whether the order changed. */
+function moveList(id: string, beforeListId: string | null): void {
+  const changed = board.moveList(id, beforeListId);
+  status.textContent = changed
+    ? `moved list ${id} before ${beforeListId ?? "(end)"}`
+    : `list ${id}: same place, nothing changed`;
+}
+
 function move(id: string, toListId: string, beforeCardId: string | null): void {
   const changed = board.moveCard(id, toListId, beforeCardId);
   status.textContent = changed
@@ -61,8 +68,21 @@ function render(): void {
   listIds.forEach((listId, li) => {
     const column = el("section", "list", "");
     const cards = [...board.cards(listId)];
-    column.append(
+    const header = el("div", "list-tools", "");
+    const left = listIds[li - 1];
+    const afterNext = listIds[li + 2] ?? null;
+    header.append(
+      action("←", `move list ${listId} left`, () => left && moveList(listId, left), !left),
+      action(
+        "→",
+        `move list ${listId} right`,
+        () => moveList(listId, afterNext),
+        li === listIds.length - 1,
+      ),
       action("×", `remove list ${listId}`, () => board.removeList(listId)),
+    );
+    column.append(
+      header,
       el("h2", "", listId),
       el("small", "", `${cards.length} ${cards.length === 1 ? "card" : "cards"}`),
     );

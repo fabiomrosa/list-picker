@@ -183,7 +183,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** DEC-06, DEC-08.
 
 ### L1.8 · Board: move a list, and the Board invariants
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** Lists move like cards, and the Board's invariants hold under random operations.
 - **Depends on:** L1.7, L1.4.
 - **In scope:** `moveList(id, beforeListId | null)`, same rules as `moveCard`; a property test of
@@ -200,7 +200,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.9 · Board events
-- **Status:** waiting (L1.8)
+- **Status:** next
 - **Goal:** a renderer or a backend can subscribe to what changed.
 - **Depends on:** L1.8, DEC-11.
 - **In scope:** `on(event, listener)` returns an unsubscribe function. `move` carries
