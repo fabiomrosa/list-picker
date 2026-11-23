@@ -1,6 +1,6 @@
 // The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
 // not covered.
-import { Board } from "../packages/core/src/index.ts";
+import { Board, type Snapshot } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
 
 type Entity = { id: string };
@@ -24,7 +24,7 @@ function el(tag: string, className: string, text: string): HTMLElement {
   return element;
 }
 
-/** Runs a Board operation from the page, showing its error if it throws. */
+/** Runs a Board operation from the page, showing its error if it throws (a change refreshes). */
 function attempt(act: () => void): boolean {
   try {
     act();
@@ -34,8 +34,6 @@ function attempt(act: () => void): boolean {
     error.textContent = (e as Error).message;
     status.textContent = "";
     return false;
-  } finally {
-    refresh();
   }
 }
 
@@ -137,7 +135,7 @@ function fill(select: HTMLSelectElement, ids: string[], empty: string | null): v
   if (ids.includes(selected) || (selected === "" && empty !== null)) select.value = selected;
 }
 
-let lastSnapshot: unknown;
+let lastSnapshot: Snapshot<Entity, Entity> | undefined;
 let version = 0;
 
 /**
@@ -155,8 +153,6 @@ function refresh(): void {
     scope.querySelector(`[data-role="${role}"]`) as HTMLButtonElement;
   for (const head of boardView.querySelectorAll<HTMLElement>("[data-lp-list-handle]")) {
     const id = head.closest("[data-lp-list]")?.getAttribute("data-lp-list") as string;
-    // Removed from the Board, not yet from the DOM: `mount` reconciles a microtask later.
-    if (!board.getList(id)) continue;
     const count = cardIds(id).length;
     (head.querySelector(".count") as HTMLElement).textContent =
       `${count} ${count === 1 ? "card" : "cards"}`;
@@ -166,7 +162,6 @@ function refresh(): void {
   }
   for (const box of boardView.querySelectorAll<HTMLElement>("[data-lp-card]")) {
     const id = box.getAttribute("data-lp-card") as string;
-    if (!board.getCard(id)) continue;
     const at = cardAt(id);
     (box.querySelector(".neighbours") as HTMLElement).textContent =
       `prev: ${at.up ?? "null"} · next: ${at.down ?? "null"}`;
