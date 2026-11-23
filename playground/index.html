@@ -29,6 +29,9 @@
       .tools .action:hover:enabled { background: #e4e7eb; }
       .tools .action:disabled { opacity: 0.35; cursor: default; }
       .status { color: #2f6f4f; min-height: 1.4em; margin: 0.25rem 0 0; }
+      .log-title { font-size: 1rem; margin: 1rem 0 0.25rem; }
+      .log-title small { color: #616e7c; font-weight: normal; }
+      .log { font: 0.8rem/1.5 ui-monospace, monospace; color: #3e4c59; max-height: 12rem; overflow-y: auto; margin: 0; }
     </style>
   </head>
   <body>
@@ -56,6 +59,8 @@
     <p class="status" id="status"></p>
     <p class="error" id="error"></p>
     <div class="board" id="board"></div>
+    <h2 class="log-title">Events <small id="changes"></small></h2>
+    <ol class="log" id="log" reversed></ol>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

@@ -15,16 +15,22 @@ Every slice's pull request updates it (SESSION §3).
   `cards(listId)`. Card ids are unique across the Board, list ids
   across the Lists; bad input throws and changes nothing. A property test runs random sequences of
   every Board operation from a populated Board against a nested-array model.
+- Board events: `on("move" | "change", listener)` returns an unsubscribe function. `move` carries
+  `{ kind, id, fromListId, toListId, prevId, nextId }` (DEC-11); `change` follows every change.
+  Nothing is emitted for a no-op or a throw; a throwing listener does not undo the change, and the
+  other listeners still run (the first error is rethrown).
 - The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
   adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
-  (showing "same place" when nothing changed), moves lists with ← →, and removes with ×.
+  (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
+  every `move` event and the `change` count.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
 title, size, frozen-files and secret checks.
 
 ## Modules
-- `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board` (`src/board.ts`).
+- `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`
+  (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
 - `playground/`: Vite page over `core`'s source; not published, outside coverage.
 
 ## Contract
@@ -34,11 +40,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L1.9:** Board events (`move`, `change`) over a small internal emitter; the
+  playground's event log.
+- **Next:** L1.10 (Snapshot).
 - **2026-11-22, L1.8:** `moveList`; the Board property test. A first version starting from an
   empty Board never reached a card moved before itself (its model was wrong there and still passed);
   runs now start from a populated Board with 20 to 60 weighted operations (measured: ~550 changing
   card moves, ~700 list moves, ~300 same-place moves per run of the suite).
-- **Next:** L1.9 (Board events).
 - **2026-11-22, L1.7:** `moveCard`; the naive remove-then-insert lost the card on a bad `before`
   (seen red), so every check now runs before the unlink. Playground move buttons and form; fixed a
   blank "to" select on first load (since L1.5).
