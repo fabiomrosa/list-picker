@@ -57,13 +57,13 @@ Every slice's pull request updates it (SESSION §3).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
-- The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
-  adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
-  (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
-  every `move` event and the `change` count. It renders from `snapshot()` and shows its version.
-  Its cards can be dragged within and across lists (it redraws after every Board change); a tall
-  Backlog list (14 cards, lists scroll past 22rem) and a board narrower than its lists (52rem) show
-  auto-scroll both ways. Lists are dragged by their titles.
+- The demo board (`playground/`, `npm run dev`) is drawn by `mount` with its own Renderers: each
+  card shows its neighbours and ↑ ↓ ← → × buttons, each list header (the drag handle) its card count
+  and ← → ×; positions are read at click time and the neighbours, counts and button states refresh
+  after every change. Forms add lists and cards at the end or before a chosen one and move cards
+  (showing "same place" when nothing changed); the page logs every `move` event, the `change`
+  count and the Snapshot version. A tall Backlog list (14 cards, lists scroll past 22rem) and a
+  board narrower than its lists (52rem) show auto-scroll both ways. Styles live in the demo only.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -72,7 +72,8 @@ title, size, frozen-files and secret checks.
 ## Modules
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
-- `playground/`: Vite page over `core`'s source; not published, outside coverage.
+- `playground/`: the demo board, a Vite page over the packages' source; not published, outside
+  coverage.
 - `packages/vanilla`: `createDrag` (`src/drag.ts`), `mount` (`src/mount.ts`); imports only types
   from `core`.
 - `bench/`: the array board, seeded move fixtures, their equivalence test, and the runner.
@@ -90,9 +91,11 @@ None yet.
   reconciles without error.
 
 ## Last session
+- **2026-11-23, L3.3:** the playground is the demo board, drawn by `mount`; the browser tests pass
+  unchanged. The owner's check of the demo in the browser is pending.
+- **Next:** L3.4 (trace); the owner checks the demo (`git pull && npm ci && npm run dev`).
 - **2026-11-23, L3.2:** `mount` follows the Board by id (one reconcile per microtask); each
   Renderer runs once per list or card, and a drop costs no DOM write.
-- **Next:** L3.3 (the demo board).
 - **2026-11-23, L3.1:** `mount` draws a Board from the user's Renderers into the DEC-13 markup and
   starts the drag; Renderers return an `HTMLElement` (the engine hides cards through `style`).
 - **2026-11-23, plan M3:** M3 split into L3.1–L3.4 in PLAN; DEC-14 accepted (`mount` builds the

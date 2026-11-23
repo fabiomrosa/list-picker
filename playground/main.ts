@@ -1,6 +1,7 @@
-// A hand-test page for @list-picker/core (`npm run dev`). Not published, not covered.
-import { Board, type Snapshot } from "../packages/core/src/index.ts";
-import { createDrag } from "../packages/vanilla/src/index.ts";
+// The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
+// not covered.
+import { Board } from "../packages/core/src/index.ts";
+import { mount } from "../packages/vanilla/src/index.ts";
 
 type Entity = { id: string };
 
@@ -23,21 +24,28 @@ function el(tag: string, className: string, text: string): HTMLElement {
   return element;
 }
 
-function action(text: string, title: string, onClick: () => void, disabled = false) {
+/** Runs a Board operation from the page, showing its error if it throws. */
+function attempt(act: () => void): boolean {
+  try {
+    act();
+    error.textContent = "";
+    return true;
+  } catch (e) {
+    error.textContent = (e as Error).message;
+    status.textContent = "";
+    return false;
+  } finally {
+    refresh();
+  }
+}
+
+/** A button that runs `act` when clicked; `role` lets `refresh` find it to enable or disable it. */
+function action(text: string, title: string, role: string, act: () => void): HTMLButtonElement {
   const button = el("button", "action", text) as HTMLButtonElement;
   button.type = "button";
-  button.disabled = disabled;
   button.title = title;
-  button.addEventListener("click", () => {
-    try {
-      onClick();
-      error.textContent = "";
-    } catch (e) {
-      error.textContent = (e as Error).message;
-      status.textContent = "";
-    }
-    render();
-  });
+  button.dataset.role = role;
+  button.addEventListener("click", () => attempt(act));
   return button;
 }
 
@@ -57,6 +65,70 @@ function move(id: string, toListId: string, beforeCardId: string | null): void {
     : `${id}: same place, nothing changed`;
 }
 
+const listIds = () => [...board.lists()].map((list) => list.id);
+const cardIds = (listId: string) => [...board.cards(listId)].map((card) => card.id);
+
+/** Where a list or a card is now, read at click time: Renderers run once, positions change. */
+function listAt(id: string) {
+  const ids = listIds();
+  const i = ids.indexOf(id);
+  return { left: ids[i - 1], right: ids[i + 1], afterRight: ids[i + 2] ?? null };
+}
+function cardAt(id: string) {
+  const listId = board.listOf(id)?.id as string;
+  const ids = cardIds(listId);
+  const i = ids.indexOf(id);
+  const lists = listAt(listId);
+  return { listId, up: ids[i - 1], down: ids[i + 1], afterDown: ids[i + 2] ?? null, ...lists };
+}
+
+function renderList(list: Entity): HTMLElement {
+  const head = el("header", "list-head", "");
+  const tools = el("div", "list-tools", "");
+  tools.append(
+    action("←", `move list ${list.id} left`, "left", () => {
+      const { left } = listAt(list.id);
+      if (left) moveList(list.id, left);
+    }),
+    action("→", `move list ${list.id} right`, "right", () =>
+      moveList(list.id, listAt(list.id).afterRight),
+    ),
+    action("×", `remove list ${list.id}`, "remove", () => board.removeList(list.id)),
+  );
+  head.append(
+    Object.assign(el("h2", "", list.id), { title: `drag to move ${list.id}` }),
+    Object.assign(el("small", "", ""), { className: "count" }),
+    tools,
+  );
+  return head;
+}
+
+function renderCard(card: Entity): HTMLElement {
+  const box = el("div", "card", "");
+  const tools = el("div", "tools", "");
+  tools.append(
+    action("↑", `move ${card.id} up`, "up", () => {
+      const { listId, up } = cardAt(card.id);
+      if (up) move(card.id, listId, up);
+    }),
+    action("↓", `move ${card.id} down`, "down", () => {
+      const { listId, afterDown } = cardAt(card.id);
+      move(card.id, listId, afterDown);
+    }),
+    action("←", `move ${card.id} left`, "left", () => {
+      const { left } = cardAt(card.id);
+      if (left) move(card.id, left, null);
+    }),
+    action("→", `move ${card.id} right`, "right", () => {
+      const { right } = cardAt(card.id);
+      if (right) move(card.id, right, null);
+    }),
+    action("×", `remove card ${card.id}`, "remove", () => board.removeCard(card.id)),
+  );
+  box.append(el("strong", "", card.id), el("small", "neighbours", ""), tools);
+  return box;
+}
+
 /** Refills a select with "(end)" or `empty`, then `ids`, keeping the choice when it still exists. */
 function fill(select: HTMLSelectElement, ids: string[], empty: string | null): void {
   const selected = select.value;
@@ -65,100 +137,53 @@ function fill(select: HTMLSelectElement, ids: string[], empty: string | null): v
   if (ids.includes(selected) || (selected === "" && empty !== null)) select.value = selected;
 }
 
-let lastSnapshot: Snapshot<Entity, Entity> | undefined;
+let lastSnapshot: unknown;
 let version = 0;
 
-/** Draws the Board from its Snapshot, as a framework adapter would. */
-function render(): void {
-  boardView.replaceChildren();
+/**
+ * Updates what depends on position (neighbours, counts, which buttons apply) and the forms; the
+ * elements themselves are kept and ordered by `mount`.
+ */
+function refresh(): void {
   const snapshot = board.snapshot();
   if (snapshot !== lastSnapshot) {
     lastSnapshot = snapshot;
     version++;
   }
   snapshotView.textContent = `snapshot v${version}`;
-  const cardsOf = new Map(snapshot.lists.map(({ list, cards }) => [list.id, cards]));
-  const idsIn = (listId: string) => (cardsOf.get(listId) ?? []).map((card) => card.id);
-  const listIds = snapshot.lists.map(({ list }) => list.id);
-  listIds.forEach((listId, li) => {
-    const column = el("section", "list", "");
-    column.dataset.lpList = listId;
-    const cards = cardsOf.get(listId) ?? [];
-    const header = el("div", "list-tools", "");
-    const left = listIds[li - 1];
-    const afterNext = listIds[li + 2] ?? null;
-    header.append(
-      action("←", `move list ${listId} left`, () => left && moveList(listId, left), !left),
-      action(
-        "→",
-        `move list ${listId} right`,
-        () => moveList(listId, afterNext),
-        li === listIds.length - 1,
-      ),
-      action("×", `remove list ${listId}`, () => board.removeList(listId)),
-    );
-    column.append(
-      header,
-      Object.assign(el("h2", "", listId), { title: `drag to move ${listId}` }),
-      el("small", "", `${cards.length} ${cards.length === 1 ? "card" : "cards"}`),
-    );
-    (column.querySelector("h2") as HTMLElement).dataset.lpListHandle = "";
-    const stack = el("div", "cards", "");
-    stack.dataset.lpCards = listId;
-    cards.forEach((card, i) => {
-      const box = el("div", "card", "");
-      box.dataset.lpCard = card.id;
-      box.append(
-        el("strong", "", card.id),
-        el(
-          "small",
-          "",
-          `prev: ${cards[i - 1]?.id ?? "null"} · next: ${cards[i + 1]?.id ?? "null"}`,
-        ),
-      );
-      const tools = el("div", "tools", "");
-      const prevList = listIds[li - 1];
-      const nextList = listIds[li + 1];
-      const up = cards[i - 1];
-      tools.append(
-        action("↑", `move ${card.id} up`, () => up && move(card.id, listId, up.id), !up),
-        action(
-          "↓",
-          `move ${card.id} down`,
-          () => move(card.id, listId, cards[i + 2]?.id ?? null),
-          i === cards.length - 1,
-        ),
-        action(
-          "←",
-          `move ${card.id} left`,
-          () => prevList && move(card.id, prevList, null),
-          !prevList,
-        ),
-        action(
-          "→",
-          `move ${card.id} right`,
-          () => nextList && move(card.id, nextList, null),
-          !nextList,
-        ),
-        action("×", `remove card ${card.id}`, () => board.removeCard(card.id)),
-      );
-      box.append(tools);
-      stack.append(box);
-    });
-    column.append(stack);
-    boardView.append(column);
-  });
-  fill(field(listForm, "before"), listIds, "(end)");
+  const button = (scope: Element, role: string) =>
+    scope.querySelector(`[data-role="${role}"]`) as HTMLButtonElement;
+  for (const head of boardView.querySelectorAll<HTMLElement>("[data-lp-list-handle]")) {
+    const id = head.closest("[data-lp-list]")?.getAttribute("data-lp-list") as string;
+    // Removed from the Board, not yet from the DOM: `mount` reconciles a microtask later.
+    if (!board.getList(id)) continue;
+    const count = cardIds(id).length;
+    (head.querySelector(".count") as HTMLElement).textContent =
+      `${count} ${count === 1 ? "card" : "cards"}`;
+    const at = listAt(id);
+    button(head, "left").disabled = !at.left;
+    button(head, "right").disabled = !at.right;
+  }
+  for (const box of boardView.querySelectorAll<HTMLElement>("[data-lp-card]")) {
+    const id = box.getAttribute("data-lp-card") as string;
+    if (!board.getCard(id)) continue;
+    const at = cardAt(id);
+    (box.querySelector(".neighbours") as HTMLElement).textContent =
+      `prev: ${at.up ?? "null"} · next: ${at.down ?? "null"}`;
+    button(box, "up").disabled = !at.up;
+    button(box, "down").disabled = !at.down;
+    button(box, "left").disabled = !at.left;
+    button(box, "right").disabled = !at.right;
+  }
+  const lists = listIds();
+  fill(field(listForm, "before"), lists, "(end)");
   const target = field<HTMLSelectElement>(cardForm, "list");
-  fill(target, listIds, null);
-  const cardIds = idsIn(target.value);
-  fill(field(cardForm, "before"), cardIds, "(end)");
-  const allCards = listIds.flatMap(idsIn);
-  fill(field(moveForm, "card"), allCards, null);
+  fill(target, lists, null);
+  fill(field(cardForm, "before"), target.value ? cardIds(target.value) : [], "(end)");
+  fill(field(moveForm, "card"), lists.flatMap(cardIds), null);
   const moveTo = field<HTMLSelectElement>(moveForm, "list");
-  fill(moveTo, listIds, null);
-  const moveBefore = idsIn(moveTo.value);
-  fill(field(moveForm, "before"), moveBefore, "(end)");
+  fill(moveTo, lists, null);
+  fill(field(moveForm, "before"), moveTo.value ? cardIds(moveTo.value) : [], "(end)");
 }
 
 function submit(form: HTMLFormElement, act: (id: string) => void): void {
@@ -166,16 +191,7 @@ function submit(form: HTMLFormElement, act: (id: string) => void): void {
     event.preventDefault();
     const input = field<HTMLInputElement>(form, "id");
     const id = input.value.trim();
-    if (!id) return;
-    try {
-      act(id);
-      error.textContent = "";
-      input.value = "";
-    } catch (e) {
-      error.textContent = (e as Error).message;
-      status.textContent = "";
-    }
-    render();
+    if (id && attempt(() => act(id))) input.value = "";
   });
 }
 
@@ -189,24 +205,19 @@ submit(cardForm, (id) =>
     field<HTMLSelectElement>(cardForm, "before").value || null,
   ),
 );
-field<HTMLSelectElement>(cardForm, "list").addEventListener("change", render);
-field<HTMLSelectElement>(moveForm, "list").addEventListener("change", render);
+field<HTMLSelectElement>(cardForm, "list").addEventListener("change", refresh);
+field<HTMLSelectElement>(moveForm, "list").addEventListener("change", refresh);
 moveForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const card = field<HTMLSelectElement>(moveForm, "card").value;
   if (!card) return;
-  try {
+  attempt(() =>
     move(
       card,
       field<HTMLSelectElement>(moveForm, "list").value,
       field<HTMLSelectElement>(moveForm, "before").value || null,
-    );
-    error.textContent = "";
-  } catch (e) {
-    error.textContent = (e as Error).message;
-    status.textContent = "";
-  }
-  render();
+    ),
+  );
 });
 
 const log = byId<HTMLOListElement>("log");
@@ -226,16 +237,15 @@ board.addCard("Doing", { id: "Linked list" }, null);
 // A tall, scrolling list to try auto-scroll on.
 board.addList({ id: "Backlog" }, null);
 for (let i = 1; i <= 14; i++) board.addCard("Backlog", { id: `Idea ${i}` }, null);
-render();
-// Drops change the Board outside the buttons' handlers: redraw after every change, once the
-// engine has finished (a microtask later).
-let redraw = false;
+mount(boardView, board, { renderList, renderCard });
+refresh();
+// After every change (a drop too), once `mount` has reconciled (its microtask runs first).
+let queued = false;
 board.on("change", () => {
-  if (redraw) return;
-  redraw = true;
+  if (queued) return;
+  queued = true;
   queueMicrotask(() => {
-    redraw = false;
-    render();
+    queued = false;
+    refresh();
   });
 });
-createDrag(boardView, board);
