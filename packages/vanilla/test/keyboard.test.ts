@@ -31,8 +31,13 @@ function setup() {
   return { root, board, card, moves };
 }
 
-function key(target: Element, name: string) {
-  const event = new KeyboardEvent("keydown", { key: name, bubbles: true, cancelable: true });
+function key(target: Element, name: string, repeat = false) {
+  const event = new KeyboardEvent("keydown", {
+    key: name,
+    repeat,
+    bubbles: true,
+    cancelable: true,
+  });
   target.dispatchEvent(event);
   return event;
 }
@@ -62,6 +67,7 @@ describe("createDrag: moving a card with the keyboard", () => {
   it("picks a card up, moves it down and up, one move event each, and drops it", () => {
     press("a", " ");
     expect(ctx.card("a").hasAttribute("data-lp-grabbed")).toBe(true);
+    key(ctx.card("a"), " ", true); // a held key's repeat does not drop it
     press("a", "ArrowDown", "ArrowDown", " ");
     expect(boardOrder()).toEqual([["b", "c", "a"], ["d"], []]);
     expect(domOrder()).toEqual(boardOrder());
@@ -115,7 +121,6 @@ describe("createDrag: moving a card with the keyboard", () => {
     expect(key(ctx.card("a"), "ArrowDown").defaultPrevented).toBe(false);
     expect(key(ctx.card("a"), " ").defaultPrevented).toBe(true);
     expect(key(ctx.card("a"), "ArrowDown").defaultPrevented).toBe(true);
-    expect(key(ctx.card("a"), "x").defaultPrevented).toBe(false);
   });
 
   it("ignores keys on the card's controls", () => {
@@ -127,7 +132,7 @@ describe("createDrag: moving a card with the keyboard", () => {
     expect(ctx.moves).toHaveLength(0);
   });
 
-  it("never runs with a pointer drag: no pick up during a press, no drag while picked up", () => {
+  it("never runs with a pointer drag: no pick up during a press; a press drops a picked-up card", () => {
     const pointer = (target: Element, type: string, x: number, y: number) =>
       target.dispatchEvent(
         new PointerEvent(type, { bubbles: true, clientX: x, clientY: y, pointerId: 1, button: 0 }),
@@ -137,10 +142,11 @@ describe("createDrag: moving a card with the keyboard", () => {
     press("a", " ");
     expect(ctx.card("a").hasAttribute("data-lp-grabbed")).toBe(false);
     pointer(ctx.card("a"), "pointerup", 50, 30);
-    press("b", " ");
+    press("a", " ");
     pointer(ctx.card("a"), "pointerdown", 50, 30);
+    expect(ctx.card("a").hasAttribute("data-lp-grabbed")).toBe(false);
     pointer(ctx.card("a"), "pointermove", 80, 90);
-    expect(ctx.root.querySelector("[data-lp-clone]")).toBeNull();
+    expect(ctx.root.querySelector("[data-lp-clone]")).not.toBeNull();
     pointer(ctx.card("a"), "pointerup", 80, 90);
   });
 

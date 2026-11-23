@@ -4,8 +4,8 @@ import { landed } from "./landed.ts";
 /** The engine's keyboard moving; `destroy()` removes its listeners. */
 export interface Keyboard {
   destroy(): void;
-  /** The card picked up, if any. */
-  grabbed(): HTMLElement | undefined;
+  /** Drops the picked-up card, if any, where it is (a pointer press takes over). */
+  drop(): void;
 }
 
 /** A picked-up card, and where it was picked up: its list container and the card after it. */
@@ -41,17 +41,13 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   /** Set while the card's own element moves: leaving the document may blur it. */
   let moving = false;
 
-  /** The grab, dropped first if its card has left the document (removed by other code). */
-  function current(): Grab | undefined {
-    if (grab && !grab.item.isConnected) release();
-    return grab;
-  }
-
   function onKeyDown(event: KeyboardEvent): void {
     const item = event.target;
     // Only on the card itself: its controls keep their keys.
     if (!(item instanceof HTMLElement) || !item.hasAttribute(CARD) || !root.contains(item)) return;
-    const held = current();
+    if (event.repeat && (event.key === " " || event.key === "Enter")) return;
+    if (!grab?.item.isConnected) release(); // its card removed by other code
+    const held = grab;
     if (!held) {
       if (event.key !== " " && event.key !== "Enter") return;
       if (pointerBusy() || !item.parentElement?.hasAttribute(CARDS)) return;
@@ -153,6 +149,6 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       release();
       root.removeEventListener("keydown", onKeyDown);
     },
-    grabbed: () => current()?.item,
+    drop: release,
   };
 }

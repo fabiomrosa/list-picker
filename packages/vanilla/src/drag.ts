@@ -93,7 +93,6 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
 ): MountedDrag {
   let press: Press | undefined;
   let active: Active | undefined;
-  // A pointer drag and a keyboard move never run at once.
   const keyboard = createKeyboard(root, board, () => press !== undefined);
   /** The latest pointer position; read once per animation frame. */
   let pointerAt = { x: 0, y: 0 };
@@ -114,7 +113,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   function onPointerDown(event: PointerEvent): void {
-    if (keyboard.grabbed()) return;
+    keyboard.drop(); // a pointer drag and a keyboard move never run at once
     if (press || event.button !== 0 || !(event.target instanceof Element)) return;
     const what = pressed(event.target);
     if (!what) return;

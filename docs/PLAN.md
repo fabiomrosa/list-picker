@@ -655,5 +655,6 @@ Ideas not planned yet; a milestone's planning picks from here.
 - A grab-side state attribute so the user can tilt the Clone (list-picker-js).
 - Fractional ranks (LexoRank-like) computed from a move event, as a helper for persistence.
 - Virtualised Lists for very long boards.
+- `mount` keeps the focus and keyboard grab of a card its writes move (Chrome blurs it; L4.2).
 - Esc during a drag also reaches the page's other Esc handlers (a dialog around the board would
   close too); stopping it needs a capture-phase listener (L2.5 review).
