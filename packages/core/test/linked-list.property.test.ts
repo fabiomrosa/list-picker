@@ -33,8 +33,14 @@ function applyToArray(model: string[], o: Op): boolean {
 
 function applyToList(list: LinkedList<Item>, o: Op): boolean {
   try {
-    if (o.kind === "remove") list.remove(o.id);
-    else list.insertBefore({ id: o.id }, o.before);
+    if (o.kind === "remove") {
+      const node = list.get(o.id);
+      expect(list.remove(o.id).id).toBe(o.id);
+      expect(node?.prev ?? null).toBeNull();
+      expect(node?.next ?? null).toBeNull();
+    } else {
+      list.insertBefore({ id: o.id }, o.before);
+    }
     return true;
   } catch {
     return false;
@@ -58,6 +64,7 @@ function expectInvariants(list: LinkedList<Item>, model: string[]): void {
     expect(node?.prev?.value.id ?? null).toBe(order[i - 1] ?? null);
     expect(node?.next?.value.id ?? null).toBe(order[i + 1] ?? null);
     if (node?.next) expect(node.next.prev).toBe(node);
+    if (node?.prev) expect(node.prev.next).toBe(node);
   });
 }
 
