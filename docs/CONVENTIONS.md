@@ -42,7 +42,7 @@ packages/<name>/
 | A model operation | the `core` public API | `packages/core/test/<thing>.test.ts`, `it('<does what> when <case>')` |
 | A model invariant | the `core` public API, random operation sequences | property test beside the unit tests |
 | An engine behaviour | the engine with `happy-dom` and synthetic pointer events | `packages/vanilla/test/<thing>.test.ts` |
-| A real drag | the demo page in Playwright | `e2e/<flow>.spec.ts` (from M2) |
+| A real drag | the demo page in Playwright | `e2e/<flow>.e2e.ts` (from M2) |
 
 **Property tests** assert that they reached their interesting outcomes (a minimum count of each),
 so a weak generator fails instead of passing blind.
