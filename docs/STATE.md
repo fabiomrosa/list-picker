@@ -72,9 +72,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, plan M3:** M3 split into L3.1–L3.4 in PLAN; DEC-14 accepted (`mount` builds the
+  containers and follows the Board by id); the layout claim gets a recorded trace (decision 0002).
+  The five M2 retro proposals landed (#31–#34); STATE's known flake is fixed.
+- **Next:** L3.1 (mount a Board).
 - **2026-11-23, close M2:** every M2 slice landed as planned (L2.1–L2.8, PRs #21–#28, plus the
   hotfix #29). Five retro proposals are open for the owner.
-- **Next:** plan M3 (vanilla adapter and demo).
 - **2026-11-23, hotfix (owner report):** a card's Placeholder copied the card's width, so it was
   too wide in a list with a scrollbar and too narrow coming from one. It now takes only the card's
   height (lists keep both). Browser tests now run with real scrollbars.

@@ -45,21 +45,27 @@ becomes draggable at L2.4.
 |---|---|
 | `list-picker` | L2.1 → L2.2 → L2.3 → L2.4 → L2.5 → L2.6 → L2.7 → L2.8 |
 
+## M3 · Vanilla adapter and demo
+`mount(root, board, { renderList, renderCard })` draws a Board from the user's Renderers into the
+DEC-13 containers, starts the drag engine and follows Board changes by id (DEC-14); the playground
+becomes the demo board; a recorded trace shows no forced layout per pointer move (decision 0002).
+
+| Repository | Slices |
+|---|---|
+| `list-picker` | L3.1 → L3.2 → L3.3 → L3.4 |
+
 ## Prerequisites (only the owner can do these)
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
 - **P2** · The npm account and package names (DEC-12). Needed by the first publish (M4).
 
 ## Later milestones (split when they start)
-- **M3 · Vanilla adapter and demo.** Mount a Board into a container with the user's Renderers,
-  update on core events, destroy (every listener removed). The playground becomes the demo board,
-  and a trace shows no forced layout per pointer move.
 - **M4 · v1 release.** Keyboard dragging and ARIA live announcements, the docs, the lab write-up,
   the first npm publish.
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-M3 next: "plan M3".
+L3.1 to L3.4 in order; the owner checks the demo at L3.3.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |

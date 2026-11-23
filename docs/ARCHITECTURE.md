@@ -23,7 +23,7 @@ Exact versions are pinned in the root `package.json`.
 | Package | Owns | May depend on |
 |---|---|---|
 | `packages/core` | The doubly linked list and its Index, the Board, Move, the event emitter, the Snapshot. No DOM. | nothing |
-| `packages/vanilla` | The drag engine over the user's markup (`createDrag`, M2: pointer handling, Clone, Placeholder, hit-testing, auto-scroll; DEC-13) and the vanilla mount (containers, the user's Renderers, M3) | `core` |
+| `packages/vanilla` | The drag engine over the user's markup (`createDrag`, M2: pointer handling, Clone, Placeholder, hit-testing, auto-scroll; DEC-13) and the vanilla mount (`mount`, M3: containers, the user's Renderers, updates by id; DEC-14) | `core` |
 | `playground/` (L1.1) | A local page that draws the model and exercises it by hand; not a package, never published | `core` (source) |
 | `packages/react` (M5) | Hook and components over `core` and the engine | `core`, `vanilla`'s engine |
 | `packages/angular` (M6) | Directive and components over `core` and the engine | `core`, `vanilla`'s engine |
