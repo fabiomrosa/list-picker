@@ -35,6 +35,7 @@ When the shape of that interface is itself in question, the project's `docs/ARCH
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
 - **Refactoring is not part of the loop.** It belongs to the review stage (the project's `list-picker-code-review` skill), not the red → green implementation cycle.
 - **Every red is seen.** Run the new test and watch it fail for the expected reason before writing the code; that is the proof SESSION §3.2 asks for.
+- **Break code safely.** Before breaking code on purpose to see a test fail, commit (or copy the file to the scratchpad); restore from that, never with `git checkout <file>`, which also wipes uncommitted work.
 
 ## Common rationalizations
 
