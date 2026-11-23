@@ -51,7 +51,7 @@ Every slice's pull request updates it (SESSION §3).
   of 2." The label is the item's `aria-label`, else its text (which runs block contents together:
   "Designthe model"), else its id (a list's from its handle); the position comes from the Board. `createDrag(root, board, { messages })` and
   `mount(..., { messages })` replace any of `pickUp`, `move`, `drop`, `cancel` (types `Messages`,
-  `Announcement`, `DragOptions`).
+  `Announcement` `{ kind, label, listLabel, position, count }`, `DragOptions`).
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
   it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
   element (marked `data-lp-list-handle`, focusable like each card) and a `div[data-lp-cards]` of the card Renderer's elements
@@ -102,6 +102,12 @@ title, size, frozen-files and secret checks.
 - `bench/`: the array board, seeded move fixtures, their equivalence test, the runner, and the drag
   trace (`drag-trace.ts`).
 
+## Packaging
+- Each package has a README (install, a complete example, the API; vanilla's also the `data-lp-*`
+  hooks, the keys and the announcements), the MIT `LICENSE`, and `description`, `license`,
+  `repository`, `keywords`, `sideEffects: false`; `npm pack --dry-run` lists only `dist`, the
+  README, the license and `package.json`. Both are still `private`, version `0.0.0` (L4.7).
+
 ## Contract
 None yet.
 
@@ -109,9 +115,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.5:** READMEs, MIT license and npm metadata for both packages; every README
+  example was run in Chrome once. The owner left P3 and the API names to the agent:
+  `Announcement.list` is now `listLabel`.
+- **Next:** L4.6 (the lab write-up in the root README).
 - **2026-11-23, L4.4:** live announcements for drags and keyboard moves, English by default,
   replaceable with `messages` (public API, additive); the demo labels cards and lists.
-- **Next:** L4.5 (package READMEs and metadata; needs the owner's license choice, P3).
 - **2026-11-23, L4.3:** lists move with the keyboard by their handle (← →, Esc back), through
   the same keyboard code as cards; `mount` makes handles focusable.
 - **2026-11-23, L4.2:** cards move with the keyboard, in `createDrag`; `mount` makes cards

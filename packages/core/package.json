@@ -1,8 +1,24 @@
 {
   "name": "@list-picker/core",
   "version": "0.0.0",
+  "description": "The model of a kanban-style board: ordered lists of ordered cards, as doubly linked lists.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabiomrosa/list-picker.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "kanban",
+    "board",
+    "linked-list",
+    "list",
+    "cards",
+    "reorder"
+  ],
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

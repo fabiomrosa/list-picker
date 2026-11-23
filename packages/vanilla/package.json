@@ -1,8 +1,25 @@
 {
   "name": "@list-picker/vanilla",
   "version": "0.0.0",
+  "description": "Drag-and-drop and keyboard reordering for a kanban-style board, headless, no framework.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabiomrosa/list-picker.git",
+    "directory": "packages/vanilla"
+  },
+  "keywords": [
+    "kanban",
+    "board",
+    "drag-and-drop",
+    "sortable",
+    "keyboard",
+    "accessibility",
+    "headless"
+  ],
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
