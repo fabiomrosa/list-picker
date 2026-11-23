@@ -74,12 +74,14 @@ None yet.
   no counterexample. A timeout set for property tests would remove the flake.
 
 ## Last session
+- **2026-11-23, close M2:** every M2 slice landed as planned (L2.1–L2.8, PRs #21–#28, plus the
+  hotfix #29). Five retro proposals are open for the owner.
+- **Next:** plan M3 (vanilla adapter and demo).
 - **2026-11-23, hotfix (owner report):** a card's Placeholder copied the card's width, so it was
   too wide in a list with a scrollbar and too narrow coming from one. It now takes only the card's
   height (lists keep both). Browser tests now run with real scrollbars.
 - **2026-11-23, L2.8:** dragging lists by a handle (one engine, two kinds: card and list); every
   M2 slice is done.
-- **Next:** the owner checks the drag in the browser, then "close M2".
 - **2026-11-23, L2.7:** auto-scroll; edges clipped to the window, found while checking in Chrome.
 - **2026-11-23, L2.6:** Playwright browser tests in the gate, with the installed Chrome.
 - **2026-11-23, L2.5:** Esc cancels a drag (`keydown` only during one).

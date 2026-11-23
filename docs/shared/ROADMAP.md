@@ -34,7 +34,7 @@ the model and grows with every slice; the owner checks it in the browser at the 
 |---|---|
 | `list-picker` | L1.1 → L1.2 → L1.3 → (L1.4 ∥ L1.5 → L1.6 → L1.7) → L1.8 → L1.9 → L1.10 → L1.11 |
 
-## M2 · Drag engine
+## M2 · Drag engine · done (2026-11-23)
 `@list-picker/vanilla`'s drag engine over the user's markup (DEC-10, DEC-13): pointer down and
 threshold, the Clone moved with `transform` in `requestAnimationFrame`, the Placeholder before or
 after the card under the pointer or at the end of a list, drop into `Board.moveCard`, Esc and
@@ -59,7 +59,7 @@ becomes draggable at L2.4.
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-L2.1 to L2.8 in order; the owner checks the drag in the browser after L2.4 and at the end of M2.
+M3 next: "plan M3".
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |
