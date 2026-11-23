@@ -46,7 +46,10 @@ Every slice's pull request updates it (SESSION §3).
   (each marked `data-lp-card`), then starts `createDrag`. Every Renderer runs and is checked first: a
   missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
   document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
-  added. It draws once: Board changes made in code are not followed yet (L3.2).
+  added. It follows the Board by id: after each `change` (in a microtask, so a drop's own DOM
+  write comes first; several changes reconcile once) it renders only new lists and cards, removes
+  the gone ones, and moves out-of-place elements into Board order, leaving the user's other
+  children of `root`, the Clone and the Placeholder where they are. After a drop it writes nothing.
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll, a list by its title; a click changes nothing.
@@ -80,9 +83,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L3.2:** `mount` follows the Board by id (one reconcile per microtask); each
+  Renderer runs once per list or card, and a drop costs no DOM write.
+- **Next:** L3.3 (the demo board).
 - **2026-11-23, L3.1:** `mount` draws a Board from the user's Renderers into the DEC-13 markup and
   starts the drag; Renderers return an `HTMLElement` (the engine hides cards through `style`).
-- **Next:** L3.2 (follow the Board by id).
 - **2026-11-23, plan M3:** M3 split into L3.1–L3.4 in PLAN; DEC-14 accepted (`mount` builds the
   containers and follows the Board by id); the layout claim gets a recorded trace (decision 0002).
   The five M2 retro proposals landed (#31–#34); STATE's known flake is fixed.

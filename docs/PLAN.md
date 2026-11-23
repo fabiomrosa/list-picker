@@ -445,7 +445,7 @@ the browser tests.
 - **References:** DEC-07, DEC-13, DEC-14; ARCHITECTURE "Configuration".
 
 ### L3.2 · Follow the Board by id
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** changes made in code (add, remove, move) show up without redrawing what did not change.
 - **Depends on:** L3.1.
 - **In scope:** on each `change`, reconcile `root` against the Snapshot by id: keep each list's and
@@ -465,7 +465,7 @@ the browser tests.
 - **References:** DEC-14.
 
 ### L3.3 · The demo board
-- **Status:** waiting (L3.2)
+- **Status:** next
 - **Goal:** the playground becomes the demo: a board drawn by `mount` with the demo's own Renderers.
 - **Depends on:** L3.2.
 - **In scope:** `playground/main.ts` renders through `mount` (its own drawing code goes); its
