@@ -185,3 +185,106 @@ describe("createDrag: the Clone follows the pointer", () => {
     expect(cancel).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("createDrag: the Placeholder follows the drop target", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const placeholder = () => document.querySelector("[data-lp-placeholder]") as HTMLElement;
+  const list = (id: string) => ctx.root.querySelector(`[data-lp-cards="${id}"]`) as HTMLElement;
+  /** Order of a list's children, by card id, "_" for the Placeholder, hidden card skipped. */
+  const order = (id: string) =>
+    [...list(id).children]
+      .filter((el) => (el as HTMLElement).style.display !== "none")
+      .map((el) =>
+        el.hasAttribute("data-lp-placeholder") ? "_" : el.getAttribute("data-lp-card"),
+      );
+
+  beforeEach(() => {
+    ctx = setup();
+    // Card b spans y 100–140; the engine asks what is under the pointer.
+    ctx.card("b").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    under = null;
+    document.elementFromPoint = () => under;
+    drag = createDrag(ctx.root, ctx.board);
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+  });
+  afterEach(() => drag.destroy());
+
+  async function moveTo(target: Element | null, y: number, from: Element = ctx.card("a")) {
+    under = target;
+    pointer(from, "pointermove", 60, y);
+    await frame();
+  }
+
+  it("goes before a card above its middle and after it below", async () => {
+    await moveTo(ctx.card("b"), 130);
+    expect(order("todo")).toEqual(["b", "_"]);
+    await moveTo(ctx.card("b"), 110);
+    expect(order("todo")).toEqual(["_", "b"]);
+  });
+
+  it("goes to the end of an empty list, or below the last card", async () => {
+    await moveTo(list("done"), 300);
+    expect(order("done")).toEqual(["_"]);
+    expect(order("todo")).toEqual(["b"]);
+    await moveTo(list("todo"), 300);
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
+  it("follows the nearest card's middle across the gaps between cards", async () => {
+    // The pointer is over the list itself (a gap), above card b's middle (120).
+    await moveTo(list("todo"), 95);
+    expect(order("todo")).toEqual(["_", "b"]);
+    await moveTo(list("todo"), 145);
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
+  it("does not write the DOM while the place is unchanged, nor outside every list", async () => {
+    const writes: MutationRecord[] = [];
+    const observer = new MutationObserver((records) => writes.push(...records));
+    observer.observe(ctx.root, { childList: true, subtree: true });
+    const settle = () => new Promise((resolve) => setTimeout(resolve));
+    // Already before b, with the hidden dragged card in between: no write.
+    await moveTo(ctx.card("b"), 105);
+    await moveTo(placeholder(), 60);
+    await settle();
+    expect(writes).toEqual([]);
+    // A real change is seen (the observer works)...
+    await moveTo(ctx.card("b"), 130);
+    await settle();
+    expect(writes.length).toBeGreaterThan(0);
+    writes.length = 0;
+    // ...then nothing outside the lists, or for a pointer still past b's middle.
+    await moveTo(ctx.root, 500);
+    await moveTo(null, 500);
+    await moveTo(ctx.card("b"), 131);
+    await settle();
+    observer.disconnect();
+    expect(writes).toEqual([]);
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
+  it("does not rewrite the end of a list that is also the root holding the Clone", async () => {
+    drag.destroy();
+    const solo = list("done");
+    solo.innerHTML = '<li data-lp-card="x">X</li><li data-lp-card="y">Y</li>';
+    const x = solo.querySelector("[data-lp-card=x]") as HTMLElement;
+    x.getBoundingClientRect = () => new DOMRect(0, 0, 100, 20);
+    (solo.querySelector("[data-lp-card=y]") as HTMLElement).getBoundingClientRect = () =>
+      new DOMRect(0, 30, 100, 20);
+    drag = createDrag(solo, ctx.board);
+    pointer(x, "pointerdown", 5, 5);
+    pointer(x, "pointermove", 5, 15);
+    await moveTo(solo, 200, x);
+    const writes: MutationRecord[] = [];
+    const observer = new MutationObserver((records) => writes.push(...records));
+    observer.observe(solo, { childList: true });
+    await moveTo(solo, 210, x);
+    await new Promise((resolve) => setTimeout(resolve));
+    observer.disconnect();
+    expect(writes).toEqual([]);
+  });
+});
