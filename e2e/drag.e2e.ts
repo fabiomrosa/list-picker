@@ -91,6 +91,40 @@ test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
   await expect.poll(async () => (await lists(page)).Backlog?.at(-1)).toBe("Linked list");
 });
 
+test("auto-scrolls a tall list upward, steadily, to drop a card at its top", async ({ page }) => {
+  const backlog = cardsOf(page, "Backlog");
+  await page.locator("#board").evaluate((board) => {
+    board.scrollLeft = board.scrollWidth;
+  });
+  await backlog.evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+  });
+  const box = await backlog.boundingBox();
+  const from = await card(page, "Idea 14").locator("strong").boundingBox();
+  if (!box || !from) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 });
+  // Record the list's scroll offset every frame while the pointer rests near its top edge.
+  await backlog.evaluate((el) => {
+    const offsets: number[] = [];
+    (window as unknown as { offsets: number[] }).offsets = offsets;
+    const record = () => {
+      offsets.push(el.scrollTop);
+      if (el.scrollTop > 0) requestAnimationFrame(record);
+    };
+    requestAnimationFrame(record);
+  });
+  await page.mouse.move(box.x + box.width / 2, box.y + 8, { steps: 4 });
+  await expect.poll(() => backlog.evaluate((el) => el.scrollTop)).toBe(0);
+  const offsets = await page.evaluate(() => (window as unknown as { offsets: number[] }).offsets);
+  // Never pushed back down (scroll anchoring once did that every few frames).
+  expect(offsets.every((top, i) => i === 0 || top <= (offsets[i - 1] as number))).toBe(true);
+  await page.mouse.move(box.x + box.width / 2, box.y + 6);
+  await page.mouse.up();
+  await expect.poll(async () => (await lists(page)).Backlog?.[0]).toBe("Idea 14");
+});
+
 test("drags a list by its title to after the next list", async ({ page }) => {
   const order = () =>
     page

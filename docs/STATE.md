@@ -53,7 +53,8 @@ Every slice's pull request updates it (SESSION §3).
   children of `root`, the Clone and the Placeholder where they are. After a drop it writes nothing.
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
-  auto-scroll, a list by its title; a click changes nothing.
+  auto-scroll (downward, and upward without ever being pushed back), a list by its title; a click
+  changes nothing.
 - `npm run trace` drags cards and a list on the demo in Chrome with a performance trace and counts
   forced layouts by where they ran; the result is in `docs/decisions/0002-drag-layout-trace.md`
   (none in `pointermove`; one per auto-scroll frame, and at most one in a drag's first frame).
