@@ -44,8 +44,14 @@ packages/<name>/
 | An engine behaviour | the engine with `happy-dom` and synthetic pointer events | `packages/vanilla/test/<thing>.test.ts` |
 | A real drag | the demo page in Playwright | `e2e/<flow>.e2e.ts` (from M2) |
 
+**Browser tests** run with the browser's user-facing defaults (scrollbars, viewport, motion); a
+test that changes one says why in a comment.
+
 **Property tests** assert that they reached their interesting outcomes (a minimum count of each),
 so a weak generator fails instead of passing blind.
+They set an explicit Vitest timeout (60 s) and fast-check's `interruptAfterTimeLimit` (50 s, with
+`markInterruptAsFailure`), so a loaded machine does not flake them and a failure stops shrinking in
+time to be reported.
 
 **Benchmarks** build their fixtures outside the timing, warm up each side, alternate which side runs
 first, and report a median; a decision record states the method next to the numbers.
