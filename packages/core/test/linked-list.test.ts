@@ -106,3 +106,56 @@ describe("LinkedList", () => {
     });
   });
 });
+
+describe("LinkedList.remove", () => {
+  const list3 = () => {
+    const list = new LinkedList<Item>();
+    for (const id of ["a", "b", "c"]) list.insertBefore({ id }, null);
+    return list;
+  };
+  const links = (list: LinkedList<Item>) =>
+    [...list].map((item) => {
+      const node = list.get(item.id);
+      return `${node?.prev?.value.id ?? "-"}<${item.id}>${node?.next?.value.id ?? "-"}`;
+    });
+
+  it("leaves an empty list after removing the only node", () => {
+    const list = new LinkedList<Item>();
+    list.insertBefore({ id: "a" }, null);
+    expect(list.remove("a")).toEqual({ id: "a" });
+    expect(list.size).toBe(0);
+    expect(list.first).toBeNull();
+    expect(list.last).toBeNull();
+    expect(ids(list)).toEqual([]);
+  });
+
+  it.each([
+    ["a", ["-<b>c", "b<c>-"], "b", "c"],
+    ["b", ["-<a>c", "a<c>-"], "a", "c"],
+    ["c", ["-<a>b", "a<b>-"], "a", "b"],
+  ])("relinks the neighbours after removing %s", (id, expected, first, last) => {
+    const list = list3();
+    const node = list.get(id);
+    expect(list.remove(id)).toEqual({ id });
+    expect(links(list)).toEqual(expected);
+    expect(list.size).toBe(2);
+    expect(list.first?.value.id).toBe(first);
+    expect(list.last?.value.id).toBe(last);
+    expect(list.has(id)).toBe(false);
+    expect(node?.prev).toBeNull();
+    expect(node?.next).toBeNull();
+  });
+
+  it("throws on an unknown id and stays unchanged", () => {
+    const list = list3();
+    expect(() => list.remove("x")).toThrow('list-picker: unknown id "x"');
+    expect(links(list)).toEqual(["-<a>b", "a<b>c", "b<c>-"]);
+  });
+
+  it("accepts a removed id again", () => {
+    const list = list3();
+    list.remove("b");
+    list.insertBefore({ id: "b" }, "a");
+    expect(links(list)).toEqual(["-<b>a", "b<a>c", "a<c>-"]);
+  });
+});
