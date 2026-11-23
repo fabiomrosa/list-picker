@@ -79,8 +79,7 @@ change itself has happened).
 
 The list the Board is made of, exported for direct use: `insertBefore(value, beforeId)`,
 `remove(id)`, `replace(value)`, `get(id)` (a `Node` with `value`, `prev` and `next`), `has(id)`,
-`first`, `last`,
-`size`, and iteration over the values in order.
+`first`, `last`, `size`, and iteration over the values in order.
 
 ## License
 
