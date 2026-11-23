@@ -71,6 +71,24 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
   board: Board<L, C>,
 ): Drag {
+  const { destroy } = startDrag(root, board, () => {});
+  return { destroy };
+}
+
+/** `mount`'s view of the engine (not exported from the package). */
+export interface MountedDrag extends Drag {
+  /** The card or list being dragged, if a drag is active. */
+  dragged(): HTMLElement | undefined;
+  /** Abandons the active drag, as Esc does. */
+  cancel(): void;
+}
+
+/** `createDrag`, plus `onEnd`, called each time a drag ends (dropped or abandoned). */
+export function startDrag<L extends { id: string }, C extends { id: string }>(
+  root: HTMLElement,
+  board: Board<L, C>,
+  onEnd: () => void,
+): MountedDrag {
   let press: Press | undefined;
   let active: Active | undefined;
   /** The latest pointer position; read once per animation frame. */
@@ -228,7 +246,11 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     const id = item.getAttribute(kind.attribute) ?? "";
     const listId = placeholder.parentElement?.getAttribute("data-lp-cards") ?? "";
     let next = placeholder.nextElementSibling;
-    while (next === item || next === clone) next = next.nextElementSibling;
+    // Past the item, the Clone, and anything the Board does not hold there: the DOM may lag
+    // behind a change made during the drag (`mount` writes after it ends).
+    while (next && (next === item || next === clone || !holds(kind, next, listId))) {
+      next = next.nextElementSibling;
+    }
     const beforeId = next?.getAttribute(kind.attribute) ?? null;
     try {
       if (kind === LIST) board.moveList(id, beforeId);
@@ -241,6 +263,12 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     }
     placeholder.replaceWith(item);
     end();
+  }
+
+  /** Whether `element` is an item the Board holds (for a card, in list `listId`). */
+  function holds(kind: Kind, element: Element, listId: string): boolean {
+    const id = element.getAttribute(kind.attribute) ?? "";
+    return kind === LIST ? board.getList(id) !== undefined : board.listOf(id)?.id === listId;
   }
 
   /** Whether the Board holds item `id` right before `beforeId` (or last), in `listId` for a card. */
@@ -304,15 +332,17 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     root.removeEventListener("pointermove", onPointerMove);
     root.removeEventListener("pointerup", onPointerEnd);
     root.removeEventListener("pointercancel", onPointerEnd);
-    if (active) {
-      document.removeEventListener("keydown", onKeyDown);
-      active.clone.remove();
-      active.placeholder.remove();
-      active.item.style.display = active.display;
-      active.item.removeAttribute("data-lp-dragging");
-    }
+    const ended = active;
     press = undefined;
     active = undefined;
+    if (ended) {
+      document.removeEventListener("keydown", onKeyDown);
+      ended.clone.remove();
+      ended.placeholder.remove();
+      ended.item.style.display = ended.display;
+      ended.item.removeAttribute("data-lp-dragging");
+      onEnd();
+    }
   }
 
   root.addEventListener("pointerdown", onPointerDown);
@@ -321,5 +351,7 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
       end();
       root.removeEventListener("pointerdown", onPointerDown);
     },
+    dragged: () => active?.item,
+    cancel: end,
   };
 }

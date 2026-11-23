@@ -505,7 +505,7 @@ tests run in `happy-dom`; keyboard moves also get browser tests. Every slice tha
 shows it in the demo.
 
 ### L4.1 · Mount: Renderer errors reach the caller, no DOM writes during a drag
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** the two M3 known issues are gone.
 - **Depends on:** M3.
 - **In scope:**
@@ -514,6 +514,10 @@ shows it in the demo.
     the microtask.
   - While a drag is active, the DOM writes wait and run once when it ends (drop or cancel);
     `createDrag` tells `mount` when a drag ends through an internal option, not public API.
+    Built as an internal `startDrag` (not exported from the package) that `createDrag` wraps.
+  - Found while building: a change that removes the dragged card or list, or the list its
+    Placeholder is in, abandons the drag at once (the drop could only fail); a drop goes before the
+    next item the Board still holds there, past ones the DOM still shows but a change moved away.
 - **Out of scope:** keyboard moving (L4.2).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
