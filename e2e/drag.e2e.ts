@@ -110,3 +110,21 @@ test("drags a list by its title to after the next list", async ({ page }) => {
     .poll(async () => (await lists(page))["To do"])
     .toEqual(["Design the model", "Write the tests"]);
 });
+
+test("the Placeholder takes the width of the list it is in, scrollbar or not", async ({ page }) => {
+  const backlogCard = await card(page, "Idea 1").boundingBox();
+  const todoCard = await card(page, "Design the model").boundingBox();
+  const from = await card(page, "Design the model").locator("strong").boundingBox();
+  const backlog = await cardsOf(page, "Backlog").boundingBox();
+  if (!backlogCard || !todoCard || !from || !backlog) throw new Error("not visible");
+  // The scrolling Backlog list is narrower inside than To do.
+  expect(backlogCard.width).toBeLessThan(todoCard.width);
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(backlog.x + backlog.width / 2, backlog.y + 60, { steps: 12 });
+  const placeholder = page.locator('[data-lp-cards="Backlog"] [data-lp-placeholder]');
+  await expect(placeholder).toHaveCount(1);
+  expect((await placeholder.boundingBox())?.width).toBeCloseTo(backlogCard.width, 0);
+  await page.keyboard.press("Escape");
+  await page.mouse.up();
+});

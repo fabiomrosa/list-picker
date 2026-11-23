@@ -275,7 +275,9 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     const placeholder = document.createElement(item.tagName);
     placeholder.setAttribute("data-lp-placeholder", "");
     Object.assign(placeholder.style, {
-      width: `${rect.width}px`,
+      // A card's Placeholder keeps the card's height but takes the width of the list it is in,
+      // like any card there (a list with a scrollbar is narrower); a list's keeps both.
+      width: kind.horizontal ? `${rect.width}px` : "",
       height: `${rect.height}px`,
       margin,
       boxSizing: "border-box",

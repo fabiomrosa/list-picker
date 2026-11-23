@@ -13,6 +13,9 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 ## DOM and drag
 - Browser tests are `e2e/*.e2e.ts`: Vitest's default include also matches `*.spec.ts`, so a
   Playwright `*.spec.ts` would be run by Vitest too.
+- Headless Chrome hides scrollbars by default (`--hide-scrollbars`), so a list with a scrollbar is
+  as wide inside as one without; `playwright.config.ts` turns that off so layout bugs that depend on
+  scrollbars show up (the Placeholder width bug did not, until then).
 - In the playground, a broken engine DOM swap is invisible end-to-end: the playground redraws from
   the Snapshot after every change. Browser tests catch a broken drop, not a broken swap; the swap is
   covered by the `happy-dom` tests.
