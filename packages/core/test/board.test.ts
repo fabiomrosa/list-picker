@@ -462,6 +462,7 @@ describe("Board updates", () => {
     expect(() => b.updateCard({ id: "nope" })).toThrow('list-picker: unknown id "nope"');
     expect(() => b.updateList({ id: "nope" })).toThrow('list-picker: unknown id "nope"');
     expect(() => b.updateCard({ id: "todo" })).toThrow('list-picker: unknown id "todo"');
+    expect(() => b.updateList({ id: "c1" })).toThrow('list-picker: unknown id "c1"');
     expect(b.snapshot()).toBe(before);
     expect(events).toEqual([]);
   });

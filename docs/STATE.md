@@ -13,8 +13,8 @@ Every slice's pull request updates it (SESSION §3).
   `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
   everything before unlinking), `moveList(id, beforeListId | null)` (same rules), `removeCard`,
   `removeList` (with its cards), `updateList(list)` and `updateCard(card)` (replace the value with
-  that id in place, return the old one; `change` only), `getList`, `getCard`, `listOf(cardId)`, `lists()`,
-  `cards(listId)`. Card ids are unique across the Board, list ids
+  that id in place, return the old one; `change` only), `getList`, `getCard`, `listOf(cardId)`,
+  `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
   across the Lists; bad input throws and changes nothing. A property test runs random sequences of
   every Board operation from a populated Board against a nested-array model.
 - Board events: `on("move" | "change", listener)` returns an unsubscribe function. `move` carries

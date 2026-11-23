@@ -147,13 +147,16 @@ function applyToBoard(board: Board<Entity, Entity>, o: Op): [Result, string?] {
       case "addCard":
         board.addCard(o.list, { id: o.id, v: 0 }, o.before);
         return ["changed"];
+      // The id of the replaced value only if it is the value read just before.
       case "updateCard": {
         const old = board.getCard(o.id);
-        return ["changed", board.updateCard({ id: o.id, v: (old?.v ?? -1) + 1 }).id];
+        const replaced = board.updateCard({ id: o.id, v: (old?.v ?? -1) + 1 });
+        return ["changed", replaced === old ? o.id : "another value"];
       }
       case "updateList": {
         const old = board.getList(o.id);
-        return ["changed", board.updateList({ id: o.id, v: (old?.v ?? -1) + 1 }).id];
+        const replaced = board.updateList({ id: o.id, v: (old?.v ?? -1) + 1 });
+        return ["changed", replaced === old ? o.id : "another value"];
       }
       case "removeCard":
         return ["changed", board.removeCard(o.id).id];

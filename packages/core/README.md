@@ -48,8 +48,8 @@ Positions are given by the item to go before (`null` for the end), never by an i
 | `addCard(listId, card, beforeCardId)` | Adds a card to a list. |
 | `removeList(id)` | Removes a list and its cards; returns the list. |
 | `removeCard(id)` | Removes a card; returns it. |
-| `updateList(list)` | Replaces the list with `list.id` (same place, same cards); returns the old value. |
-| `updateCard(card)` | Replaces the card with `card.id` (same list, same place); returns the old value. |
+| `updateList(list)` | Replaces the list with `list.id` (same place, its cards); returns the old one. |
+| `updateCard(card)` | Replaces the card with `card.id` (same place); returns the old one. |
 | `moveList(id, beforeListId)` | Moves a list (with its cards); returns whether the order changed. |
 | `moveCard(id, toListId, beforeCardId)` | Moves a card, in its list or to another; returns whether the order changed. |
 | `getList(id)`, `getCard(id)` | The list or card with that id, or `undefined`. |
@@ -57,6 +57,9 @@ Positions are given by the item to go before (`null` for the end), never by an i
 | `lists()`, `cards(listId)` | The lists, or a list's cards, in order. |
 | `snapshot()` | The Board as one frozen value, `{ lists: [{ list, cards }] }`; the same object until the Board changes. |
 | `on(event, listener)` | Subscribes to an event; returns the function that unsubscribes. |
+
+Pass a new object to `updateList` and `updateCard` (`{ ...card, text }`), not the same one changed:
+a renderer redraws an item when its value is a different object.
 
 An unknown id, a duplicate id or a `before` that is not in the target list throws an `Error`, and
 the Board is left unchanged.
@@ -75,7 +78,8 @@ change itself has happened).
 ### `LinkedList<T>`
 
 The list the Board is made of, exported for direct use: `insertBefore(value, beforeId)`,
-`remove(id)`, `replace(value)`, `get(id)` (a `Node` with `value`, `prev` and `next`), `has(id)`, `first`, `last`,
+`remove(id)`, `replace(value)`, `get(id)` (a `Node` with `value`, `prev` and `next`), `has(id)`,
+`first`, `last`,
 `size`, and iteration over the values in order.
 
 ## License
