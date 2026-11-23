@@ -28,4 +28,9 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   `pointercancel`.
 - `setPointerCapture` keeps `pointermove` coming when the pointer leaves the card; without it, a
   fast move loses the drag.
+- On a drop the engine calls `board.moveCard` (which emits `change` synchronously) before it moves
+  the card into the Placeholder's place; a `change` listener that writes the DOM at once races the
+  engine, so `mount` reconciles in a microtask.
+- `mount` keys elements by id: a card removed and added again with the same id before the
+  reconcile runs keeps its old element (its Renderer is not called again).
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.
