@@ -95,7 +95,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.3 · Linked list: remove
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** any value can be taken out of the list in O(1).
 - **Depends on:** L1.2.
 - **In scope:** `remove(id)` returns the value; works for the only, first, middle and last node; an
@@ -112,7 +112,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.4 · Linked list: invariants under random operations
-- **Status:** waiting (L1.3)
+- **Status:** next
 - **Goal:** the PRODUCT invariants are proven over thousands of random operation sequences, not
   only the hand-picked cases.
 - **Depends on:** L1.3.
@@ -131,7 +131,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants, CONVENTIONS §5.
 
 ### L1.5 · Board: add lists and cards
-- **Status:** waiting (L1.3)
+- **Status:** next
 - **Goal:** a `Board` holds ordered Lists of ordered Cards, and finds any card and its List in O(1).
 - **Depends on:** L1.3.
 - **In scope:** `new Board()`; `addList(list, beforeListId | null)`; `addCard(listId, card,

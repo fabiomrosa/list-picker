@@ -30,6 +30,14 @@ function render(): void {
       el("small", "", `prev: ${node.prev?.value.id ?? "null"}`),
       el("small", "", `next: ${node.next?.value.id ?? "null"}`),
     );
+    const remove = el("button", "remove", "×") as HTMLButtonElement;
+    remove.type = "button";
+    remove.title = `remove ${item.id}`;
+    remove.addEventListener("click", () => {
+      list.remove(item.id);
+      render();
+    });
+    box.append(remove);
     listView.append(box);
   }
   const selected = before.value;

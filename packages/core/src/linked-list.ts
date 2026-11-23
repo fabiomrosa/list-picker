@@ -52,6 +52,19 @@ export class LinkedList<T extends { id: string }> {
     this.#index.set(value.id, node);
   }
 
+  /** Removes the node with `id` and returns its value. */
+  remove(id: string): T {
+    const node = this.#node(id);
+    if (node.prev) node.prev.next = node.next;
+    else this.#first = node.next;
+    if (node.next) node.next.prev = node.prev;
+    else this.#last = node.prev;
+    node.prev = null;
+    node.next = null;
+    this.#index.delete(id);
+    return node.value;
+  }
+
   #node(id: string): MutableNode<T> {
     const node = this.#index.get(id);
     if (!node) throw new Error(`list-picker: unknown id "${id}"`);

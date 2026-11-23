@@ -4,10 +4,10 @@ What exists in this repository now. The code wins over this file: if they disagr
 Every slice's pull request updates it (SESSION §3).
 
 ## Capabilities
-- `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `get`, `has`, `size`, `first`, `last`, ordered
+- `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`, `get`, `has`, `size`, `first`, `last`, ordered
   iteration; duplicate ids throw.
 - The playground (`npm run dev`) draws a `LinkedList` with `prev`/`next` and inserts from a form,
-  at the end or before a chosen id.
+  at the end or before a chosen id, and removes with each box's × button.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -24,8 +24,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L1.3:** `remove(id)` in O(1), clearing the removed node's links; the playground's
+  remove buttons.
+- **Next:** L1.4 (linked-list property test) or L1.5 (Board); both are `next`.
 - **2026-11-22, L1.2:** `insertBefore` any existing node; the playground's "before" selector.
-- **Next:** L1.3 (remove).
 - **2026-11-22, L1.1:** `LinkedList` append and read, the playground. Absent nodes are `null`
   (`first`, `last`, `prev`, `next`); `get` of an unknown id is `undefined`. `insertBefore` takes only
   `null` until L1.2 widens it.
