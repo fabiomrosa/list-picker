@@ -43,10 +43,11 @@ Every slice's pull request updates it (SESSION §3).
   Keyboard (DEC-15, a `keydown` listener on `root`): Space or Enter on a focused card picks it up
   (`data-lp-grabbed`); ↑ ↓ ← → move it (to the same position or the end of the neighbouring list),
   each a `board.moveCard`, the element following with the focus; Space or Enter drops, Esc puts it
-  back, the focus leaving drops. It never runs with a pointer drag.
+  back, the focus leaving drops. A list moves the same way by its focused handle, with ← → only
+  (`board.moveList`). It never runs with a pointer drag.
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
   it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
-  element (marked `data-lp-list-handle`) and a `div[data-lp-cards]` of the card Renderer's elements
+  element (marked `data-lp-list-handle`, focusable like each card) and a `div[data-lp-cards]` of the card Renderer's elements
   (each marked `data-lp-card`, and `tabindex="0"` unless it has one), then starts `createDrag`. Every Renderer runs and is checked first: a
   missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
   document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
@@ -101,9 +102,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.3:** lists move with the keyboard by their handle (← →, Esc back), through
+  the same keyboard code as cards; `mount` makes handles focusable.
+- **Next:** L4.4 (live announcements).
 - **2026-11-23, L4.2:** cards move with the keyboard, in `createDrag`; `mount` makes cards
   focusable. Chrome blurs a focused element moved in the DOM (GOTCHAS).
-- **Next:** L4.3 (move a list with the keyboard).
 - **2026-11-23, L4.1:** `mount` runs the Renderers in the `change` listener (their errors reach
   the caller) and writes nothing during a drag; a change that removes what the drag needs abandons
   it. The live check found the demo reading cards from a DOM that now lags; it now checks

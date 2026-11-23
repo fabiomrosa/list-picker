@@ -161,6 +161,24 @@ test("drags a list by its title to after the next list", async ({ page }) => {
     .toEqual(["Design the model", "Write the tests"]);
 });
 
+test("moves a list with the keyboard by its title, then back with Esc", async ({ page }) => {
+  const order = () =>
+    page
+      .locator("[data-lp-list]")
+      .evaluateAll((all) => all.map((l) => l.getAttribute("data-lp-list")));
+  const handle = page.locator('[data-lp-list="To do"] [data-lp-list-handle]');
+  await handle.focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
+  await expect(handle).toBeFocused();
+  expect(await order()).toEqual(["Doing", "Done", "To do", "Backlog"]);
+  expect((await lists(page))["To do"]).toEqual(["Design the model", "Write the tests"]);
+  await page.keyboard.press("Escape");
+  await expect(handle).toBeFocused();
+  expect(await order()).toEqual(["To do", "Doing", "Done", "Backlog"]);
+});
+
 test("the Placeholder takes the width of the list it is in, scrollbar or not", async ({ page }) => {
   const backlogCard = await card(page, "Idea 1").boundingBox();
   const todoCard = await card(page, "Design the model").boundingBox();
