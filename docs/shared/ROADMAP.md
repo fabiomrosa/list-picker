@@ -17,7 +17,7 @@ Angular adapters follow v1.
 - A milestone is planned before its first slice and closed after its last (SESSION §7); its heading
   then reads `M<n> · Name · done (YYYY-MM-DD)`.
 
-## M0 · Foundations
+## M0 · Foundations · done (2026-11-22)
 The npm workspace with `packages/core` empty, TypeScript strict, format, lint, tests with coverage,
 build, and the gate in CI.
 
@@ -25,16 +25,20 @@ build, and the gate in CI.
 |---|---|
 | `list-picker` | L0.1 runnable skeleton |
 
+## M1 · Core model
+The doubly linked list with its Index, the Board, moves, events, the Snapshot, property tests of the
+PRODUCT invariants, and a benchmark against arrays. No DOM.
+
+| Repository | Slices |
+|---|---|
+| `list-picker` | L1.1 → L1.2 → L1.3 → (L1.4 ∥ L1.5 → L1.6 → L1.7) → L1.8 → L1.9 → L1.10 → L1.11 |
+
 ## Prerequisites (only the owner can do these)
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
-  (OWNER_PLAN §0). Needed by L0.1 (its pull request).
+  (OWNER_PLAN §0). Done.
 - **P2** · The npm account and package names (DEC-12). Needed by the first publish (M4).
 
 ## Later milestones (split when they start)
-- **M1 · Core model.** No DOM. The doubly linked list with its Index (append, insert before/after,
-  remove, get, iterate), the Board as a list of Lists, Move within and across Lists and Move of a
-  List, the event emitter and the move event, the Snapshot. Property tests of the PRODUCT
-  invariants. A benchmark against an array implementation.
 - **M2 · Drag engine.** Pointer down and threshold, the Clone moved with `transform` in
   `requestAnimationFrame`, the Placeholder before/after the card under the pointer or at the end,
   drop into `core` Move, Esc to cancel, auto-scroll at the edges, dragging Lists. Browser tests.
@@ -46,7 +50,7 @@ build, and the gate in CI.
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-L0.1, then plan M1 with the owner ("plan M1").
+L1.1 to L1.11 in order (L1.4 may run before or after L1.5 to L1.7); then plan M2.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |
