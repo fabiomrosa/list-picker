@@ -346,7 +346,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** DEC-08, DEC-13.
 
 ### L2.5 · Cancel
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** a drag can be abandoned with nothing changed.
 - **Depends on:** L2.4.
 - **In scope:** Esc (a `keydown` listener only during a drag), `pointercancel`, and `destroy()`
@@ -362,7 +362,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** AGENTS "Non-negotiable" (listeners).
 
 ### L2.6 · Browser tests
-- **Status:** waiting (L2.5)
+- **Status:** next
 - **Goal:** real drags in a real browser are checked by the gate.
 - **Depends on:** L2.5.
 - **In scope:** `@playwright/test` with the installed Chrome (`channel: "chrome"`; GitHub's Ubuntu
@@ -420,3 +420,5 @@ Ideas not planned yet; a milestone's planning picks from here.
 - A grab-side state attribute so the user can tilt the Clone (list-picker-js).
 - Fractional ranks (LexoRank-like) computed from a move event, as a helper for persistence.
 - Virtualised Lists for very long boards.
+- Esc during a drag also reaches the page's other Esc handlers (a dialog around the board would
+  close too); stopping it needs a capture-phase listener (L2.5 review).
