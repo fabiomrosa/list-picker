@@ -362,6 +362,18 @@ describe("mount: following the Board", () => {
     expect(domBoard()).toEqual(board());
   });
 
+  it("still follows the Board when the cancel message of an abandoned drag throws", async () => {
+    mounted.destroy();
+    const cancel = () => {
+      throw new Error("boom");
+    };
+    mounted = mount(ctx.root, ctx.board, ctx.renderers, { messages: { cancel } });
+    await dragA("c");
+    expect(() => ctx.board.removeList("done")).toThrow("boom");
+    await settle();
+    expect(domBoard()).toEqual(board());
+  });
+
   it("keeps the Placeholder out of a list the Board removed during the drag", async () => {
     const release = await dragA();
     const caught = catchErrors();

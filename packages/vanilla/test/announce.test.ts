@@ -110,6 +110,41 @@ describe("createDrag: live announcements", () => {
     expect(said()).toBe("Cancelled moving Card A. To do, position 1 of 2.");
   });
 
+  it("announces no move on Esc without one, and a keyboard step a throwing listener follows", () => {
+    let moves = 0;
+    const move = () => `moved ${++moves}`;
+    drag = createDrag(root, board, { messages: { move } });
+    press(card("a"), " ", "Escape");
+    expect(moves).toBe(0);
+    expect(region()?.textContent).toBe("Cancelled moving Card A. To do, position 1 of 2.");
+    board.on("move", () => {
+      throw new Error("listener failed");
+    });
+    card("a").focus();
+    key(card("a"), " ");
+    expect(() => key(card("a"), "ArrowDown")).toThrow("listener failed");
+    expect(region()?.textContent).toBe("moved 1");
+  });
+
+  it("keeps Esc and the focus leaving working when a pick up message throws", () => {
+    drag = createDrag(root, board, {
+      messages: {
+        pickUp: () => {
+          throw new Error("boom");
+        },
+      },
+    });
+    card("a").focus();
+    expect(() => key(card("a"), " ")).toThrow("boom");
+    (root.querySelector("[data-lp-list-handle]") as HTMLElement).focus();
+    expect(card("a").hasAttribute("data-lp-grabbed")).toBe(false);
+    card("a").getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    pointer(card("a"), "pointerdown", 50, 30);
+    expect(() => pointer(card("a"), "pointermove", 70, 30)).toThrow("boom");
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(root.querySelector("[data-lp-clone]")).toBeNull();
+  });
+
   it("removes its live region on destroy", () => {
     drag = createDrag(root, board);
     drag.destroy();

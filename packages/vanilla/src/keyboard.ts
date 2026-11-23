@@ -106,8 +106,8 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     const items = itemsIn(what.container, what.kind);
     grab = { ...what, before: items[items.indexOf(what.item) + 1] ?? null };
     what.item.setAttribute("data-lp-grabbed", "");
-    say("pickUp", what.kind, what.item);
     root.addEventListener("focusout", onFocusOut);
+    say("pickUp", what.kind, what.item); // last, so a message that throws leaves a full grab
   }
 
   function release(): void {
@@ -150,14 +150,22 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   function back({ kind, item, focus, container, before }: Grab): void {
     release();
     if (container.isConnected) {
-      place(kind, item, focus, container, before?.parentElement === container ? before : null);
+      place(
+        kind,
+        item,
+        focus,
+        container,
+        before?.parentElement === container ? before : null,
+        "cancel",
+      );
+    } else {
+      say("cancel", kind, item);
     }
-    say("cancel", kind, item);
   }
 
   /**
-   * Moves the item on the Board, then its element, before `before` (or last) in `container`, and
-   * keeps the focus. If the Board throws, the element follows only when the move happened anyway;
+   * Moves the item on the Board, then its element, before `before` (or last) in `container`, keeps
+   * the focus and announces `event`. If the Board throws, the element follows only when the move happened anyway;
    * the error is rethrown.
    */
   function place(
@@ -166,6 +174,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     focus: HTMLElement,
     container: HTMLElement,
     before: HTMLElement | null,
+    event: "move" | "cancel" = "move",
   ): void {
     const id = item.getAttribute(ATTRIBUTE[kind]) ?? "";
     const listId = kind === "card" ? (container.getAttribute("data-lp-cards") ?? "") : "";
@@ -179,6 +188,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
         moving = false;
       }
       focus.focus();
+      say(event, kind, item);
     };
     try {
       if (kind === "list") board.moveList(id, beforeId);
@@ -188,7 +198,6 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       throw error;
     }
     follow();
-    say("move", kind, item);
   }
 
   root.addEventListener("keydown", onKeyDown);

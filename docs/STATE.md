@@ -48,8 +48,8 @@ Every slice's pull request updates it (SESSION §3).
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
   `aria-live="assertive"` region in `root` (removed by `destroy()`) says pick up, drop and cancel
   of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
-  of 2." The label is the item's `aria-label`, else its text, else its id (a list's from its
-  handle); the position comes from the Board. `createDrag(root, board, { messages })` and
+  of 2." The label is the item's `aria-label`, else its text (which runs block contents together:
+  "Designthe model"), else its id (a list's from its handle); the position comes from the Board. `createDrag(root, board, { messages })` and
   `mount(..., { messages })` replace any of `pickUp`, `move`, `drop`, `cancel` (types `Messages`,
   `Announcement`, `DragOptions`).
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:

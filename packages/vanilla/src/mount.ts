@@ -206,11 +206,15 @@ export function mount<L extends { id: string }, C extends { id: string }>(
   // The Renderers run in the listener, so their errors reach the caller of the Board operation.
   const unsubscribe = board.on("change", () => {
     const dragged = drag.dragged();
-    if (dragged && !droppable(dragged)) drag.cancel();
-    failed = true;
-    render();
-    failed = false;
-    schedule();
+    try {
+      if (dragged && !droppable(dragged)) drag.cancel();
+    } finally {
+      // Even if the cancel's announcement throws (a user's message), the DOM follows the Board.
+      failed = true;
+      render();
+      failed = false;
+      schedule();
+    }
   });
   return {
     destroy() {

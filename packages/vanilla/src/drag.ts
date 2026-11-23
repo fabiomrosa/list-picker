@@ -147,9 +147,10 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
         return;
       }
       active = start(press.kind, press.item);
-      announcer.say("pickUp", name(press.kind), press.item);
       // Only during a drag (AGENTS: no document listener outside one).
       document.addEventListener("keydown", onKeyDown);
+      // Last: a user's message that throws leaves a drag that Esc still cancels.
+      announcer.say("pickUp", name(press.kind), press.item);
     }
     // Only store the pointer here; the DOM is written once per frame (no layout thrashing).
     frame ??= requestAnimationFrame(update);
