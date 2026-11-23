@@ -90,3 +90,23 @@ test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
   await page.mouse.up();
   await expect.poll(async () => (await lists(page)).Backlog?.at(-1)).toBe("Linked list");
 });
+
+test("drags a list by its title to after the next list", async ({ page }) => {
+  const order = () =>
+    page
+      .locator("[data-lp-list]")
+      .evaluateAll((all) => all.map((l) => l.getAttribute("data-lp-list")));
+  expect(await order()).toEqual(["To do", "Doing", "Done", "Backlog"]);
+  const from = await page.locator('[data-lp-list="To do"] [data-lp-list-handle]').boundingBox();
+  const doing = await page.locator('[data-lp-list="Doing"]').boundingBox();
+  if (!from || !doing) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(doing.x + doing.width * 0.8, from.y + 5, { steps: 12 });
+  await page.mouse.up();
+  await expect.poll(order).toEqual(["Doing", "To do", "Done", "Backlog"]);
+  // The cards travelled with their list.
+  await expect
+    .poll(async () => (await lists(page))["To do"])
+    .toEqual(["Design the model", "Write the tests"]);
+});

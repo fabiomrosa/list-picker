@@ -25,33 +25,47 @@ interface ScrollStep {
   readonly top?: number;
 }
 
-/** Presses on these start no drag, so controls inside a card keep working. */
+/** Presses on these start no drag, so controls inside a card or a list keep working. */
 const INTERACTIVE = "button, input, select, textarea, a[href], [contenteditable]";
 
+/**
+ * What is being dragged: a card among the cards of the list container under the pointer
+ * (vertically), or a list among its sibling lists (horizontally, pressed by its handle).
+ */
+interface Kind {
+  readonly attribute: "data-lp-card" | "data-lp-list";
+  readonly horizontal: boolean;
+}
+const CARD: Kind = { attribute: "data-lp-card", horizontal: false };
+const LIST: Kind = { attribute: "data-lp-list", horizontal: true };
+
 interface Press {
-  readonly card: HTMLElement;
+  readonly kind: Kind;
+  readonly item: HTMLElement;
   readonly pointerId: number;
   readonly x: number;
   readonly y: number;
 }
 
-/** A place in a list: before a card, or at the end (`before: null`). */
+/** A place among the items of `container`: before an item, or at the end (`before: null`). */
 interface Target {
-  readonly list: HTMLElement;
+  readonly container: HTMLElement;
   readonly before: HTMLElement | null;
 }
 
 interface Active {
-  readonly card: HTMLElement;
+  readonly kind: Kind;
+  readonly item: HTMLElement;
   readonly clone: HTMLElement;
   readonly placeholder: HTMLElement;
-  /** The card's own inline `display`, restored when it is shown again. */
+  /** The item's own inline `display`, restored when it is shown again. */
   readonly display: string;
 }
 
 /**
- * Makes the cards under `root` draggable (DEC-08, DEC-10, DEC-13). Cards are `[data-lp-card]`
- * elements inside `[data-lp-cards]` list containers, in the user's own markup.
+ * Makes the cards and lists under `root` draggable (DEC-08, DEC-10, DEC-13), in the user's own
+ * markup: cards are `[data-lp-card]` elements inside `[data-lp-cards]` list containers; lists are
+ * `[data-lp-list]` elements, dragged by a `[data-lp-list-handle]` inside them.
  */
 export function createDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
@@ -63,16 +77,28 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   let pointerAt = { x: 0, y: 0 };
   let frame: number | undefined;
 
+  /** The list (by its handle) or the card a press on `target` would drag, if any. */
+  function pressed(target: Element): { kind: Kind; item: HTMLElement } | undefined {
+    const handle = target.closest("[data-lp-list-handle]");
+    const list = handle?.closest<HTMLElement>("[data-lp-list]");
+    const [kind, item] = list
+      ? [LIST, list]
+      : [CARD, target.closest<HTMLElement>("[data-lp-card]")];
+    if (!item || !root.contains(item)) return undefined;
+    const control = target.closest(INTERACTIVE);
+    // A control inside the item keeps working; a handle that is itself a control still drags.
+    if (control && item.contains(control) && control !== handle) return undefined;
+    return { kind, item };
+  }
+
   function onPointerDown(event: PointerEvent): void {
     if (press || event.button !== 0 || !(event.target instanceof Element)) return;
-    const card = event.target.closest<HTMLElement>("[data-lp-card]");
-    if (!card || !root.contains(card)) return;
-    const control = event.target.closest(INTERACTIVE);
-    if (control && card.contains(control)) return;
-    press = { card, pointerId: event.pointerId, x: event.clientX, y: event.clientY };
+    const what = pressed(event.target);
+    if (!what) return;
+    press = { ...what, pointerId: event.pointerId, x: event.clientX, y: event.clientY };
     // Captured from the press, so the release always comes back here, even outside `root`.
     try {
-      card.setPointerCapture(event.pointerId);
+      what.item.setPointerCapture(event.pointerId);
     } catch {
       // An inactive pointer (synthetic events): the root listeners still see bubbling events.
     }
@@ -86,7 +112,7 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     pointerAt = { x: event.clientX, y: event.clientY };
     if (!active) {
       if (Math.hypot(pointerAt.x - press.x, pointerAt.y - press.y) <= THRESHOLD) return;
-      active = start(press.card);
+      active = start(press.kind, press.item);
       // Only during a drag (AGENTS: no document listener outside one).
       document.addEventListener("keydown", onKeyDown);
     }
@@ -147,30 +173,37 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   /**
-   * Where the Placeholder belongs: in the list container under the pointer (directly, or through a
-   * card or the Placeholder), before the first visible card whose vertical middle is below the
-   * pointer, or at the end. Gaps and padding between cards follow the same rule, so the
-   * Placeholder never jumps while crossing them. `undefined` outside every list: stay put.
+   * Where the Placeholder belongs: among the items of its container — for a card, the list
+   * container under the pointer (directly, or through a card or the Placeholder); for a list, its
+   * own parent — before the first visible item whose middle (vertical for cards, horizontal for
+   * lists) is past the pointer, or at the end. Gaps between items follow the same rule, so the
+   * Placeholder never jumps while crossing them. `undefined` outside: stay put.
    */
   function dropTarget(drag: Active, under: Element | null): Target | undefined {
-    const list = under?.closest<HTMLElement>("[data-lp-cards]");
-    if (!list || !root.contains(list)) return undefined;
-    for (const card of list.querySelectorAll<HTMLElement>(":scope > [data-lp-card]")) {
-      if (card === drag.card) continue;
-      const rect = card.getBoundingClientRect();
-      if (pointerAt.y < rect.top + rect.height / 2) return { list, before: card };
+    if (!under || !root.contains(under)) return undefined;
+    const container =
+      drag.kind === LIST
+        ? drag.placeholder.parentElement
+        : under.closest<HTMLElement>("[data-lp-cards]");
+    if (!container || !root.contains(container)) return undefined;
+    const { attribute, horizontal } = drag.kind;
+    for (const item of container.querySelectorAll<HTMLElement>(`:scope > [${attribute}]`)) {
+      if (item === drag.item) continue;
+      const rect = item.getBoundingClientRect();
+      const middle = horizontal ? rect.left + rect.width / 2 : rect.top + rect.height / 2;
+      if ((horizontal ? pointerAt.x : pointerAt.y) < middle) return { container, before: item };
     }
-    return { list, before: null };
+    return { container, before: null };
   }
 
   /** Moves the Placeholder to `target`, writing the DOM only when its place changes. */
-  function place({ placeholder, card: dragged, clone }: Active, { list, before }: Target): void {
-    // The hidden dragged card and the Clone may sit next to it in the DOM: look through them.
+  function place({ placeholder, item, clone }: Active, { container, before }: Target): void {
+    // The hidden dragged item and the Clone may sit next to it in the DOM: look through them.
     let next = placeholder.nextElementSibling;
-    while (next === dragged || next === clone) next = next.nextElementSibling;
-    if (placeholder.parentElement === list && next === before) return;
+    while (next === item || next === clone) next = next.nextElementSibling;
+    if (placeholder.parentElement === container && next === before) return;
     if (before) before.before(placeholder);
-    else list.append(placeholder);
+    else container.append(placeholder);
   }
 
   /** Esc abandons the drag: everything goes back, nothing moves. */
@@ -185,45 +218,48 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   /**
-   * Applies the drop to the Board (DEC-13): the card goes before the Placeholder's next card, or
-   * to the end of its list, then takes the Placeholder's place in the DOM. If the Board rejects
-   * the move, the card stays where it was; either way an error is rethrown.
+   * Applies the drop to the Board (DEC-13): the item goes before the Placeholder's next item, or
+   * to the end (`moveCard` into the Placeholder's list, or `moveList`), then takes the
+   * Placeholder's place in the DOM. If the Board rejects the move, the item stays where it was;
+   * either way an error is rethrown.
    */
-  function drop({ card, placeholder, clone }: Active): void {
+  function drop({ kind, item, placeholder, clone }: Active): void {
     // Missing attributes become "", which the Board rejects like any unknown id.
+    const id = item.getAttribute(kind.attribute) ?? "";
     const listId = placeholder.parentElement?.getAttribute("data-lp-cards") ?? "";
-    const id = card.getAttribute("data-lp-card") ?? "";
     let next = placeholder.nextElementSibling;
-    while (next === card || next === clone) next = next.nextElementSibling;
-    const beforeId = next?.getAttribute("data-lp-card") ?? null;
+    while (next === item || next === clone) next = next.nextElementSibling;
+    const beforeId = next?.getAttribute(kind.attribute) ?? null;
     try {
-      board.moveCard(id, listId, beforeId);
+      if (kind === LIST) board.moveList(id, beforeId);
+      else board.moveCard(id, listId, beforeId);
     } catch (error) {
-      // A listener may throw after the Board has moved the card: keep the DOM in step anyway.
-      if (landed(id, listId, beforeId)) placeholder.replaceWith(card);
+      // A listener may throw after the Board has moved the item: keep the DOM in step anyway.
+      if (landed(kind, id, listId, beforeId)) placeholder.replaceWith(item);
       end();
       throw error;
     }
-    placeholder.replaceWith(card);
+    placeholder.replaceWith(item);
     end();
   }
 
-  /** Whether the Board holds card `id` in `listId`, right before `beforeId` (or last). */
-  function landed(id: string, listId: string, beforeId: string | null): boolean {
-    if (board.listOf(id)?.id !== listId) return false;
-    const ids = [...board.cards(listId)].map((card) => card.id);
-    return (ids[ids.indexOf(id) + 1] ?? null) === beforeId;
+  /** Whether the Board holds item `id` right before `beforeId` (or last), in `listId` for a card. */
+  function landed(kind: Kind, id: string, listId: string, beforeId: string | null): boolean {
+    if (kind === CARD && board.listOf(id)?.id !== listId) return false;
+    const items = kind === LIST ? board.lists() : board.cards(listId);
+    const ids = [...items].map((value) => value.id);
+    return ids.includes(id) && (ids[ids.indexOf(id) + 1] ?? null) === beforeId;
   }
 
-  /** Reads the card's box once, then shows the Clone and holds the card's place. */
-  function start(card: HTMLElement): Active {
-    const rect = card.getBoundingClientRect();
-    const margin = getComputedStyle(card).margin;
+  /** Reads the item's box once, then shows the Clone and holds the item's place. */
+  function start(kind: Kind, item: HTMLElement): Active {
+    const rect = item.getBoundingClientRect();
+    const margin = getComputedStyle(item).margin;
 
-    const clone = card.cloneNode(true) as HTMLElement;
+    const clone = item.cloneNode(true) as HTMLElement;
     clone.removeAttribute("id");
     for (const withId of clone.querySelectorAll("[id]")) withId.removeAttribute("id");
-    clone.removeAttribute("data-lp-card");
+    clone.removeAttribute(kind.attribute);
     clone.setAttribute("data-lp-clone", "");
     Object.assign(clone.style, {
       position: "fixed",
@@ -236,26 +272,27 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
       pointerEvents: "none",
     });
 
-    const placeholder = document.createElement(card.tagName);
+    const placeholder = document.createElement(item.tagName);
     placeholder.setAttribute("data-lp-placeholder", "");
     Object.assign(placeholder.style, {
       width: `${rect.width}px`,
       height: `${rect.height}px`,
       margin,
       boxSizing: "border-box",
+      flex: "none",
     });
 
-    const display = card.style.display;
-    card.before(placeholder);
+    const display = item.style.display;
+    item.before(placeholder);
     // Inline, so it wins over the author's `display` rules; restored afterwards.
-    card.style.display = "none";
-    card.setAttribute("data-lp-dragging", "");
+    item.style.display = "none";
+    item.setAttribute("data-lp-dragging", "");
     // Inside `root`, so the user's descendant selectors still style it.
     root.append(clone);
-    return { card, clone, placeholder, display };
+    return { kind, item, clone, placeholder, display };
   }
 
-  /** Ends the press or drag: removes the Clone and the Placeholder and shows the card. */
+  /** Ends the press or drag: removes the Clone and the Placeholder and shows the item. */
   function end(): void {
     if (frame !== undefined) cancelAnimationFrame(frame);
     frame = undefined;
@@ -266,8 +303,8 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
       document.removeEventListener("keydown", onKeyDown);
       active.clone.remove();
       active.placeholder.remove();
-      active.card.style.display = active.display;
-      active.card.removeAttribute("data-lp-dragging");
+      active.item.style.display = active.display;
+      active.item.removeAttribute("data-lp-dragging");
     }
     press = undefined;
     active = undefined;

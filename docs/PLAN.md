@@ -397,7 +397,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** DEC-08.
 
 ### L2.8 · Drag lists
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** lists are reordered by dragging their handle.
 - **Depends on:** L2.7.
 - **In scope:** a press on `[data-lp-list-handle]` drags its `[data-lp-list]` with the same Clone,

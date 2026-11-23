@@ -82,6 +82,7 @@ function render(): void {
   const listIds = snapshot.lists.map(({ list }) => list.id);
   listIds.forEach((listId, li) => {
     const column = el("section", "list", "");
+    column.dataset.lpList = listId;
     const cards = cardsOf.get(listId) ?? [];
     const header = el("div", "list-tools", "");
     const left = listIds[li - 1];
@@ -98,9 +99,10 @@ function render(): void {
     );
     column.append(
       header,
-      el("h2", "", listId),
+      Object.assign(el("h2", "", listId), { title: `drag to move ${listId}` }),
       el("small", "", `${cards.length} ${cards.length === 1 ? "card" : "cards"}`),
     );
+    (column.querySelector("h2") as HTMLElement).dataset.lpListHandle = "";
     const stack = el("div", "cards", "");
     stack.dataset.lpCards = listId;
     cards.forEach((card, i) => {

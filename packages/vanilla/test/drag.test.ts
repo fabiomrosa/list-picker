@@ -605,3 +605,121 @@ describe("createDrag: auto-scroll", () => {
     expect(scroller.scrollTop).toBe(at);
   });
 });
+
+describe("createDrag: lists", () => {
+  let board: Board<Entity, Entity>;
+  let root: HTMLElement;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  let moves: unknown[];
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const list = (id: string) => root.querySelector(`[data-lp-list="${id}"]`) as HTMLElement;
+  const handle = (id: string) => list(id).querySelector("[data-lp-list-handle]") as HTMLElement;
+  const domLists = () =>
+    [...root.querySelectorAll(":scope > [data-lp-list]")].map((el) =>
+      el.getAttribute("data-lp-list"),
+    );
+
+  beforeEach(() => {
+    // Three lists side by side: x 0–100, 120–220, 240–340; each with a handle and one card.
+    document.body.innerHTML = `<div id="root">${["one", "two", "three"]
+      .map(
+        (id) => `<section data-lp-list="${id}">
+          <h2 data-lp-list-handle>${id}</h2>
+          <ul data-lp-cards="${id}"><li data-lp-card="${id}-card">card</li></ul>
+        </section>`,
+      )
+      .join("")}</div>`;
+    root = document.getElementById("root") as HTMLElement;
+    board = new Board<Entity, Entity>();
+    ["one", "two", "three"].forEach((id, i) => {
+      board.addList({ id }, null);
+      board.addCard(id, { id: `${id}-card` }, null);
+      list(id).getBoundingClientRect = () => new DOMRect(i * 120, 0, 100, 300);
+    });
+    under = null;
+    document.elementFromPoint = () => under;
+    moves = [];
+    board.on("move", (event) => moves.push(event));
+    drag = createDrag(root, board);
+  });
+  afterEach(() => drag.destroy());
+
+  async function dragList(id: string, x: number) {
+    pointer(handle(id), "pointerdown", 50, 10);
+    pointer(handle(id), "pointermove", 60, 10);
+    under = root;
+    pointer(handle(id), "pointermove", x, 10);
+    await frame();
+    pointer(handle(id), "pointerup", x, 10);
+  }
+
+  it("moves a list past another's middle, in the Board and the DOM", async () => {
+    await dragList("one", 300);
+    expect([...board.lists()].map((l) => l.id)).toEqual(["two", "three", "one"]);
+    expect(domLists()).toEqual(["two", "three", "one"]);
+    expect(moves).toEqual([
+      { kind: "list", id: "one", fromListId: null, toListId: null, prevId: "three", nextId: null },
+    ]);
+  });
+
+  it("moves a list before another when left of its middle", async () => {
+    await dragList("three", 140);
+    expect(domLists()).toEqual(["one", "three", "two"]);
+    expect([...board.lists()].map((l) => l.id)).toEqual(["one", "three", "two"]);
+  });
+
+  it("still drags the card, not the list, when the card is pressed", async () => {
+    const card = root.querySelector('[data-lp-card="one-card"]') as HTMLElement;
+    pointer(card, "pointerdown", 50, 100);
+    pointer(card, "pointermove", 80, 100);
+    expect(card.hasAttribute("data-lp-dragging")).toBe(true);
+    expect(list("one").hasAttribute("data-lp-dragging")).toBe(false);
+  });
+
+  it("drags from a handle that is itself a button, but not from a button inside a handle", () => {
+    handle("one").innerHTML = '<button type="button">⋯</button>';
+    const inner = handle("one").querySelector("button") as HTMLButtonElement;
+    pointer(inner, "pointerdown", 50, 10);
+    pointer(inner, "pointermove", 80, 10);
+    expect(list("one").hasAttribute("data-lp-dragging")).toBe(false);
+    pointer(inner, "pointerup", 80, 10);
+    const button = document.createElement("button");
+    button.setAttribute("data-lp-list-handle", "");
+    list("two").prepend(button);
+    pointer(button, "pointerdown", 150, 10);
+    pointer(button, "pointermove", 180, 10);
+    expect(list("two").hasAttribute("data-lp-dragging")).toBe(true);
+  });
+
+  it("puts a list back when the Board rejects the move", async () => {
+    board.removeList("one");
+    const before = root.innerHTML;
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    try {
+      await dragList("one", 300);
+    } catch (error) {
+      errors.push(error);
+    }
+    window.removeEventListener("error", onError);
+    expect(root.innerHTML).toBe(before);
+    expect(String(errors[0])).toContain('unknown id "one"');
+  });
+
+  it("cancels a list drag with Esc, moving nothing", async () => {
+    const before = root.innerHTML;
+    pointer(handle("one"), "pointerdown", 50, 10);
+    pointer(handle("one"), "pointermove", 60, 10);
+    under = root;
+    pointer(handle("one"), "pointermove", 300, 10);
+    await frame();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(root.innerHTML).toBe(before);
+    expect(moves).toEqual([]);
+  });
+});
