@@ -46,6 +46,7 @@ packages/<name>/
 
 **Browser tests** run with the browser's user-facing defaults (scrollbars, viewport, motion); a
 test that changes one says why in a comment.
+A behaviour with a direction (auto-scroll, a drop before or after) is tested in each direction.
 
 **Property tests** assert that they reached their interesting outcomes (a minimum count of each),
 so a weak generator fails instead of passing blind.
