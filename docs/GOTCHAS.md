@@ -9,6 +9,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   excluded in `biome.json`.
 - TypeScript 7 is the native (Go) compiler; the binary is still `tsc`. Source imports use the `.ts`
   extension (`rewriteRelativeImportExtensions` turns them into `.js` in `dist/`).
+- A scripted edit that replaces everything between a start and an end marker silently deletes
+  whatever sits between them (L2.3 lost two functions that way); exact, unique snippets do not.
 
 ## DOM and drag
 - Browser tests are `e2e/*.e2e.ts`: Vitest's default include also matches `*.spec.ts`, so a
