@@ -123,12 +123,12 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
    * the move, the card stays where it was and the error is rethrown.
    */
   function drop({ card, placeholder, clone }: Active): void {
-    const listId = placeholder.parentElement?.getAttribute("data-lp-cards");
-    const id = card.getAttribute("data-lp-card");
+    // Missing attributes become "", which the Board rejects like any unknown id.
+    const listId = placeholder.parentElement?.getAttribute("data-lp-cards") ?? "";
+    const id = card.getAttribute("data-lp-card") ?? "";
     let next = placeholder.nextElementSibling;
     while (next === card || next === clone) next = next.nextElementSibling;
     const beforeId = next?.getAttribute("data-lp-card") ?? null;
-    if (listId == null || id == null) return end();
     try {
       board.moveCard(id, listId, beforeId);
     } catch (error) {

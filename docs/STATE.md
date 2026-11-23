@@ -24,8 +24,10 @@ Every slice's pull request updates it (SESSION §3).
 - `@list-picker/vanilla`: `createDrag(root, board)` returns `{ destroy }`. A press on a
   `[data-lp-card]` (not on a control inside it) captures the pointer; past 4 px it shows a Clone
   (inside `root`, ids removed) over the card and a Placeholder of its size in its place, and hides
-  the card (inline `display: none`, `data-lp-dragging`). Release, `pointercancel` or `destroy()`
-  show the card again as it was (dropping comes in L2.4). The Clone follows the pointer: moves only
+  the card (inline `display: none`, `data-lp-dragging`). A release drops: `board.moveCard` to the
+  Placeholder's list, before its next card or at the end, and the card takes the Placeholder's
+  place; if the Board rejects it, the card goes back and the error is rethrown. `pointercancel` or
+  `destroy()` show the card again as it was. The Clone follows the pointer: moves only
   store it, one `requestAnimationFrame` per frame writes `transform`. Each frame the Placeholder
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
@@ -37,7 +39,7 @@ Every slice's pull request updates it (SESSION §3).
   adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
   (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
   every `move` event and the `change` count. It renders from `snapshot()` and shows its version.
-  Its cards carry the engine's attributes; pressing and dragging one shows the Clone and Placeholder.
+  Its cards can be dragged within and across lists (it redraws after every Board change).
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -57,8 +59,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L2.4:** drop applies the move to the Board and the DOM; the playground's cards are
+  draggable for real.
+- **Next:** the owner checks the drag in the browser; then L2.5 (cancel).
 - **2026-11-22, L2.3:** the Placeholder follows the drop target (read, then write, per frame).
-- **Next:** L2.4 (drop), the first real drag in the playground.
 - **2026-11-22, L2.2:** the Clone follows the pointer (`transform`, one write per frame).
 - **2026-11-22, L2.1:** `@list-picker/vanilla` and the drag start; `happy-dom` for engine tests; a
   `paths` entry lets the root typecheck see `core`'s source.
