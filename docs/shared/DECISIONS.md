@@ -127,6 +127,24 @@ moved, never redrawn.
 - **Consequences:** the Renderer's element is the card itself, with no wrapper; content changes to a
   card are out of v1 (the Board has no update operation).
 
+## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23)
+On a focused card, Space or Enter picks it up; ↑ ↓ move it within its list, ← → to the neighbouring
+list; Space or Enter drops; Esc puts it back where it was picked up. A list moves the same way by
+its focused handle, with ← →. Each step is a real Board move.
+- **Why:** the common pattern for accessible sortable lists, one card at a time like the pointer
+  drag; it needs no multi-select, which PRODUCT keeps out of v1.
+- **Consequences:** `mount` makes cards and handles focusable; the engine listens to `keydown` on
+  `root` and moves the element itself (DEC-13); the move events are the same as for a drag.
+
+## DEC-16 · Live announcements in English by default, replaceable — Accepted (owner, 2026-11-23)
+The engine announces pick up, moves, drop and cancel in an `aria-live` region, with short English
+messages; a `messages` option replaces any of them.
+- **Why:** a board should be usable with a screen reader without extra work; teams with other
+  languages replace the text.
+- **Consequences:** the one exception to "the library has no user-facing text of its own"
+  (AGENTS); the default messages are part of the public behaviour, changed only with a note in the
+  pull request.
+
 ---
 
 ## Proposed (waiting for the owner)
