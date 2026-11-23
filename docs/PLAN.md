@@ -465,7 +465,7 @@ the browser tests.
 - **References:** DEC-14.
 
 ### L3.3 · The demo board
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** the playground becomes the demo: a board drawn by `mount` with the demo's own Renderers.
 - **Depends on:** L3.2.
 - **In scope:** `playground/main.ts` renders through `mount` (its own drawing code goes); its
@@ -482,7 +482,7 @@ the browser tests.
 - **References:** SESSION §3.3.
 
 ### L3.4 · Trace: no forced layout per pointer move
-- **Status:** waiting (L3.3)
+- **Status:** next
 - **Goal:** the claim that a drag forces no layout in `pointermove` is measured, not assumed.
 - **Depends on:** L3.3.
 - **In scope:** record a Chrome performance trace of card and list drags on the demo (with
