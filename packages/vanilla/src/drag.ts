@@ -278,6 +278,9 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
       // A card's Placeholder keeps the card's height but takes the width of the list it is in,
       // like any card there (a list with a scrollbar is narrower); a list's keeps both.
       width: kind.horizontal ? `${rect.width}px` : "",
+      // Stretch across a flex column even when its items are not stretched (width auto alone
+      // would collapse to 0 there); block and grid lists fill the width anyway.
+      alignSelf: kind.horizontal ? "" : "stretch",
       height: `${rect.height}px`,
       margin,
       boxSizing: "border-box",
