@@ -31,6 +31,4 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - On a drop the engine calls `board.moveCard` (which emits `change` synchronously) before it moves
   the card into the Placeholder's place; a `change` listener that writes the DOM at once races the
   engine, so `mount` reconciles in a microtask.
-- happy-dom's `MutationObserver` did not report the engine's `replaceWith` in a test; spying on the
-  DOM methods was reliable.
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.
