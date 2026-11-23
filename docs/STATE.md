@@ -4,15 +4,18 @@ What exists in this repository now. The code wins over this file: if they disagr
 Every slice's pull request updates it (SESSION §3).
 
 ## Capabilities
-- `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`, `get`, `has`, `size`, `first`, `last`, ordered
-  iteration; duplicate ids throw. A property test checks every PRODUCT invariant of the list
-  against an array model over 1000 random operation sequences.
+- `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`,
+  `get`, `has`, `size`, `first`, `last`, ordered iteration; duplicate ids throw. A property test
+  checks every PRODUCT invariant of the list against an array model over 1000 random operation
+  sequences.
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
-  `removeCard`, `removeList` (with its cards), `getList`, `getCard`, `listOf(cardId)`, `lists()`,
-  `cards(listId)`; card ids unique across the
-  Board, list ids across the Lists; bad input throws and changes nothing.
+  `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
+  everything before unlinking), `removeCard`, `removeList` (with its cards), `getList`, `getCard`,
+  `listOf(cardId)`, `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
+  across the Lists; bad input throws and changes nothing.
 - The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
-  adds lists and cards at the end or before a chosen one, and removes them with ×.
+  adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
+  (showing "same place" when nothing changed), and removes with ×.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -29,9 +32,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L1.7:** `moveCard`; the naive remove-then-insert lost the card on a bad `before`
+  (seen red), so every check now runs before the unlink. Playground move buttons and form; fixed a
+  blank "to" select on first load (since L1.5).
+- **Next:** L1.8 (move a list, Board property test).
 - **2026-11-22, L1.6:** `removeCard`, `removeList` (its cards leave the card index); × buttons in
   the playground.
-- **Next:** L1.7 (move a card): validate `before` before removing (L1.5 review).
 - **2026-11-22, L1.5:** `Board` with lists and cards, a card-to-list index; the playground now
   shows the Board (the plain linked-list view is gone; removing returns in L1.6).
 - **2026-11-22, L1.4:** linked-list property test (`fast-check`), seen failing on three planted
