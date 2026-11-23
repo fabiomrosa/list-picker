@@ -46,8 +46,9 @@ function labelOf(element: Element | null | undefined, id: string): string {
 }
 
 /**
- * Adds a visually hidden `aria-live="assertive"` region to `root` and announces into it, with the
- * position read from the Board (an item no longer on the Board is not announced).
+ * Adds a visually hidden `aria-live="assertive"` region to the document's body (so `root` holds only
+ * the user's markup) and announces into it, with the position read from the Board (an item no
+ * longer on the Board is not announced).
  */
 export function createAnnouncer<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
@@ -67,7 +68,7 @@ export function createAnnouncer<L extends { id: string }, C extends { id: string
     clipPath: "inset(50%)",
     whiteSpace: "nowrap",
   });
-  root.append(region);
+  document.body.append(region);
 
   /** The label of list `id`, from its handle in `root` if there is one. */
   const listLabel = (id: string) => {

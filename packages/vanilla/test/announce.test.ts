@@ -46,7 +46,7 @@ describe("createDrag: live announcements", () => {
   });
   afterEach(() => drag?.destroy());
 
-  const region = () => root.querySelector("[aria-live]");
+  const region = () => document.querySelector("[aria-live]");
   const said = () => region()?.textContent;
   const card = (id: string) => root.querySelector(`[data-lp-card="${id}"]`) as HTMLElement;
   /** Focuses `target` and presses `keys` on whatever holds the focus. */

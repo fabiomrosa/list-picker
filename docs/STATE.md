@@ -46,7 +46,7 @@ Every slice's pull request updates it (SESSION §3).
   back, the focus leaving drops. A list moves the same way by its focused handle, with ← → only
   (`board.moveList`). It never runs with a pointer drag.
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
-  `aria-live="assertive"` region in `root` (removed by `destroy()`) says pick up, drop and cancel
+  `aria-live="assertive"` region in the document's body, not in `root` (removed by `destroy()`) says pick up, drop and cancel
   of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
   of 2." The label is the item's `aria-label`, else its text (which runs block contents together:
   "Designthe model"), else its id (a list's from its handle); the position comes from the Board. `createDrag(root, board, { messages })` and

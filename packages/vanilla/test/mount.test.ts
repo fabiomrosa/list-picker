@@ -101,7 +101,7 @@ describe("mount", () => {
     const a = ctx.rendered.get("a") as HTMLElement;
     a.focus();
     a.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true }));
-    expect(ctx.root.querySelector("[aria-live]")?.textContent).toBe("A @1");
+    expect(document.querySelector("[aria-live]")?.textContent).toBe("A @1");
   });
 
   it("makes the mounted cards draggable", async () => {
