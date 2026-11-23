@@ -67,7 +67,8 @@ owner to confirm.
 6. A hard bug or a check failing for no clear reason: the `diagnosing-bugs` skill.
 
 ## 3. Verify
-1. The repository's gate passes (`AGENTS.md` "Commands").
+1. The repository's gate passes (`AGENTS.md` "Commands"). When the slice adds a package or a
+   cross-package import, run it once from a tree without build output (`rm -rf packages/*/dist`).
 2. Every acceptance criterion has a test that was seen red, and coverage stays at or above the
    floor (`docs/CONVENTIONS.md` §5; the gate checks it).
 3. Run it once live (curl for an API; simulator or browser for a client; the binary for a CLI).
