@@ -112,7 +112,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.4 · Linked list: invariants under random operations
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** the PRODUCT invariants are proven over thousands of random operation sequences, not
   only the hand-picked cases.
 - **Depends on:** L1.3.

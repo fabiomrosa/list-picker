@@ -5,7 +5,8 @@ Every slice's pull request updates it (SESSION §3).
 
 ## Capabilities
 - `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`, `get`, `has`, `size`, `first`, `last`, ordered
-  iteration; duplicate ids throw.
+  iteration; duplicate ids throw. A property test checks every PRODUCT invariant of the list
+  against an array model over 1000 random operation sequences.
 - The playground (`npm run dev`) draws a `LinkedList` with `prev`/`next` and inserts from a form,
   at the end or before a chosen id, and removes with each box's × button.
 
@@ -24,9 +25,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, L1.4:** linked-list property test (`fast-check`), seen failing on three planted
+  bugs. Nothing new in the playground (no new behaviour).
+- **Next:** L1.5 (Board: add lists and cards).
 - **2026-11-22, L1.3:** `remove(id)` in O(1), clearing the removed node's links; the playground's
   remove buttons.
-- **Next:** L1.4 (linked-list property test) or L1.5 (Board); both are `next`.
 - **2026-11-22, L1.2:** `insertBefore` any existing node; the playground's "before" selector.
 - **2026-11-22, L1.1:** `LinkedList` append and read, the playground. Absent nodes are `null`
   (`first`, `last`, `prev`, `next`); `get` of an unknown id is `undefined`. `insertBefore` takes only
