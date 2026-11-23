@@ -36,6 +36,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - On a drop the engine calls `board.moveCard` (which emits `change` synchronously) before it moves
   the card into the Placeholder's place; a `change` listener that writes the DOM at once races the
   engine, so `mount` reconciles in a microtask.
+- A `MutationObserver` with a callback hands its records to the callback in a microtask, so
+  `takeRecords()` after an `await` returns nothing even when the DOM changed (it misled L3.2).
 - `mount` keys elements by id: a card removed and added again with the same id before the
   reconcile runs keeps its old element (its Renderer is not called again).
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.
