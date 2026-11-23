@@ -92,5 +92,17 @@ describe("LinkedList", () => {
       expect(list.has("x")).toBe(false);
       expect(links(list)).toEqual(["-<a>b", "a<b>c", "b<c>-"]);
     });
+
+    it("throws on a duplicate id with a valid beforeId and stays unchanged", () => {
+      const list = abc();
+      expect(() => list.insertBefore({ id: "c" }, "a")).toThrow('list-picker: duplicate id "c"');
+      expect(links(list)).toEqual(["-<a>b", "a<b>c", "b<c>-"]);
+    });
+
+    it("throws on any beforeId in an empty list", () => {
+      const list = new LinkedList<Item>();
+      expect(() => list.insertBefore({ id: "x" }, "a")).toThrow('list-picker: unknown id "a"');
+      expect(list.size).toBe(0);
+    });
   });
 });
