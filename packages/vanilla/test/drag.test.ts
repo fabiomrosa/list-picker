@@ -677,6 +677,40 @@ describe("createDrag: lists", () => {
     expect(list("one").hasAttribute("data-lp-dragging")).toBe(false);
   });
 
+  it("drags from a handle that is itself a button, but not from a button inside a handle", () => {
+    handle("one").innerHTML = '<button type="button">⋯</button>';
+    const inner = handle("one").querySelector("button") as HTMLButtonElement;
+    pointer(inner, "pointerdown", 50, 10);
+    pointer(inner, "pointermove", 80, 10);
+    expect(list("one").hasAttribute("data-lp-dragging")).toBe(false);
+    pointer(inner, "pointerup", 80, 10);
+    const button = document.createElement("button");
+    button.setAttribute("data-lp-list-handle", "");
+    list("two").prepend(button);
+    pointer(button, "pointerdown", 150, 10);
+    pointer(button, "pointermove", 180, 10);
+    expect(list("two").hasAttribute("data-lp-dragging")).toBe(true);
+  });
+
+  it("puts a list back when the Board rejects the move", async () => {
+    board.removeList("one");
+    const before = root.innerHTML;
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    try {
+      await dragList("one", 300);
+    } catch (error) {
+      errors.push(error);
+    }
+    window.removeEventListener("error", onError);
+    expect(root.innerHTML).toBe(before);
+    expect(String(errors[0])).toContain('unknown id "one"');
+  });
+
   it("cancels a list drag with Esc, moving nothing", async () => {
     const before = root.innerHTML;
     pointer(handle("one"), "pointerdown", 50, 10);
