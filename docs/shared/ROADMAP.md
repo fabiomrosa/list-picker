@@ -27,7 +27,8 @@ build, and the gate in CI.
 
 ## M1 · Core model
 The doubly linked list with its Index, the Board, moves, events, the Snapshot, property tests of the
-PRODUCT invariants, and a benchmark against arrays. No DOM.
+PRODUCT invariants, and a benchmark against arrays. No DOM in `core`; a local playground page draws
+the model and grows with every slice, and the owner checks each slice there before its merge.
 
 | Repository | Slices |
 |---|---|
@@ -43,8 +44,8 @@ PRODUCT invariants, and a benchmark against arrays. No DOM.
   `requestAnimationFrame`, the Placeholder before/after the card under the pointer or at the end,
   drop into `core` Move, Esc to cancel, auto-scroll at the edges, dragging Lists. Browser tests.
 - **M3 · Vanilla adapter and demo.** Mount a Board into a container with the user's Renderers,
-  update on core events, destroy (every listener removed). The demo board, and a trace that shows no
-  forced layout per pointer move.
+  update on core events, destroy (every listener removed). The playground becomes the demo board,
+  and a trace shows no forced layout per pointer move.
 - **M4 · v1 release.** Keyboard dragging and ARIA live announcements, the docs, the lab write-up,
   the first npm publish.
 - **M5 · React adapter.** **M6 · Angular adapter.**
