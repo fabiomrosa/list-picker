@@ -82,10 +82,16 @@ describe("mount", () => {
       if (card.id === "b") el.tabIndex = -1;
       return el;
     };
+    const renderList = ctx.renderers.renderList;
+    ctx.renderers.renderList = (list) => {
+      const el = renderList(list);
+      if (list.id === "done") el.tabIndex = -1;
+      return el;
+    };
     mounted = mount(ctx.root, ctx.board, ctx.renderers);
     const tabindex = (id: string) => ctx.rendered.get(id)?.getAttribute("tabindex");
     expect([tabindex("a"), tabindex("b"), tabindex("c")]).toEqual(["0", "-1", "0"]);
-    expect([tabindex("todo"), tabindex("done")]).toEqual(["0", "0"]);
+    expect([tabindex("todo"), tabindex("done")]).toEqual(["0", "-1"]);
   });
 
   it("makes the mounted cards draggable", async () => {
