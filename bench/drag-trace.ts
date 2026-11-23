@@ -87,6 +87,10 @@ try {
     (e) => e.name === "EventDispatch" && e.args?.data?.type === "pointermove",
   );
   const frames = events.filter((e) => e.name === "FireAnimationFrame");
+  // A wrong thread, or events Chrome emits in another shape, would otherwise print "0 forced".
+  if (moves.length === 0 || frames.length === 0) {
+    throw new Error("no pointermove dispatch or animation frame found on the main thread");
+  }
   const row = (where: string, parents: TraceEvent[]) =>
     `| ${where} | ${parents.length} | ${inside(events, parents, "Layout")} | ${inside(events, parents, "UpdateLayoutTree")} |`;
   console.log("| Inside | Count | Forced layouts | Forced style recalcs |");

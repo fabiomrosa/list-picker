@@ -127,14 +127,12 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
     const target = dropTarget(active, under);
     const steps = scrollSteps(under);
-    // Scrolling first: setting a scroll offset needs a fresh layout, which a write before it (the
-    // Placeholder's move) would force.
+    active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
+    if (target) place(active, target);
     for (const { element, left, top } of steps) {
       if (left !== undefined) element.scrollLeft = left;
       if (top !== undefined) element.scrollTop = top;
     }
-    active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
-    if (target) place(active, target);
     // Keep scrolling while the pointer rests near an edge; the Placeholder retargets each frame.
     if (steps.length > 0) frame = requestAnimationFrame(update);
   }

@@ -56,7 +56,7 @@ Every slice's pull request updates it (SESSION §3).
   auto-scroll, a list by its title; a click changes nothing.
 - `npm run trace` drags cards and a list on the demo in Chrome with a performance trace and counts
   forced layouts by where they ran; the result is in `docs/decisions/0002-drag-layout-trace.md`
-  (none in `pointermove`; one per drag start in the first animation frame).
+  (none in `pointermove`; one per auto-scroll frame, and at most one in a drag's first frame).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
@@ -96,8 +96,9 @@ None yet.
 
 ## Last session
 - **2026-11-23, L3.4:** decision record 0002: a Chrome trace of real drags shows no forced layout
-  in `pointermove`; auto-scroll frames forced one each (a `scrollTop` write after the Placeholder's
-  move), fixed by scrolling first (12 → 1 forced layouts per run). Every M3 slice is done.
+  in `pointermove`. Auto-scroll frames force one each (the `scrollTop` write after the
+  Placeholder's move); scrolling first removed them but broke upward auto-scroll through scroll
+  anchoring (caught in review), so the engine is unchanged. Every M3 slice is done.
 - **Next:** the owner checks the demo (`git pull && npm ci && npm run dev`), then "close M3".
 - **2026-11-23, L3.3:** the playground is the demo board, drawn by `mount`; the browser tests pass
   unchanged. The owner's check of the demo in the browser is pending.
