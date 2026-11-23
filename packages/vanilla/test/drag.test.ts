@@ -374,3 +374,72 @@ describe("createDrag: drop", () => {
     expect(String(errors[0])).toContain('unknown id "a"');
   });
 });
+
+describe("createDrag: drop positions and listener errors", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const domOrder = (id: string) =>
+    [...(ctx.root.querySelector(`[data-lp-cards="${id}"]`) as HTMLElement).children].map(
+      (el) => el.getAttribute("data-lp-card") ?? "?",
+    );
+  const boardOrder = (id: string) => [...ctx.board.cards(id)].map((card) => card.id);
+
+  beforeEach(() => {
+    ctx = setup();
+    // A third card c, and boxes: a 20–60, b 100–140, c 160–200.
+    const c = document.createElement("li");
+    c.setAttribute("data-lp-card", "c");
+    ctx.card("b").after(c);
+    ctx.board.addCard("todo", { id: "c" }, null);
+    ctx.card("b").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    ctx.card("c").getBoundingClientRect = () => new DOMRect(10, 160, 200, 40);
+    under = null;
+    document.elementFromPoint = () => under;
+    drag = createDrag(ctx.root, ctx.board);
+  });
+  afterEach(() => drag.destroy());
+
+  async function dragCard(id: string, target: Element, y: number) {
+    pointer(ctx.card(id), "pointerdown", 50, 30);
+    pointer(ctx.card(id), "pointermove", 70, 30);
+    under = target;
+    pointer(ctx.card(id), "pointermove", 60, y);
+    await frame();
+    pointer(ctx.card(id), "pointerup", 60, y);
+  }
+
+  it("drops into the middle and at the top of a list", async () => {
+    await dragCard("a", ctx.card("c"), 170);
+    expect(boardOrder("todo")).toEqual(["b", "a", "c"]);
+    expect(domOrder("todo")).toEqual(["b", "a", "c"]);
+    ctx.card("a").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    ctx.card("b").getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    await dragCard("c", ctx.card("b"), 25);
+    expect(boardOrder("todo")).toEqual(["c", "b", "a"]);
+    expect(domOrder("todo")).toEqual(["c", "b", "a"]);
+  });
+
+  it("keeps the DOM in step with the Board when a listener throws after a valid move", async () => {
+    ctx.board.on("move", () => {
+      throw new Error("listener failed");
+    });
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    try {
+      await dragCard("a", ctx.card("c"), 170);
+    } catch (error) {
+      errors.push(error);
+    }
+    window.removeEventListener("error", onError);
+    expect(boardOrder("todo")).toEqual(["b", "a", "c"]);
+    expect(domOrder("todo")).toEqual(["b", "a", "c"]);
+    expect(String(errors[0])).toContain("listener failed");
+    expect(document.querySelector("[data-lp-placeholder], [data-lp-clone]")).toBeNull();
+  });
+});

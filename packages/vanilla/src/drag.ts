@@ -120,7 +120,7 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
   /**
    * Applies the drop to the Board (DEC-13): the card goes before the Placeholder's next card, or
    * to the end of its list, then takes the Placeholder's place in the DOM. If the Board rejects
-   * the move, the card stays where it was and the error is rethrown.
+   * the move, the card stays where it was; either way an error is rethrown.
    */
   function drop({ card, placeholder, clone }: Active): void {
     // Missing attributes become "", which the Board rejects like any unknown id.
@@ -132,11 +132,20 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     try {
       board.moveCard(id, listId, beforeId);
     } catch (error) {
+      // A listener may throw after the Board has moved the card: keep the DOM in step anyway.
+      if (landed(id, listId, beforeId)) placeholder.replaceWith(card);
       end();
       throw error;
     }
     placeholder.replaceWith(card);
     end();
+  }
+
+  /** Whether the Board holds card `id` in `listId`, right before `beforeId` (or last). */
+  function landed(id: string, listId: string, beforeId: string | null): boolean {
+    if (board.listOf(id)?.id !== listId) return false;
+    const ids = [...board.cards(listId)].map((card) => card.id);
+    return (ids[ids.indexOf(id) + 1] ?? null) === beforeId;
   }
 
   /** Reads the card's box once, then shows the Clone and holds the card's place. */
