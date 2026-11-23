@@ -11,6 +11,11 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   extension (`rewriteRelativeImportExtensions` turns them into `.js` in `dist/`).
 
 ## DOM and drag
+- Browser tests are `e2e/*.e2e.ts`: Vitest's default include also matches `*.spec.ts`, so a
+  Playwright `*.spec.ts` would be run by Vitest too.
+- In the playground, a broken engine DOM swap is invisible end-to-end: the playground redraws from
+  the Snapshot after every change. Browser tests catch a broken drop, not a broken swap; the swap is
+  covered by the `happy-dom` tests.
 - Reading layout (`getBoundingClientRect`, `offsetTop`, `offsetHeight`) right after a DOM write
   forces a synchronous layout. In a `pointermove` loop that is the main cost of a board, far more
   than any list operation.

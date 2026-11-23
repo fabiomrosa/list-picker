@@ -39,10 +39,12 @@ npm ci
 npm test            # the tests once
 npm run dev         # the playground at http://localhost:5173
 npm run bench       # linked lists against arrays (docs/decisions/0001)
+npm run e2e         # real drags in Chrome (needs Google Chrome installed)
 npm run format      # format and apply safe lint fixes
 ```
 
-Check everything CI checks (lint and format, types, tests with the coverage floor, build):
+Check everything CI checks (lint and format, types, tests with the coverage floor, build, browser
+tests):
 
 ```sh
 npm run verify

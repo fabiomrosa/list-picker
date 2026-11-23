@@ -362,7 +362,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** AGENTS "Non-negotiable" (listeners).
 
 ### L2.6 · Browser tests
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** real drags in a real browser are checked by the gate.
 - **Depends on:** L2.5.
 - **In scope:** `@playwright/test` with the installed Chrome (`channel: "chrome"`; GitHub's Ubuntu
@@ -379,7 +379,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** CONVENTIONS §5.
 
 ### L2.7 · Auto-scroll
-- **Status:** waiting (L2.6)
+- **Status:** next
 - **Goal:** dragging near the edge of a scrollable list or the board scrolls it.
 - **Depends on:** L2.6.
 - **In scope:** during a drag, within 40 px of the edge of the nearest scrollable ancestor (a list
