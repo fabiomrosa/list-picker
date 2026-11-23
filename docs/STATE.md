@@ -28,13 +28,18 @@ Every slice's pull request updates it (SESSION §3).
   Placeholder's list, before its next card or at the end, and the card takes the Placeholder's
   place; if the Board rejects it, the card goes back and the error is rethrown. Esc (a `keydown`
   listener on `document` only during a drag), `pointercancel` or `destroy()` cancel: the card is
-  shown where it was and nothing moves. The Clone follows the pointer: moves only
+  shown where it was and nothing moves.
+  Auto-scroll: within 40 px of the visible edge of a scrollable container around the pointer (a list
+  vertically, the board horizontally; a container cut off by the window uses the window's edge), it
+  scrolls each frame, faster closer to the edge, and keeps going while the pointer rests, until
+  there is nothing left to scroll that way. The Clone follows the pointer: moves only
   store it, one `requestAnimationFrame` per frame writes `transform`. Each frame the Placeholder
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
-  Chrome: within a list, across lists, into an empty list; a click changes nothing.
+  Chrome: within a list, across lists, into an empty list, to the end of a tall list by
+  auto-scroll; a click changes nothing.
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
@@ -42,7 +47,9 @@ Every slice's pull request updates it (SESSION §3).
   adds lists and cards at the end or before a chosen one, moves cards with ↑ ↓ ← → or a form
   (showing "same place" when nothing changed), moves lists with ← →, removes with ×, and logs
   every `move` event and the `change` count. It renders from `snapshot()` and shows its version.
-  Its cards can be dragged within and across lists (it redraws after every Board change).
+  Its cards can be dragged within and across lists (it redraws after every Board change); a tall
+  Backlog list (14 cards, lists scroll past 22rem) and a board narrower than its lists (52rem) show
+  auto-scroll both ways.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -64,8 +71,9 @@ None yet.
   no counterexample. A timeout set for property tests would remove the flake.
 
 ## Last session
+- **2026-11-23, L2.7:** auto-scroll; edges clipped to the window, found while checking in Chrome.
+- **Next:** L2.8 (drag lists), the last M2 slice.
 - **2026-11-23, L2.6:** Playwright browser tests in the gate, with the installed Chrome.
-- **Next:** L2.7 (auto-scroll).
 - **2026-11-23, L2.5:** Esc cancels a drag (`keydown` only during one).
 - **2026-11-22, L2.4:** drop applies the move to the Board and the DOM; the playground's cards are
   draggable for real.

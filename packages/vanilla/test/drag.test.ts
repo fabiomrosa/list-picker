@@ -514,3 +514,94 @@ describe("createDrag: cancel", () => {
     expect(remove.mock.calls.filter(([type]) => type === "keydown")).toHaveLength(1);
   });
 });
+
+describe("createDrag: auto-scroll", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let scroller: HTMLElement;
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
+  beforeEach(() => {
+    ctx = setup();
+    // The "todo" list scrolls vertically: 200 px tall box, 1000 px of content.
+    scroller = ctx.root.querySelector('[data-lp-cards="todo"]') as HTMLElement;
+    scroller.style.overflowY = "auto";
+    Object.defineProperty(scroller, "clientHeight", { value: 200 });
+    Object.defineProperty(scroller, "scrollHeight", { value: 1000 });
+    scroller.getBoundingClientRect = () => new DOMRect(0, 0, 220, 200);
+    document.elementFromPoint = () => scroller;
+    drag = createDrag(ctx.root, ctx.board);
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+  });
+  afterEach(() => {
+    drag.destroy();
+    vi.restoreAllMocks();
+  });
+
+  it("scrolls a list while the pointer is near its bottom edge, faster closer to it", async () => {
+    pointer(ctx.card("a"), "pointermove", 60, 180);
+    await frame();
+    const slow = scroller.scrollTop;
+    expect(slow).toBeGreaterThan(0);
+    // It keeps scrolling with the pointer still.
+    await frame();
+    expect(scroller.scrollTop).toBeGreaterThan(slow);
+    const at = scroller.scrollTop;
+    pointer(ctx.card("a"), "pointermove", 60, 198);
+    await frame();
+    expect(scroller.scrollTop - at).toBeGreaterThan(slow);
+  });
+
+  it("scrolls up near the top edge, and not at all away from the edges", async () => {
+    scroller.scrollTop = 300;
+    pointer(ctx.card("a"), "pointermove", 60, 5);
+    await frame();
+    expect(scroller.scrollTop).toBeLessThan(300);
+    const at = scroller.scrollTop;
+    pointer(ctx.card("a"), "pointermove", 60, 100);
+    await frame();
+    await frame();
+    expect(scroller.scrollTop).toBe(at);
+  });
+
+  it("treats the window's edge as the edge of a list cut off by it", async () => {
+    // The list runs past the bottom of the window; its visible bottom is the window's.
+    scroller.getBoundingClientRect = () => new DOMRect(0, 0, 220, window.innerHeight + 300);
+    pointer(ctx.card("a"), "pointermove", 60, window.innerHeight - 5);
+    await frame();
+    expect(scroller.scrollTop).toBeGreaterThan(0);
+  });
+
+  it("stops asking for frames once the list cannot scroll further that way", async () => {
+    // At the top already, with the pointer resting near the top edge: nothing left to scroll.
+    pointer(ctx.card("a"), "pointermove", 60, 5);
+    await frame();
+    const raf = vi.spyOn(window, "requestAnimationFrame");
+    await frame();
+    expect(raf.mock.calls.length).toBeLessThanOrEqual(1);
+    expect(scroller.scrollTop).toBe(0);
+  });
+
+  it("scrolls the board sideways near its right edge", async () => {
+    const board = ctx.root;
+    board.style.overflowX = "auto";
+    Object.defineProperty(board, "clientWidth", { value: 300 });
+    Object.defineProperty(board, "scrollWidth", { value: 900 });
+    board.getBoundingClientRect = () => new DOMRect(0, 0, 300, 400);
+    document.elementFromPoint = () => board;
+    pointer(ctx.card("a"), "pointermove", 295, 100);
+    await frame();
+    expect(board.scrollLeft).toBeGreaterThan(0);
+  });
+
+  it("stops scrolling when the drag ends", async () => {
+    pointer(ctx.card("a"), "pointermove", 60, 190);
+    await frame();
+    pointer(ctx.card("a"), "pointercancel", 60, 190);
+    const at = scroller.scrollTop;
+    await frame();
+    await frame();
+    expect(scroller.scrollTop).toBe(at);
+  });
+});

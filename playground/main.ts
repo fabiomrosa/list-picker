@@ -221,6 +221,9 @@ board.on("move", (event) => {
 for (const id of ["To do", "Doing", "Done"]) board.addList({ id }, null);
 for (const id of ["Design the model", "Write the tests"]) board.addCard("To do", { id }, null);
 board.addCard("Doing", { id: "Linked list" }, null);
+// A tall, scrolling list to try auto-scroll on.
+board.addList({ id: "Backlog" }, null);
+for (let i = 1; i <= 14; i++) board.addCard("Backlog", { id: `Idea ${i}` }, null);
 render();
 // Drops change the Board outside the buttons' handlers: redraw after every change, once the
 // engine has finished (a microtask later).
