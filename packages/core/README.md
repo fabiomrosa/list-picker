@@ -12,6 +12,8 @@ no runtime dependencies. To draw a Board and drag its cards, add
 npm install @list-picker/core
 ```
 
+ES modules only; the types need TypeScript 5 or later.
+
 ## Example
 
 ```ts

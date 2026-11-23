@@ -11,6 +11,8 @@ header; it owns the containers, the dragging and the order, and ships no styles.
 npm install @list-picker/core @list-picker/vanilla
 ```
 
+ES modules only; the types need TypeScript 5 or later.
+
 ## Example
 
 ```html

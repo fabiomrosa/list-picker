@@ -1,6 +1,6 @@
 {
   "name": "@list-picker/core",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "The model of a kanban-style board: ordered lists of ordered cards, as doubly linked lists.",
   "license": "MIT",
   "repository": {
@@ -16,7 +16,6 @@
     "cards",
     "reorder"
   ],
-  "private": true,
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -29,6 +28,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

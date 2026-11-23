@@ -106,7 +106,9 @@ title, size, frozen-files and secret checks.
 - Each package has a README (install, a complete example, the API; vanilla's also the `data-lp-*`
   hooks, the keys and the announcements), the MIT `LICENSE`, and `description`, `license`,
   `repository`, `keywords`, `sideEffects: false`; `npm pack --dry-run` lists only `dist`, the
-  README, the license and `package.json`. Both are still `private`, version `0.0.0` (L4.7).
+  README, the license and `package.json`. Version `1.0.0`, public (`publishConfig.access`),
+  vanilla depending on core `^1.0.0`; `prepublishOnly` builds. The owner publishes from their npm
+  account (core first), from `main`; the tag `v1.0.0` marks the published commit.
 
 ## Contract
 None yet.
@@ -115,10 +117,14 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.7:** both packages at `1.0.0`, ready for npm (`npm publish --dry-run` clean;
+  tarballs installed into an empty folder run both README examples). Not yet on npm: after the
+  merge the owner creates the `list-picker` npm org and publishes from `main`, then the agent tags
+  `v1.0.0` and checks criterion 1 against the registry.
+- **Next:** close M4 (SESSION §7).
 - **2026-11-23, L4.6:** the root README answers the lab's question with decisions 0001 and 0002
   (faster for the model, irrelevant next to layout; simpler for positions and events, not for
   drawing), lists the packages and how to repeat both measurements (rerun: same ranges).
-- **Next:** L4.7 (first npm publish; needs the owner's npm account and package names, P2).
 - **2026-11-23, L4.5:** READMEs, MIT license and npm metadata for both packages; every README
   example was run in Chrome once. The owner left P3 and the API names to the agent:
   `Announcement.list` is now `listLabel`.

@@ -637,13 +637,17 @@ shows it in the demo.
 - **References:** decisions 0001, 0002; DEC-06.
 
 ### L4.7 · First npm publish
-- **Status:** waiting (L4.6)
+- **Status:** done (2026-11-23)
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
   core `^1.0.0`), `private` removed, `publishConfig.access: public` for a scope; the agent runs
   `npm publish --dry-run` in each; the owner runs the publish from their account; tag `v1.0.0`.
 - **Out of scope:** a release workflow in CI.
+- **Deviation:** each package gets `prepublishOnly: npm run build`, so a publish never ships a stale
+  `dist`. Before the publish, criterion 1 was checked with `npm pack` tarballs installed into an
+  empty folder (the core example in Node, the vanilla example in Chrome). The publish and the tag
+  follow the merge, from `main`.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. `npm install <vanilla name>` in an empty folder installs both packages, and the README example
