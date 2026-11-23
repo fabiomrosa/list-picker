@@ -412,6 +412,90 @@ styles the user must fight, except the Clone's position and `transform`.
 - **Files:** ~6: `src/drag.ts`, its test, `e2e/drag.e2e.ts`, playground, PLAN, STATE.
 - **References:** DEC-13.
 
+## M3 · Vanilla adapter and demo
+`mount(root, board, { renderList, renderCard })` in `packages/vanilla` (DEC-14): it builds the
+containers with the `data-lp-*` attributes of DEC-13, puts the user's elements in them, starts the
+drag engine, and follows the Board by id. The playground becomes the demo board at L3.3, and the
+owner checks it then. Engine and mount tests run in `happy-dom`; the demo's drags stay covered by
+the browser tests.
+
+### L3.1 · Mount a Board
+- **Status:** next
+- **Goal:** one call draws a Board from the user's Renderers and makes it draggable.
+- **Depends on:** M2, DEC-14.
+- **In scope:**
+  - `mount(root, board, { renderList, renderCard })` returning `{ destroy }`. For each list, in
+    Board order: a `div[data-lp-list]` holding the element `renderList(list)` returns (marked
+    `data-lp-list-handle`) and a `div[data-lp-cards]`; each card is the element `renderCard(card)`
+    returns, marked `data-lp-card`. Then `createDrag(root, board)`.
+  - A missing `root`, or a Renderer that returns something other than an `Element`, throws a
+    `list-picker:` error and leaves `root` as it was.
+  - `destroy()` destroys the drag and removes every element `mount` added.
+- **Out of scope:** following Board changes made in code (L3.2), the demo (L3.3).
+- **Contract:** none. **Public API:** additive, `mount`, `Mount`, `Renderers`.
+- **Acceptance criteria:**
+  1. After `mount`, `root` holds one list container per list and one card element per card, in
+     Board order, each the Renderer's own element with the attributes added.
+  2. A card dragged in a mounted Board moves in the Board and the DOM.
+  3. A missing `root` or a non-`Element` from a Renderer throws, and `root` is unchanged.
+  4. After `destroy()`, `root` is as before `mount` and pressing a card does nothing.
+- **Files:** ~6: `src/mount.ts`, `src/index.ts`, `test/mount.test.ts`, ARCHITECTURE, PLAN, STATE.
+- **References:** DEC-07, DEC-13, DEC-14; ARCHITECTURE "Configuration".
+
+### L3.2 · Follow the Board by id
+- **Status:** waiting (L3.1)
+- **Goal:** changes made in code (add, remove, move) show up without redrawing what did not change.
+- **Depends on:** L3.1.
+- **In scope:** on each `change`, reconcile `root` against the Snapshot by id: keep each list's and
+  card's element, call a Renderer only for a new list or card, remove the elements of the ones that
+  are gone, and move the rest into Board order (moving only those out of place). After a drop the
+  engine has already moved the element, so nothing is written. `destroy()` also unsubscribes.
+- **Out of scope:** updating a card's content (the Board has no such operation).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. After `addCard`, `removeCard`, `moveCard`, `addList`, `removeList` and `moveList`, the DOM
+     matches the Board order.
+  2. Each Renderer is called once per list or card over its life in the Board; a kept element is
+     the same object (its focus and input state survive).
+  3. After a drag-and-drop, the reconcile writes nothing to the DOM.
+  4. After `destroy()`, a Board change touches nothing.
+- **Files:** ~5: `src/mount.ts`, `test/mount.test.ts`, PLAN, STATE, GOTCHAS if needed.
+- **References:** DEC-14.
+
+### L3.3 · The demo board
+- **Status:** waiting (L3.2)
+- **Goal:** the playground becomes the demo: a board drawn by `mount` with the demo's own Renderers.
+- **Depends on:** L3.2.
+- **In scope:** `playground/main.ts` renders through `mount` (its own drawing code goes); its
+  Renderers keep the cards' neighbours, the move and × buttons, and the list titles as handles; the
+  forms and the event log stay outside the mounted root. Styles stay in the demo (DEC-07). The
+  browser tests keep passing against it.
+- **Out of scope:** publishing the demo (M4).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. `npm run e2e` passes against the demo unchanged, or with only selector changes.
+  2. Every playground control still works (run once live, reading the page as loaded).
+  3. The owner checks the demo in the browser.
+- **Files:** ~5: `playground/{main.ts,index.html}`, `e2e/drag.e2e.ts` if needed, PLAN, STATE.
+- **References:** SESSION §3.3.
+
+### L3.4 · Trace: no forced layout per pointer move
+- **Status:** waiting (L3.3)
+- **Goal:** the claim that a drag forces no layout in `pointermove` is measured, not assumed.
+- **Depends on:** L3.3.
+- **In scope:** record a Chrome performance trace of card and list drags on the demo (with
+  auto-scroll); count forced (synchronous) layouts and where they come from; decision record 0002
+  with the method, the numbers and the trace's summary. A forced layout inside `pointermove` found
+  here is a fix in this slice if small, otherwise a known issue.
+- **Out of scope:** an automated trace check in the gate.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Decision record 0002 states how the trace was recorded and reports forced layouts per
+     `pointermove` (expected: zero).
+  2. The record says how to repeat it.
+- **Files:** ~3: `docs/decisions/0002-drag-layout-trace.md`, PLAN, STATE.
+- **References:** AGENTS "Non-negotiable" (layout reads, performance claims), decision 0001.
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).

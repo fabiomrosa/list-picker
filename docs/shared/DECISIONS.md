@@ -115,6 +115,18 @@ The drag engine (`createDrag(root, board)` in `@list-picker/vanilla`) finds card
 - **Consequences:** the user's markup must carry the attributes; the engine never creates cards,
   only the Clone and the Placeholder; if `moveCard` throws, the card goes back where it was.
 
+## DEC-14 · `mount` builds the containers and follows the Board by id — Accepted (owner, 2026-11-23)
+`mount(root, board, { renderList, renderCard })` in `@list-picker/vanilla` builds each list's
+container (`data-lp-list`, `data-lp-cards`) and marks the Renderers' elements (`data-lp-list-handle`
+on the list's, `data-lp-card` on each card's), then starts `createDrag`. On each `change` it
+reconciles against the Snapshot by id: a Renderer runs once per list or card, kept elements are
+moved, never redrawn.
+- **Why:** the user writes only what a card and a list look like (DEC-07) and cannot get the
+  attributes wrong; keyed updates keep the user's element state (focus, inputs) and make a drop,
+  already applied by the engine (DEC-13), cost no DOM write.
+- **Consequences:** the Renderer's element is the card itself, with no wrapper; content changes to a
+  card are out of v1 (the Board has no update operation).
+
 ---
 
 ## Proposed (waiting for the owner)
