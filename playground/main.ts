@@ -19,6 +19,17 @@ function el(tag: string, className: string, text: string): HTMLElement {
   return element;
 }
 
+function removeButton(label: string, onClick: () => void): HTMLButtonElement {
+  const button = el("button", "remove", "×") as HTMLButtonElement;
+  button.type = "button";
+  button.title = `remove ${label}`;
+  button.addEventListener("click", () => {
+    onClick();
+    render();
+  });
+  return button;
+}
+
 /** Refills a select with "(end)" or `empty`, then `ids`, keeping the choice when it still exists. */
 function fill(select: HTMLSelectElement, ids: string[], empty: string | null): void {
   const selected = select.value;
@@ -34,6 +45,7 @@ function render(): void {
     const column = el("section", "list", "");
     const cards = [...board.cards(listId)];
     column.append(
+      removeButton(`list ${listId}`, () => board.removeList(listId)),
       el("h2", "", listId),
       el("small", "", `${cards.length} ${cards.length === 1 ? "card" : "cards"}`),
     );
@@ -47,6 +59,7 @@ function render(): void {
           "",
           `prev: ${cards[i - 1]?.id ?? "null"} · next: ${cards[i + 1]?.id ?? "null"}`,
         ),
+        removeButton(`card ${card.id}`, () => board.removeCard(card.id)),
       );
       stack.append(box);
     });

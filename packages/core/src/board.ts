@@ -30,6 +30,22 @@ export class Board<L extends Entity, C extends Entity> {
     this.#listOfCard.set(card.id, entry);
   }
 
+  /** Removes the card with `id` from its List and the Board, and returns it. */
+  removeCard(id: string): C {
+    const entry = this.#listOfCard.get(id);
+    if (!entry) throw new Error(`list-picker: unknown id "${id}"`);
+    const card = entry.cards.remove(id);
+    this.#listOfCard.delete(id);
+    return card;
+  }
+
+  /** Removes the List with `id` and all its cards from the Board, and returns the List. */
+  removeList(id: string): L {
+    const entry = this.#lists.remove(id);
+    for (const card of entry.cards) this.#listOfCard.delete(card.id);
+    return entry.list;
+  }
+
   getList(id: string): L | undefined {
     return this.#lists.get(id)?.value.list;
   }

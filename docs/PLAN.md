@@ -148,7 +148,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT ubiquitous language, DEC-06.
 
 ### L1.6 · Board: remove cards and lists
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** cards and whole Lists can be removed, and the Board forgets them.
 - **Depends on:** L1.5.
 - **In scope:** `removeCard(id)` and `removeList(id)` return what they removed; removing a List
@@ -163,7 +163,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.7 · Board: move a card
-- **Status:** waiting (L1.6)
+- **Status:** next
 - **Goal:** a card moves within its List or to another one, before a given card or at the end,
   in O(1).
 - **Depends on:** L1.6.
