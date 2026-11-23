@@ -34,6 +34,8 @@ packages/<name>/
 ## 4. Errors
 - Bad input at mount or in a public call (unknown `id`, duplicate `id`, missing container) throws an
   `Error` whose message starts with `list-picker:` and names the value.
+- A call that takes the user's elements checks all of them before it writes any (attributes, moves),
+  so an error leaves the user's markup as it was.
 - Nothing is logged with `console` in library code.
 
 ## 5. Tests
@@ -55,6 +57,11 @@ time to be reported.
 
 **Benchmarks** build their fixtures outside the timing, warm up each side, alternate which side runs
 first, and report a median; a decision record states the method next to the numbers.
+A measurement script fails when what it counts over is empty (no events found, no samples),
+instead of reporting zero.
+
+**DOM writes** are counted when a test claims a change touches only some elements (a reconcile that
+moves only what is out of place); checking the resulting order alone passes with extra writes.
 
 **Coverage floor:** 80% of lines (`--coverage.thresholds.lines` in the root `test:coverage` script),
 measured by the gate over `packages/*/src` (tests and configuration excluded). It is raised when
