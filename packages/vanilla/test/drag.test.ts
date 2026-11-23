@@ -288,3 +288,89 @@ describe("createDrag: the Placeholder follows the drop target", () => {
     expect(writes).toEqual([]);
   });
 });
+
+describe("createDrag: drop", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  let moves: unknown[];
+  const frame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+  const list = (id: string) => ctx.root.querySelector(`[data-lp-cards="${id}"]`) as HTMLElement;
+  const domOrder = (id: string) =>
+    [...list(id).children].map((el) => el.getAttribute("data-lp-card") ?? "?");
+  const boardOrder = (id: string) => [...ctx.board.cards(id)].map((card) => card.id);
+
+  beforeEach(() => {
+    ctx = setup();
+    ctx.card("b").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    under = null;
+    document.elementFromPoint = () => under;
+    moves = [];
+    ctx.board.on("move", (event) => moves.push(event));
+    drag = createDrag(ctx.root, ctx.board);
+  });
+  afterEach(() => drag.destroy());
+
+  async function dragTo(target: Element | null, y: number) {
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+    under = target;
+    pointer(ctx.card("a"), "pointermove", 60, y);
+    await frame();
+    pointer(ctx.card("a"), "pointerup", 60, y);
+  }
+
+  it("moves the card below another card, in the Board and the DOM", async () => {
+    await dragTo(ctx.card("b"), 130);
+    expect(boardOrder("todo")).toEqual(["b", "a"]);
+    expect(domOrder("todo")).toEqual(["b", "a"]);
+    expect(moves).toHaveLength(1);
+  });
+
+  it("moves the card to the end of another list", async () => {
+    await dragTo(list("done"), 300);
+    expect(boardOrder("todo")).toEqual(["b"]);
+    expect(boardOrder("done")).toEqual(["a"]);
+    expect(domOrder("done")).toEqual(["a"]);
+    expect(moves).toEqual([
+      { kind: "card", id: "a", fromListId: "todo", toListId: "done", prevId: null, nextId: null },
+    ]);
+  });
+
+  it("changes nothing when dropped where it was", async () => {
+    const before = ctx.root.innerHTML;
+    await dragTo(ctx.card("b"), 105);
+    expect(moves).toEqual([]);
+    expect(ctx.root.innerHTML).toBe(before);
+  });
+
+  it("cleans up after a drop: no Clone, no Placeholder, no drag state, no drag listener", async () => {
+    await dragTo(list("done"), 300);
+    expect(
+      document.querySelector("[data-lp-clone], [data-lp-placeholder], [data-lp-dragging]"),
+    ).toBeNull();
+    expect(ctx.card("a").style.display).toBe("flex");
+    pointer(ctx.card("a"), "pointermove", 200, 200);
+    await frame();
+    expect(document.querySelector("[data-lp-clone]")).toBeNull();
+  });
+
+  it("puts the card back where it was when the Board rejects the move", async () => {
+    ctx.board.removeCard("a");
+    const before = ctx.root.innerHTML;
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    try {
+      await dragTo(list("done"), 300);
+    } catch (error) {
+      errors.push(error);
+    }
+    window.removeEventListener("error", onError);
+    expect(ctx.root.innerHTML).toBe(before);
+    expect(String(errors[0])).toContain('unknown id "a"');
+  });
+});

@@ -37,7 +37,7 @@ interface Active {
  */
 export function createDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
-  _board: Board<L, C>,
+  board: Board<L, C>,
 ): Drag {
   let press: Press | undefined;
   let active: Active | undefined;
@@ -113,6 +113,29 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
 
   function onPointerEnd(event: PointerEvent): void {
     if (!press || event.pointerId !== press.pointerId) return;
+    if (event.type === "pointerup" && active) drop(active);
+    else end();
+  }
+
+  /**
+   * Applies the drop to the Board (DEC-13): the card goes before the Placeholder's next card, or
+   * to the end of its list, then takes the Placeholder's place in the DOM. If the Board rejects
+   * the move, the card stays where it was and the error is rethrown.
+   */
+  function drop({ card, placeholder, clone }: Active): void {
+    const listId = placeholder.parentElement?.getAttribute("data-lp-cards");
+    const id = card.getAttribute("data-lp-card");
+    let next = placeholder.nextElementSibling;
+    while (next === card || next === clone) next = next.nextElementSibling;
+    const beforeId = next?.getAttribute("data-lp-card") ?? null;
+    if (listId == null || id == null) return end();
+    try {
+      board.moveCard(id, listId, beforeId);
+    } catch (error) {
+      end();
+      throw error;
+    }
+    placeholder.replaceWith(card);
     end();
   }
 
@@ -156,7 +179,7 @@ export function createDrag<L extends { id: string }, C extends { id: string }>(
     return { card, clone, placeholder, display };
   }
 
-  /** Ends the press or drag: the card is shown where it was (dropping comes in L2.4). */
+  /** Ends the press or drag: removes the Clone and the Placeholder and shows the card. */
   function end(): void {
     if (frame !== undefined) cancelAnimationFrame(frame);
     frame = undefined;
