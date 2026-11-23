@@ -420,7 +420,7 @@ owner checks it then. Engine and mount tests run in `happy-dom`; the demo's drag
 the browser tests.
 
 ### L3.1 · Mount a Board
-- **Status:** next
+- **Status:** done (2026-11-23)
 - **Goal:** one call draws a Board from the user's Renderers and makes it draggable.
 - **Depends on:** M2, DEC-14.
 - **In scope:**
@@ -443,7 +443,7 @@ the browser tests.
 - **References:** DEC-07, DEC-13, DEC-14; ARCHITECTURE "Configuration".
 
 ### L3.2 · Follow the Board by id
-- **Status:** waiting (L3.1)
+- **Status:** next
 - **Goal:** changes made in code (add, remove, move) show up without redrawing what did not change.
 - **Depends on:** L3.1.
 - **In scope:** on each `change`, reconcile `root` against the Snapshot by id: keep each list's and
