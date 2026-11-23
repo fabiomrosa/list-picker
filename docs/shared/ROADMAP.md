@@ -45,7 +45,7 @@ becomes draggable at L2.4.
 |---|---|
 | `list-picker` | L2.1 → L2.2 → L2.3 → L2.4 → L2.5 → L2.6 → L2.7 → L2.8 |
 
-## M3 · Vanilla adapter and demo
+## M3 · Vanilla adapter and demo · done (2026-11-23)
 `mount(root, board, { renderList, renderCard })` draws a Board from the user's Renderers into the
 DEC-13 containers, starts the drag engine and follows Board changes by id (DEC-14); the playground
 becomes the demo board; a recorded trace shows no forced layout per pointer move (decision 0002).
@@ -65,7 +65,7 @@ becomes the demo board; a recorded trace shows no forced layout per pointer move
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-L3.1 to L3.4 in order; the owner checks the demo at L3.3.
+M4 next: "plan M4".
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |

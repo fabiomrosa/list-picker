@@ -95,13 +95,15 @@ None yet.
   reconciles without error.
 
 ## Last session
+- **2026-11-23, close M3:** every M3 slice landed as planned (L3.1–L3.4, PRs #36–#39); the owner
+  checked the demo. Five retro proposals and two known issues are open for the owner.
+- **Next:** plan M4 (v1 release).
 - **2026-11-23, L3.4:** decision record 0002: a Chrome trace of real drags shows no forced layout
   in `pointermove`. Auto-scroll frames force one each (the `scrollTop` write after the
   Placeholder's move); scrolling first removed them but broke upward auto-scroll through scroll
   anchoring (caught in review), so the engine is unchanged. Every M3 slice is done.
-- **Next:** the owner checks the demo (`git pull && npm ci && npm run dev`), then "close M3".
 - **2026-11-23, L3.3:** the playground is the demo board, drawn by `mount`; the browser tests pass
-  unchanged. The owner's check of the demo in the browser is pending.
+  unchanged. The owner checked the demo at the M3 close.
 - **2026-11-23, L3.2:** `mount` follows the Board by id (one reconcile per microtask); each
   Renderer runs once per list or card, and a drop costs no DOM write.
 - **2026-11-23, L3.1:** `mount` draws a Board from the user's Renderers into the DEC-13 markup and
