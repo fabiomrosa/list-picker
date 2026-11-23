@@ -119,28 +119,27 @@ function applyToModel(model: Model, o: Op): Result {
   }
 }
 
-function applyToBoard(board: Board<Entity, Entity>, o: Op): Result {
+/** Runs `o` on the Board. A removal returns the removed id so the caller can check it. */
+function applyToBoard(board: Board<Entity, Entity>, o: Op): [Result, string?] {
   try {
     switch (o.kind) {
       case "addList":
         board.addList({ id: o.id }, o.before);
-        return "changed";
+        return ["changed"];
       case "addCard":
         board.addCard(o.list, { id: o.id }, o.before);
-        return "changed";
+        return ["changed"];
       case "removeCard":
-        expect(board.removeCard(o.id).id).toBe(o.id);
-        return "changed";
+        return ["changed", board.removeCard(o.id).id];
       case "removeList":
-        expect(board.removeList(o.id).id).toBe(o.id);
-        return "changed";
+        return ["changed", board.removeList(o.id).id];
       case "moveCard":
-        return board.moveCard(o.id, o.list, o.before) ? "changed" : "same";
+        return [board.moveCard(o.id, o.list, o.before) ? "changed" : "same"];
       case "moveList":
-        return board.moveList(o.id, o.before) ? "changed" : "same";
+        return [board.moveList(o.id, o.before) ? "changed" : "same"];
     }
   } catch {
-    return "error";
+    return ["error"];
   }
 }
 
@@ -162,16 +161,26 @@ function expectInvariants(board: Board<Entity, Entity>, model: Model): void {
 
 describe("Board invariants", () => {
   it("match a nested-array model after any sequence of operations", () => {
+    const reached = new Map<string, number>();
     fc.assert(
       fc.property(setup, fc.array(op, { minLength: 20, maxLength: 60 }), (start, ops) => {
         const board = new Board<Entity, Entity>();
         const model: Model = [];
         for (const o of [...start, ...ops]) {
-          expect(applyToBoard(board, o)).toBe(applyToModel(model, o));
+          const expected = applyToModel(model, o);
+          const [actual, removed] = applyToBoard(board, o);
+          expect(actual).toBe(expected);
+          if (removed !== undefined) expect(removed).toBe("id" in o ? o.id : undefined);
           expectInvariants(board, model);
+          const key = `${o.kind}:${expected}`;
+          reached.set(key, (reached.get(key) ?? 0) + 1);
         }
       }),
       { numRuns: 500 },
     );
+    // The generator must keep reaching the interesting cases, or the property goes blind.
+    for (const key of ["moveCard:changed", "moveCard:same", "moveList:changed", "moveList:same"]) {
+      expect(reached.get(key) ?? 0, key).toBeGreaterThan(50);
+    }
   });
 });

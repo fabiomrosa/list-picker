@@ -39,7 +39,7 @@ function action(text: string, title: string, onClick: () => void, disabled = fal
   return button;
 }
 
-/** Moves a card and says on the page whether the order changed. */
+/** Moves a list and says on the page whether the order changed. */
 function moveList(id: string, beforeListId: string | null): void {
   const changed = board.moveList(id, beforeListId);
   status.textContent = changed
@@ -47,6 +47,7 @@ function moveList(id: string, beforeListId: string | null): void {
     : `list ${id}: same place, nothing changed`;
 }
 
+/** Moves a card and says on the page whether the order changed. */
 function move(id: string, toListId: string, beforeCardId: string | null): void {
   const changed = board.moveCard(id, toListId, beforeCardId);
   status.textContent = changed
