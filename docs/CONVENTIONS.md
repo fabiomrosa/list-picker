@@ -44,6 +44,12 @@ packages/<name>/
 | An engine behaviour | the engine with `happy-dom` and synthetic pointer events | `packages/vanilla/test/<thing>.test.ts` |
 | A real drag | the demo page in Playwright | `e2e/<flow>.spec.ts` (from M2) |
 
+**Property tests** assert that they reached their interesting outcomes (a minimum count of each),
+so a weak generator fails instead of passing blind.
+
+**Benchmarks** build their fixtures outside the timing, warm up each side, alternate which side runs
+first, and report a median; a decision record states the method next to the numbers.
+
 **Coverage floor:** 80% of lines (`--coverage.thresholds.lines` in the root `test:coverage` script),
 measured by the gate over `packages/*/src` (tests and configuration excluded). It is raised when
 coverage grows past it and lowered only with the owner's ok. A floor proves tests exist, not that
