@@ -340,3 +340,85 @@ describe("Board events", () => {
     expect(b.listOf("a")?.id).toBe("done");
   });
 });
+
+describe("Board.snapshot", () => {
+  const sample = () => {
+    const b = new Board<List, Card>();
+    b.addList({ id: "todo", title: "To do" }, null);
+    b.addList({ id: "done" }, null);
+    b.addCard("todo", { id: "a" }, null);
+    b.addCard("todo", { id: "b" }, null);
+    return b;
+  };
+
+  it("reads the Board in order, with the user's own values", () => {
+    const b = sample();
+    const list = b.getList("todo");
+    expect(b.snapshot()).toEqual({
+      lists: [
+        { list: { id: "todo", title: "To do" }, cards: [{ id: "a" }, { id: "b" }] },
+        { list: { id: "done" }, cards: [] },
+      ],
+    });
+    expect(b.snapshot().lists[0]?.list).toBe(list);
+    expect(b.snapshot().lists[0]?.cards[0]).toBe(b.getCard("a"));
+  });
+
+  it("is frozen at every level the library creates", () => {
+    const snapshot = sample().snapshot();
+    expect(Object.isFrozen(snapshot)).toBe(true);
+    expect(Object.isFrozen(snapshot.lists)).toBe(true);
+    expect(Object.isFrozen(snapshot.lists[0])).toBe(true);
+    expect(Object.isFrozen(snapshot.lists[0]?.cards)).toBe(true);
+    expect(() => (snapshot.lists as unknown[]).push(1)).toThrow(TypeError);
+  });
+
+  it("is the same object until the Board changes, then a new one", () => {
+    const b = sample();
+    const first = b.snapshot();
+    expect(b.snapshot()).toBe(first);
+    b.moveCard("a", "todo", "a");
+    expect(b.snapshot()).toBe(first);
+    b.moveCard("a", "done", null);
+    const second = b.snapshot();
+    expect(second).not.toBe(first);
+    expect(second.lists[1]?.cards).toEqual([{ id: "a" }]);
+    expect(first.lists[1]?.cards).toEqual([]);
+  });
+
+  it("gives move and change listeners of one change the same fresh object", () => {
+    const b = sample();
+    const seen: unknown[] = [];
+    b.on("move", () => seen.push(b.snapshot()));
+    b.on("change", () => seen.push(b.snapshot()));
+    b.moveCard("b", "done", null);
+    expect(seen).toHaveLength(2);
+    expect(seen[0]).toBe(seen[1]);
+  });
+
+  it("is fresh inside a change listener after an add or a remove", () => {
+    const b = sample();
+    const seen: number[] = [];
+    b.on("change", () => seen.push(b.snapshot().lists.length));
+    b.addList({ id: "later" }, null);
+    b.removeList("later");
+    expect(seen).toEqual([3, 2]);
+  });
+
+  it("survives a call that throws", () => {
+    const b = sample();
+    const first = b.snapshot();
+    expect(() => b.addCard("todo", { id: "a" }, null)).toThrow();
+    expect(b.snapshot()).toBe(first);
+  });
+
+  it("is already fresh inside a move listener", () => {
+    const b = sample();
+    let seen: string[] = [];
+    b.on("move", () => {
+      seen = (b.snapshot().lists[1]?.cards ?? []).map((card) => card.id);
+    });
+    b.moveCard("b", "done", null);
+    expect(seen).toEqual(["b"]);
+  });
+});
