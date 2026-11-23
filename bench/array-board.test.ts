@@ -6,14 +6,17 @@ describe("benchmark fixtures", () => {
   it.each<Shape>([
     { lists: 10, cardsPerList: 10 },
     { lists: 10, cardsPerList: 100 },
+    { lists: 20, cardsPerList: 500 },
   ])("give the Board and the ArrayBoard the same order after the same moves (%o)", (shape) => {
     const board = makeBoard(shape);
     const array = makeArrayBoard(shape);
+    let noOps = 0;
     for (const m of makeMoves(shape, 2000)) {
-      expect(board.moveCard(m.id, m.toListId, m.beforeCardId)).toBe(
-        array.moveCard(m.id, m.toListId, m.beforeCardId),
-      );
+      const changed = board.moveCard(m.id, m.toListId, m.beforeCardId);
+      expect(changed).toBe(array.moveCard(m.id, m.toListId, m.beforeCardId));
+      if (!changed) noOps++;
     }
+    expect(noOps).toBeGreaterThan(0);
     const order = board
       .snapshot()
       .lists.map(({ list, cards }) => [list.id, cards.map((c) => c.id)]);

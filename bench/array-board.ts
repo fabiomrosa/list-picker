@@ -21,7 +21,7 @@ export class ArrayBoard<C extends Entity> {
 
   moveCard(id: string, toListId: string, beforeCardId: string | null): boolean {
     const from = this.#listOf.get(id);
-    const to = this.lists.find((l) => l.id === toListId);
+    const to = this.lists.find((l) => l.id === toListId); // O(lists): lists are few
     if (!from || !to) throw new Error("unknown id");
     const at = from.cards.findIndex((c) => c.id === id);
     if (from === to) {

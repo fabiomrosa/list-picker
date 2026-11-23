@@ -15,22 +15,31 @@ lists, before a random card or to the end) on:
 - `ArrayBoard` (`bench/array-board.ts`): plain arrays with `findIndex` + `splice`, and a
   card-to-list map so finding a card's list is O(1) too. The cost left is the work inside a list.
 
-Each sample builds a fresh board outside the timing; 5 warm-up samples, then the median of 30.
-`bench/array-board.test.ts` (in the gate) checks both boards give the same results and the same
-order after the same moves, so they do the same work.
+Each sample builds a fresh board outside the timing. Both sides warm up for about 100 ms, then 40
+rounds alternate which side runs first; the result is the median. A plain Node runner rather than
+`vitest bench`, because every sample needs a fresh board built outside the timing.
+`bench/array-board.test.ts` (in the gate) checks, for all three shapes, that both boards return the
+same results (including no-op moves) and end in the same order, so they do the same work.
 
-Machine: Apple M4 Pro, 24 GB, macOS 27.0.1, Node 26.13.1. Three runs:
+Machine: Apple M4 Pro, 24 GB, macOS 27.0.1, Node 26.13.1. Ids are short strings; no listeners.
+Three runs:
 
 | Board (lists × cards per list) | Linked list (µs/move) | Arrays (µs/move) | Arrays / linked |
 |---|---|---|---|
-| 10 × 10 | 0.135 – 0.149 | 0.128 – 0.133 | 0.9× |
-| 10 × 100 | 0.152 – 0.171 | 0.396 – 0.409 | 2.4 – 2.7× |
-| 20 × 500 | 0.185 – 0.187 | 1.42 – 1.50 | 7.7 – 8.1× |
+| 10 × 10 | 0.097 – 0.105 | 0.121 – 0.122 | 1.1 – 1.3× |
+| 10 × 100 | 0.139 – 0.150 | 0.399 – 0.419 | 2.8 – 2.9× |
+| 20 × 500 | 0.180 – 0.183 | 1.44 – 1.48 | 7.9 – 8.2× |
+
+A first version of the runner warmed up for only 5 short samples and always ran the linked list
+first; it measured 10 × 10 the other way round (arrays 10% faster) and the linked list up to 20%
+slower at 20 × 500. Small differences here depend on the method: read the 10 × 10 row as "about
+equal".
 
 ## Decision
-Keep the linked-list model (DEC-06). A move costs the same, about 0.15–0.19 µs, whatever the list
-length, as O(1) predicts; the array board grows with the list length (`findIndex` and `splice`): level
-at 10 cards per list, 2.4–2.7× slower at 100, about 8× slower at 500.
+Keep the linked-list model (DEC-06). From 10 to 500 cards per list (50× longer), a linked-list
+move gets about 1.8× slower (likely memory and cache effects; the work itself is O(1)), while an
+array move gets about 12× slower (`findIndex` and `splice` are O(n)). About equal on small lists,
+roughly 3× faster at 100 cards per list and 8× at 500.
 
 ## Consequences
 - The theory holds for the model, but the absolute numbers are tiny: even the slowest case is
@@ -40,4 +49,4 @@ at 10 cards per list, 2.4–2.7× slower at 100, about 8× slower at 500.
 - The gap matters for long lists and bulk work (replaying many moves from a server, scripted
   reorders).
 - Not measured: memory per card, `snapshot()` (O(n) after each change; M3 measures it in real
-  renders if it shows up in a trace).
+  renders if it shows up in a trace), other machines and engines, long ids.
