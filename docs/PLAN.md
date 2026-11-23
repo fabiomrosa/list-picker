@@ -428,8 +428,9 @@ the browser tests.
     Board order: a `div[data-lp-list]` holding the element `renderList(list)` returns (marked
     `data-lp-list-handle`) and a `div[data-lp-cards]`; each card is the element `renderCard(card)`
     returns, marked `data-lp-card`. Then `createDrag(root, board)`.
-  - A missing `root`, or a Renderer that returns something other than an `Element`, throws a
-    `list-picker:` error and leaves `root` as it was.
+  - A missing `root`, or a Renderer that returns anything but a new, detached `HTMLElement` (not
+    in the document, not returned before), throws a `list-picker:` error and leaves `root` as it
+    was.
   - `destroy()` destroys the drag and removes every element `mount` added.
 - **Out of scope:** following Board changes made in code (L3.2), the demo (L3.3).
 - **Contract:** none. **Public API:** additive, `mount`, `Mount`, `Renderers`.
@@ -437,7 +438,8 @@ the browser tests.
   1. After `mount`, `root` holds one list container per list and one card element per card, in
      Board order, each the Renderer's own element with the attributes added.
   2. A card dragged in a mounted Board moves in the Board and the DOM.
-  3. A missing `root` or a non-`Element` from a Renderer throws, and `root` is unchanged.
+  3. A missing `root`, a non-element, a repeated or an attached element from a Renderer throws,
+     and nothing in the document changes.
   4. After `destroy()`, `root` is as before `mount` and pressing a card does nothing.
 - **Files:** ~6: `src/mount.ts`, `src/index.ts`, `test/mount.test.ts`, ARCHITECTURE, PLAN, STATE.
 - **References:** DEC-07, DEC-13, DEC-14; ARCHITECTURE "Configuration".

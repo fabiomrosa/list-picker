@@ -43,8 +43,9 @@ Every slice's pull request updates it (SESSION §3).
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
   it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
   element (marked `data-lp-list-handle`) and a `div[data-lp-cards]` of the card Renderer's elements
-  (each marked `data-lp-card`), then starts `createDrag`. A missing `root` or a Renderer returning
-  no `HTMLElement` throws before `root` changes; `destroy()` stops the drag and removes what it
+  (each marked `data-lp-card`), then starts `createDrag`. Every Renderer runs and is checked first: a
+  missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
+  document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
   added. It draws once: Board changes made in code are not followed yet (L3.2).
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by

@@ -46,7 +46,11 @@ describe("mount", () => {
     ctx = setup();
     mounted = undefined;
   });
-  afterEach(() => mounted?.destroy());
+  const elementFromPoint = document.elementFromPoint;
+  afterEach(() => {
+    mounted?.destroy();
+    document.elementFromPoint = elementFromPoint;
+  });
 
   it("draws each list and card from the Renderers' own elements, in Board order", () => {
     mounted = mount(ctx.root, ctx.board, ctx.renderers);
@@ -112,5 +116,21 @@ describe("mount", () => {
     pointer(a, "pointerdown", 50, 30);
     pointer(a, "pointermove", 70, 30);
     expect(document.querySelector("[data-lp-clone]")).toBeNull();
+  });
+
+  it("throws for an element given twice, or already in the document, and changes nothing", () => {
+    const shared = document.createElement("article");
+    expect(() =>
+      mount(ctx.root, ctx.board, { ...ctx.renderers, renderCard: () => shared }),
+    ).toThrow(/^list-picker: .*"b"/);
+    expect(shared.attributes).toHaveLength(0);
+    const before = ctx.root.innerHTML;
+    const kept = ctx.root.firstElementChild as HTMLElement;
+    const renderList = (list: Entity) =>
+      list.id === "todo" ? kept : ctx.renderers.renderList(list);
+    expect(() => mount(ctx.root, ctx.board, { ...ctx.renderers, renderList })).toThrow(
+      /^list-picker: .*"todo"/,
+    );
+    expect(ctx.root.innerHTML).toBe(before);
   });
 });

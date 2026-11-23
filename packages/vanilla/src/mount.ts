@@ -12,19 +12,11 @@ export interface Renderers<L, C> {
   renderCard(card: C): HTMLElement;
 }
 
-/** The Renderer's result for the item `id`, which must be an element. */
-function rendered(element: unknown, id: string): HTMLElement {
-  if (!(element instanceof HTMLElement)) {
-    throw new Error(`list-picker: the Renderer of "${id}" returned no element`);
-  }
-  return element;
-}
-
 /**
  * Draws `board` into `root` from the user's Renderers, in the markup the drag engine reads
  * (DEC-13, DEC-14): per list a `[data-lp-list]` holding its header (`[data-lp-list-handle]`) and a
- * `[data-lp-cards]` container of its cards (`[data-lp-card]`). Bad input throws before `root`
- * changes.
+ * `[data-lp-cards]` container of its cards (`[data-lp-card]`). Every Renderer runs, and its result
+ * is checked, before any element is marked or moved: bad input throws and changes nothing.
  */
 export function mount<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
@@ -32,22 +24,37 @@ export function mount<L extends { id: string }, C extends { id: string }>(
   renderers: Renderers<L, C>,
 ): Mount {
   if (!(root instanceof HTMLElement)) throw new Error("list-picker: mount needs a root element");
-  const added: HTMLElement[] = [];
-  for (const { list, cards } of board.snapshot().lists) {
+  const seen = new Set<unknown>();
+  /** The Renderer's result for `id`: a new element, not in the document, not given before. */
+  const checked = (element: unknown, id: string): HTMLElement => {
+    if (!(element instanceof HTMLElement) || element.isConnected || seen.has(element)) {
+      throw new Error(`list-picker: the Renderer of "${id}" must return a new, detached element`);
+    }
+    seen.add(element);
+    return element;
+  };
+  const rendered = board.snapshot().lists.map(({ list, cards }) => ({
+    id: list.id,
+    header: checked(renderers.renderList(list), list.id),
+    cards: cards.map((card) => ({
+      id: card.id,
+      element: checked(renderers.renderCard(card), card.id),
+    })),
+  }));
+
+  const added = rendered.map(({ id, header, cards }) => {
     const container = document.createElement("div");
-    container.setAttribute("data-lp-list", list.id);
-    const header = rendered(renderers.renderList(list), list.id);
+    container.setAttribute("data-lp-list", id);
     header.setAttribute("data-lp-list-handle", "");
     const cardsContainer = document.createElement("div");
-    cardsContainer.setAttribute("data-lp-cards", list.id);
+    cardsContainer.setAttribute("data-lp-cards", id);
     for (const card of cards) {
-      const element = rendered(renderers.renderCard(card), card.id);
-      element.setAttribute("data-lp-card", card.id);
-      cardsContainer.append(element);
+      card.element.setAttribute("data-lp-card", card.id);
+      cardsContainer.append(card.element);
     }
     container.append(header, cardsContainer);
-    added.push(container);
-  }
+    return container;
+  });
   root.append(...added);
   const drag = createDrag(root, board);
   return {
