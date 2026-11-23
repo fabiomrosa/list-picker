@@ -646,7 +646,8 @@ shows it in the demo.
 - **Out of scope:** a release workflow in CI.
 - **Deviation:** each package gets `prepublishOnly: npm run build`, so a publish never ships a stale
   `dist`. Before the publish, criterion 1 was checked with `npm pack` tarballs installed into an
-  empty folder (the core example in Node, the vanilla example in Chrome).
+  empty folder (the core example in Node, the vanilla example in Chrome). The publish and the tag
+  follow the merge, from `main`.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. `npm install <vanilla name>` in an empty folder installs both packages, and the README example

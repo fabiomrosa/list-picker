@@ -67,7 +67,8 @@ and the first npm publish.
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
 - **P2** · The npm account and package names (DEC-12). Done: `@list-picker/core` and
-  `@list-picker/vanilla`, published from the owner's account (2026-11-23).
+  `@list-picker/vanilla` (the owner's `list-picker` npm org), published from the owner's account
+  after the L4.7 merge (2026-11-23).
 - **P3** · The license of the packages. Done: MIT (left to the agent by the owner, 2026-11-23).
 
 ## Later milestones (split when they start)
