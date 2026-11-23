@@ -40,6 +40,13 @@ Every slice's pull request updates it (SESSION §3).
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
+- `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
+  it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
+  element (marked `data-lp-list-handle`) and a `div[data-lp-cards]` of the card Renderer's elements
+  (each marked `data-lp-card`), then starts `createDrag`. Every Renderer runs and is checked first: a
+  missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
+  document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
+  added. It draws once: Board changes made in code are not followed yet (L3.2).
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll, a list by its title; a click changes nothing.
@@ -62,7 +69,8 @@ title, size, frozen-files and secret checks.
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
 - `playground/`: Vite page over `core`'s source; not published, outside coverage.
-- `packages/vanilla`: `createDrag` (`src/drag.ts`); imports only types from `core`.
+- `packages/vanilla`: `createDrag` (`src/drag.ts`), `mount` (`src/mount.ts`); imports only types
+  from `core`.
 - `bench/`: the array board, seeded move fixtures, their equivalence test, and the runner.
 
 ## Contract
@@ -72,10 +80,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L3.1:** `mount` draws a Board from the user's Renderers into the DEC-13 markup and
+  starts the drag; Renderers return an `HTMLElement` (the engine hides cards through `style`).
+- **Next:** L3.2 (follow the Board by id).
 - **2026-11-23, plan M3:** M3 split into L3.1–L3.4 in PLAN; DEC-14 accepted (`mount` builds the
   containers and follows the Board by id); the layout claim gets a recorded trace (decision 0002).
   The five M2 retro proposals landed (#31–#34); STATE's known flake is fixed.
-- **Next:** L3.1 (mount a Board).
 - **2026-11-23, close M2:** every M2 slice landed as planned (L2.1–L2.8, PRs #21–#28, plus the
   hotfix #29). Five retro proposals are open for the owner.
 - **2026-11-23, hotfix (owner report):** a card's Placeholder copied the card's width, so it was
