@@ -1,4 +1,5 @@
 import type { Board } from "@list-picker/core";
+import { createAnnouncer, type DragOptions, type Messages } from "./announce.ts";
 import { createKeyboard } from "./keyboard.ts";
 import { landed } from "./landed.ts";
 
@@ -67,13 +68,16 @@ interface Active {
 /**
  * Makes the cards and lists under `root` draggable (DEC-08, DEC-10, DEC-13), in the user's own
  * markup: cards are `[data-lp-card]` elements inside `[data-lp-cards]` list containers; lists are
- * `[data-lp-list]` elements, dragged by a `[data-lp-list-handle]` inside them.
+ * `[data-lp-list]` elements, dragged by a `[data-lp-list-handle]` inside them. Pick up, drop
+ * and cancel (and each keyboard step) are announced in a live region (DEC-16), in English unless
+ * `options.messages` replaces a message.
  */
 export function createDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
   board: Board<L, C>,
+  options: DragOptions = {},
 ): Drag {
-  const { destroy } = startDrag(root, board, () => {});
+  const { destroy } = startDrag(root, board, () => {}, options.messages);
   return { destroy };
 }
 
@@ -90,10 +94,13 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
   board: Board<L, C>,
   onEnd: () => void,
+  messages?: Partial<Messages>,
 ): MountedDrag {
   let press: Press | undefined;
   let active: Active | undefined;
-  const keyboard = createKeyboard(root, board, () => press !== undefined);
+  const announcer = createAnnouncer(root, board, messages);
+  const keyboard = createKeyboard(root, board, () => press !== undefined, announcer.say);
+  const name = (kind: Kind) => (kind === LIST ? "list" : "card");
   /** The latest pointer position; read once per animation frame. */
   let pointerAt = { x: 0, y: 0 };
   let frame: number | undefined;
@@ -142,6 +149,8 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       active = start(press.kind, press.item);
       // Only during a drag (AGENTS: no document listener outside one).
       document.addEventListener("keydown", onKeyDown);
+      // Last: a user's message that throws leaves a drag that Esc still cancels.
+      announcer.say("pickUp", name(press.kind), press.item);
     }
     // Only store the pointer here; the DOM is written once per frame (no layout thrashing).
     frame ??= requestAnimationFrame(update);
@@ -239,13 +248,20 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
 
   /** Esc abandons the drag: everything goes back, nothing moves. */
   function onKeyDown(event: KeyboardEvent): void {
-    if (event.key === "Escape") end();
+    if (event.key === "Escape") cancel();
   }
 
   function onPointerEnd(event: PointerEvent): void {
     if (!press || event.pointerId !== press.pointerId) return;
     if (event.type === "pointerup" && active) drop(active);
-    else end();
+    else cancel();
+  }
+
+  /** Ends the press or drag without a move, announcing an abandoned drag. */
+  function cancel(): void {
+    const ended = active;
+    end();
+    if (ended) announcer.say("cancel", name(ended.kind), ended.item);
   }
 
   /**
@@ -270,13 +286,15 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       else board.moveCard(id, listId, beforeId);
     } catch (error) {
       // A listener may throw after the Board has moved the item: keep the DOM in step anyway.
-      if (landed(board, kind === LIST ? "list" : "card", id, listId, beforeId))
-        placeholder.replaceWith(item);
+      const moved = landed(board, name(kind), id, listId, beforeId);
+      if (moved) placeholder.replaceWith(item);
       end();
+      announcer.say(moved ? "drop" : "cancel", name(kind), item);
       throw error;
     }
     placeholder.replaceWith(item);
     end();
+    announcer.say("drop", name(kind), item);
   }
 
   /** Whether `element` is an item the Board holds (for a card, in list `listId`). */
@@ -356,9 +374,10 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     destroy() {
       end();
       keyboard.destroy();
+      announcer.destroy();
       root.removeEventListener("pointerdown", onPointerDown);
     },
     dragged: () => active?.item,
-    cancel: end,
+    cancel,
   };
 }

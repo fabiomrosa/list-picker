@@ -575,12 +575,13 @@ shows it in the demo.
 - **References:** DEC-15.
 
 ### L4.4 · Live announcements
-- **Status:** waiting (L4.3)
+- **Status:** done (2026-11-23)
 - **Goal:** screen-reader users hear what a drag or a keyboard move does (DEC-16).
 - **Depends on:** L4.3, DEC-16.
 - **In scope:**
   - One visually hidden `aria-live="assertive"` region inside `root`, added by the engine and
-    removed by `destroy()`.
+    removed by `destroy()`. Built in the document's body instead (as dnd-kit does), so `root`
+    holds only the user's markup.
   - Announcements for pick up, each move, drop and cancel, for cards and lists, by pointer and by
     keyboard: the item's id-derived label, its list and position ("Picked up Design the model. To
     do, position 1 of 2."). The label comes from the element's `aria-label` or text.

@@ -1,4 +1,5 @@
 import type { Board } from "@list-picker/core";
+import type { Announcer } from "./announce.ts";
 import { landed } from "./landed.ts";
 
 /** The engine's keyboard moving; `destroy()` removes its listeners. */
@@ -44,6 +45,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   root: HTMLElement,
   board: Board<L, C>,
   pointerBusy: () => boolean,
+  say: Announcer["say"],
 ): Keyboard {
   let grab: Grab | undefined;
   /** Set while the focused element (or the list around it) moves: leaving the document may blur it. */
@@ -79,6 +81,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       return;
     } else if (event.key === " " || event.key === "Enter") {
       release();
+      say("drop", held.kind, held.item);
     } else if (event.key === "Escape") {
       back(held);
     } else if (horizontal && held.kind === "card") {
@@ -93,7 +96,10 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   }
 
   function onFocusOut(event: FocusEvent): void {
-    if (!moving && event.target === grab?.focus) release();
+    if (moving || !grab || event.target !== grab.focus) return;
+    const { kind, item } = grab;
+    release();
+    say("drop", kind, item);
   }
 
   function pick(what: Omit<Grab, "before">): void {
@@ -101,6 +107,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     grab = { ...what, before: items[items.indexOf(what.item) + 1] ?? null };
     what.item.setAttribute("data-lp-grabbed", "");
     root.addEventListener("focusout", onFocusOut);
+    say("pickUp", what.kind, what.item); // last, so a message that throws leaves a full grab
   }
 
   function release(): void {
@@ -143,13 +150,22 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   function back({ kind, item, focus, container, before }: Grab): void {
     release();
     if (container.isConnected) {
-      place(kind, item, focus, container, before?.parentElement === container ? before : null);
+      place(
+        kind,
+        item,
+        focus,
+        container,
+        before?.parentElement === container ? before : null,
+        "cancel",
+      );
+    } else {
+      say("cancel", kind, item);
     }
   }
 
   /**
-   * Moves the item on the Board, then its element, before `before` (or last) in `container`, and
-   * keeps the focus. If the Board throws, the element follows only when the move happened anyway;
+   * Moves the item on the Board, then its element, before `before` (or last) in `container`, keeps
+   * the focus and announces `event`. If the Board throws, the element follows only when the move happened anyway;
    * the error is rethrown.
    */
   function place(
@@ -158,6 +174,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     focus: HTMLElement,
     container: HTMLElement,
     before: HTMLElement | null,
+    event: "move" | "cancel" = "move",
   ): void {
     const id = item.getAttribute(ATTRIBUTE[kind]) ?? "";
     const listId = kind === "card" ? (container.getAttribute("data-lp-cards") ?? "") : "";
@@ -171,6 +188,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
         moving = false;
       }
       focus.focus();
+      say(event, kind, item);
     };
     try {
       if (kind === "list") board.moveList(id, beforeId);

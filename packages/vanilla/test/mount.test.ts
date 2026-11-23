@@ -94,6 +94,16 @@ describe("mount", () => {
     expect([tabindex("todo"), tabindex("done")]).toEqual(["0", "-1"]);
   });
 
+  it("passes the `messages` option to the engine's announcements", () => {
+    mounted = mount(ctx.root, ctx.board, ctx.renderers, {
+      messages: { pickUp: ({ label, position }) => `${label} @${position}` },
+    });
+    const a = ctx.rendered.get("a") as HTMLElement;
+    a.focus();
+    a.dispatchEvent(new KeyboardEvent("keydown", { key: " ", bubbles: true }));
+    expect(document.querySelector("[aria-live]")?.textContent).toBe("A @1");
+  });
+
   it("makes the mounted cards draggable", async () => {
     mounted = mount(ctx.root, ctx.board, ctx.renderers);
     const a = ctx.rendered.get("a") as HTMLElement;
@@ -349,6 +359,18 @@ describe("mount: following the Board", () => {
     release();
     await settle();
     expect(caught()).toEqual([]);
+    expect(domBoard()).toEqual(board());
+  });
+
+  it("still follows the Board when the cancel message of an abandoned drag throws", async () => {
+    mounted.destroy();
+    const cancel = () => {
+      throw new Error("boom");
+    };
+    mounted = mount(ctx.root, ctx.board, ctx.renderers, { messages: { cancel } });
+    await dragA("c");
+    expect(() => ctx.board.removeList("done")).toThrow("boom");
+    await settle();
     expect(domBoard()).toEqual(board());
   });
 
