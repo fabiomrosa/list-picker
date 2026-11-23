@@ -559,7 +559,7 @@ shows it in the demo.
 - **References:** DEC-15; ARCHITECTURE "Lessons from list-picker-js".
 
 ### L4.3 · Keyboard: move a list
-- **Status:** waiting (L4.2)
+- **Status:** done (2026-11-23)
 - **Goal:** lists move with the keyboard by their handle.
 - **Depends on:** L4.2.
 - **In scope:** the same pick up, ← →, drop and Esc on a focused `[data-lp-list-handle]` (`mount`

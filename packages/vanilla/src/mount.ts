@@ -133,6 +133,7 @@ export function mount<L extends { id: string }, C extends { id: string }>(
         const container = document.createElement("div");
         container.setAttribute("data-lp-list", list.id);
         header.setAttribute("data-lp-list-handle", "");
+        if (!header.hasAttribute("tabindex")) header.tabIndex = 0;
         const cardsContainer = document.createElement("div");
         cardsContainer.setAttribute("data-lp-cards", list.id);
         container.append(header, cardsContainer);

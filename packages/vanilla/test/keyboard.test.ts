@@ -156,3 +156,62 @@ describe("createDrag: moving a card with the keyboard", () => {
     expect(ctx.moves).toHaveLength(0);
   });
 });
+
+describe("createDrag: moving a list with the keyboard", () => {
+  let root: HTMLElement;
+  let board: Board<Entity, Entity>;
+  let moves: MoveEvent[];
+  let drag: ReturnType<typeof createDrag>;
+  beforeEach(() => {
+    document.body.innerHTML = `<div id="root">${["one", "two", "three"]
+      .map(
+        (id) => `<section data-lp-list="${id}"><h2 data-lp-list-handle tabindex="0">${id}</h2>
+          <ul data-lp-cards="${id}"><li data-lp-card="${id}-card" tabindex="0"></li></ul></section>`,
+      )
+      .join("")}</div>`;
+    board = new Board<Entity, Entity>();
+    for (const id of ["one", "two", "three"]) {
+      board.addList({ id }, null);
+      board.addCard(id, { id: `${id}-card` }, null);
+    }
+    moves = [];
+    board.on("move", (event) => moves.push(event));
+    root = document.getElementById("root") as HTMLElement;
+    drag = createDrag(root, board);
+  });
+  afterEach(() => drag.destroy());
+
+  const handle = (id: string) =>
+    root.querySelector(`[data-lp-list="${id}"] [data-lp-list-handle]`) as HTMLElement;
+  const boardOrder = () => [...board.lists()].map((list) => list.id);
+  const domOrder = () =>
+    [...root.querySelectorAll("[data-lp-list]")].map((list) => list.getAttribute("data-lp-list"));
+  function press(id: string, ...keys: string[]) {
+    handle(id).focus();
+    for (const name of keys) key(document.activeElement as Element, name);
+  }
+
+  it("picks a list up by its handle, moves it one place right with its cards, and drops it", () => {
+    press("one", " ");
+    expect(handle("one").closest("[data-lp-list]")?.hasAttribute("data-lp-grabbed")).toBe(true);
+    press("one", "ArrowRight", " ");
+    expect(boardOrder()).toEqual(["two", "one", "three"]);
+    expect(domOrder()).toEqual(boardOrder());
+    expect(moves).toHaveLength(1);
+    expect(root.querySelector('[data-lp-list="one"] [data-lp-card="one-card"]')).not.toBeNull();
+    expect(document.activeElement).toBe(handle("one"));
+    expect(handle("one").closest("[data-lp-list]")?.hasAttribute("data-lp-grabbed")).toBe(false);
+  });
+
+  it("puts a list back on Esc; ↑ ↓ and moves past either end do nothing", () => {
+    press("two", "Enter", "ArrowUp", "ArrowDown");
+    expect(moves).toHaveLength(0);
+    press("two", "ArrowLeft", "ArrowLeft");
+    expect(boardOrder()).toEqual(["two", "one", "three"]);
+    press("two", "ArrowRight", "ArrowRight", "ArrowRight", "Escape");
+    expect(moves).toHaveLength(4);
+    expect(boardOrder()).toEqual(["one", "two", "three"]);
+    expect(domOrder()).toEqual(boardOrder());
+    expect(document.activeElement).toBe(handle("two"));
+  });
+});

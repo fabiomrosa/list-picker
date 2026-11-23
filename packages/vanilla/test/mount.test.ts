@@ -75,7 +75,7 @@ describe("mount", () => {
     expect(ctx.root.firstElementChild?.textContent).toBe("kept");
   });
 
-  it("makes each card focusable, keeping a tabindex the Renderer set", () => {
+  it("makes each card and list handle focusable, keeping a tabindex the Renderer set", () => {
     const renderCard = ctx.renderers.renderCard;
     ctx.renderers.renderCard = (card) => {
       const el = renderCard(card);
@@ -85,6 +85,7 @@ describe("mount", () => {
     mounted = mount(ctx.root, ctx.board, ctx.renderers);
     const tabindex = (id: string) => ctx.rendered.get(id)?.getAttribute("tabindex");
     expect([tabindex("a"), tabindex("b"), tabindex("c")]).toEqual(["0", "-1", "0"]);
+    expect([tabindex("todo"), tabindex("done")]).toEqual(["0", "0"]);
   });
 
   it("makes the mounted cards draggable", async () => {
