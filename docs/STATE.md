@@ -46,12 +46,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-22, close M1:** every M1 slice landed as planned (L1.1–L1.11, PRs #5–#15); the owner
+  checked the playground in the browser. Five retro proposals are open for the owner.
+- **Next:** plan M2 (drag engine).
 - **2026-11-22, L1.11:** benchmark against an array board; decision record 0001 (DEC-06 holds:
   linked-list moves go from ~0.10 to ~0.18 µs as lists grow 50×, arrays from ~0.12 to ~1.46 µs; both
   tiny next to layout). A plain Node runner instead of `vitest bench` (each sample needs a fresh
   board); the review caught a warm-up and ordering bias in its first version.
-- **Next:** every M1 slice is done: the owner checks the playground in the browser, then
-  "close M1".
 - **2026-11-22, L1.10:** `Board.snapshot()`, cached and frozen; the Board property checks it and
   that it is replaced exactly when the Board changes; the playground renders from it.
 - **2026-11-22, L1.9:** Board events (`move`, `change`) over a small internal emitter; the
