@@ -18,21 +18,44 @@ interface ListElements {
   readonly cards: HTMLElement;
 }
 
-/** The nearest previous sibling of `item` that carries `attribute`, if any. */
-function previousItem(item: Element, attribute: string): Element | null {
-  let previous = item.previousElementSibling;
-  while (previous && !previous.hasAttribute(attribute)) previous = previous.previousElementSibling;
-  return previous;
+/** The positions in `sequence` of a longest strictly increasing run of its values that are 0 or more. */
+function longestIncreasing(sequence: readonly number[]): Set<number> {
+  /** `ends[k]`: the position of the smallest value ending a run of length k + 1. */
+  const ends: number[] = [];
+  const before = new Map<number, number>();
+  sequence.forEach((value, position) => {
+    if (value < 0) return;
+    let low = 0;
+    let high = ends.length;
+    while (low < high) {
+      const middle = (low + high) >> 1;
+      if ((sequence[ends[middle] as number] as number) < value) low = middle + 1;
+      else high = middle;
+    }
+    if (low > 0) before.set(position, ends[low - 1] as number);
+    ends[low] = position;
+  });
+  const run = new Set<number>();
+  for (let position = ends.at(-1); position !== undefined; position = before.get(position)) {
+    run.add(position);
+  }
+  return run;
 }
 
 /**
- * Puts `items` in this order among the children of `parent` that carry `attribute`, moving only
- * the ones out of place; other children (the user's, the Clone, the Placeholder) stay put.
+ * Puts `items` in this order among the children of `parent` that carry `attribute`, keeping the
+ * longest run already in order and moving only the rest; other children (the user's, the Clone,
+ * the Placeholder) stay put.
  */
-function arrange(parent: HTMLElement, items: HTMLElement[], attribute: string): void {
+function arrange(parent: HTMLElement, items: readonly HTMLElement[], attribute: string): void {
+  const current = new Map<Element, number>();
+  for (const child of parent.children) {
+    if (child.hasAttribute(attribute)) current.set(child, current.size);
+  }
+  const kept = longestIncreasing(items.map((item) => current.get(item) ?? -1));
   let previous: HTMLElement | null = null;
-  for (const item of items) {
-    if (item.parentElement !== parent || previousItem(item, attribute) !== previous) {
+  for (const [position, item] of items.entries()) {
+    if (!kept.has(position)) {
       const first = parent.querySelector(`:scope > [${attribute}]`);
       if (previous) previous.after(item);
       else if (first) first.before(item);
@@ -56,7 +79,8 @@ export function mount<L extends { id: string }, C extends { id: string }>(
   renderers: Renderers<L, C>,
 ): Mount {
   if (!(root instanceof HTMLElement)) throw new Error("list-picker: mount needs a root element");
-  const seen = new Set<unknown>();
+  // Weak: a removed element is not kept alive just to refuse it if it comes back.
+  const seen = new WeakSet<object>();
   /** The Renderer's result for `id`: a new element, not in the document, not given before. */
   const checked = (element: unknown, id: string): HTMLElement => {
     if (!(element instanceof HTMLElement) || element.isConnected || seen.has(element)) {
@@ -65,47 +89,54 @@ export function mount<L extends { id: string }, C extends { id: string }>(
     seen.add(element);
     return element;
   };
-  const lists = new Map<string, ListElements>();
+  /** The Renderers' elements by id, kept as soon as rendered so none renders twice. */
+  const headers = new Map<string, HTMLElement>();
   const cards = new Map<string, HTMLElement>();
+  const lists = new Map<string, ListElements>();
 
-  /** Brings the DOM in line with the Board's Snapshot, writing only what differs. */
+  /**
+   * Brings the DOM in line with the Board's Snapshot, writing only what differs. Everything new is
+   * rendered and checked before the first write, so a Renderer error writes nothing.
+   */
   function reconcile(): void {
     const snapshot = board.snapshot().lists;
-    const newLists = new Map<string, HTMLElement>();
-    const newCards = new Map<string, HTMLElement>();
     for (const { list, cards: listCards } of snapshot) {
-      if (!lists.has(list.id)) newLists.set(list.id, checked(renderers.renderList(list), list.id));
+      if (!headers.has(list.id)) headers.set(list.id, checked(renderers.renderList(list), list.id));
       for (const card of listCards) {
-        if (!cards.has(card.id))
-          newCards.set(card.id, checked(renderers.renderCard(card), card.id));
+        if (!cards.has(card.id)) cards.set(card.id, checked(renderers.renderCard(card), card.id));
       }
     }
 
-    for (const [id, header] of newLists) {
-      const container = document.createElement("div");
-      container.setAttribute("data-lp-list", id);
-      header.setAttribute("data-lp-list-handle", "");
-      const cardsContainer = document.createElement("div");
-      cardsContainer.setAttribute("data-lp-cards", id);
-      container.append(header, cardsContainer);
-      lists.set(id, { container, cards: cardsContainer });
-    }
-    for (const [id, element] of newCards) {
-      element.setAttribute("data-lp-card", id);
-      cards.set(id, element);
-    }
     const listIds = new Set(snapshot.map(({ list }) => list.id));
     const cardIds = new Set(snapshot.flatMap((entry) => entry.cards.map((card) => card.id)));
-    for (const [id, { container }] of lists) {
+    for (const id of headers.keys()) {
       if (!listIds.has(id)) {
-        container.remove();
+        lists.get(id)?.container.remove();
         lists.delete(id);
+        headers.delete(id);
       }
     }
     for (const [id, element] of cards) {
       if (!cardIds.has(id)) {
         element.remove();
         cards.delete(id);
+      }
+    }
+
+    for (const { list, cards: listCards } of snapshot) {
+      if (!lists.has(list.id)) {
+        const header = headers.get(list.id) as HTMLElement;
+        const container = document.createElement("div");
+        container.setAttribute("data-lp-list", list.id);
+        header.setAttribute("data-lp-list-handle", "");
+        const cardsContainer = document.createElement("div");
+        cardsContainer.setAttribute("data-lp-cards", list.id);
+        container.append(header, cardsContainer);
+        lists.set(list.id, { container, cards: cardsContainer });
+      }
+      for (const card of listCards) {
+        const element = cards.get(card.id) as HTMLElement;
+        if (!element.hasAttribute("data-lp-card")) element.setAttribute("data-lp-card", card.id);
       }
     }
 

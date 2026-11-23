@@ -48,7 +48,8 @@ Every slice's pull request updates it (SESSION §3).
   document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
   added. It follows the Board by id: after each `change` (in a microtask, so a drop's own DOM
   write comes first; several changes reconcile once) it renders only new lists and cards, removes
-  the gone ones, and moves out-of-place elements into Board order, leaving the user's other
+  the gone ones, and moves into Board order only the elements outside the longest run already in
+  order, leaving the user's other
   children of `root`, the Clone and the Placeholder where they are. After a drop it writes nothing.
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
@@ -80,7 +81,13 @@ title, size, frozen-files and secret checks.
 None yet.
 
 ## Known issues
-None.
+- A Board change made in code during an active drag is reconciled at once: it may move the hidden
+  dragged card (or its list) in the DOM, which in a real browser can release the pointer capture,
+  and removing the dragged card makes the drop throw `unknown id` (cleanup is correct). Deferring
+  the reconcile until the drag ends would fix it (L3.2 review).
+- A Renderer that throws during a reconcile after a change throws from a microtask (an uncaught
+  error the caller of the Board operation cannot catch); nothing is written until a later change
+  reconciles without error.
 
 ## Last session
 - **2026-11-23, L3.2:** `mount` follows the Board by id (one reconcile per microtask); each
