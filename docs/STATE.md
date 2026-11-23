@@ -10,8 +10,9 @@ Every slice's pull request updates it (SESSION §3).
   sequences.
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
   `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
-  everything before unlinking), `moveList(id, beforeListId | null)` (same rules), `removeCard`, `removeList` (with its cards), `getList`, `getCard`,
-  `listOf(cardId)`, `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
+  everything before unlinking), `moveList(id, beforeListId | null)` (same rules), `removeCard`,
+  `removeList` (with its cards), `getList`, `getCard`, `listOf(cardId)`, `lists()`,
+  `cards(listId)`. Card ids are unique across the Board, list ids
   across the Lists; bad input throws and changes nothing. A property test runs random sequences of
   every Board operation from a populated Board against a nested-array model.
 - The playground (`npm run dev`) draws a Board as columns of cards (with each card's neighbours) and
