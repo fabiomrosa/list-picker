@@ -14,8 +14,9 @@ Follow YAGNI and KISS strictly, in code and in communication.
 - **Communication:** short, direct answers. No options that won't be followed, no explanations nobody
   asked for.
 - **Language:** code, identifiers, comments and docs in English, with the terms of the ubiquitous
-  language (`docs/shared/PRODUCT.md`). The library has no user-facing text of its own; the demo's
-  copy is English. Conversations with the owner may be in Portuguese.
+  language (`docs/shared/PRODUCT.md`). The library's only user-facing text is its live
+  announcements (DEC-16: English defaults the `messages` option replaces); the demo's copy is
+  English. Conversations with the owner may be in Portuguese.
 - **Design:** low coupling, high cohesion; the layering of `docs/CONVENTIONS.md` §1.
 - **Docs:** every document lives in `docs/`; update what is there before creating something new.
 - **Small pull requests:** at most 15 files and 400 lines (SESSION §0). Split the slice before coding

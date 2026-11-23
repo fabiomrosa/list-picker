@@ -1,4 +1,5 @@
 import type { Board } from "@list-picker/core";
+import type { Announcer } from "./announce.ts";
 import { landed } from "./landed.ts";
 
 /** The engine's keyboard moving; `destroy()` removes its listeners. */
@@ -44,6 +45,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   root: HTMLElement,
   board: Board<L, C>,
   pointerBusy: () => boolean,
+  say: Announcer["say"],
 ): Keyboard {
   let grab: Grab | undefined;
   /** Set while the focused element (or the list around it) moves: leaving the document may blur it. */
@@ -79,6 +81,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       return;
     } else if (event.key === " " || event.key === "Enter") {
       release();
+      say("drop", held.kind, held.item);
     } else if (event.key === "Escape") {
       back(held);
     } else if (horizontal && held.kind === "card") {
@@ -93,13 +96,17 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   }
 
   function onFocusOut(event: FocusEvent): void {
-    if (!moving && event.target === grab?.focus) release();
+    if (moving || !grab || event.target !== grab.focus) return;
+    const { kind, item } = grab;
+    release();
+    say("drop", kind, item);
   }
 
   function pick(what: Omit<Grab, "before">): void {
     const items = itemsIn(what.container, what.kind);
     grab = { ...what, before: items[items.indexOf(what.item) + 1] ?? null };
     what.item.setAttribute("data-lp-grabbed", "");
+    say("pickUp", what.kind, what.item);
     root.addEventListener("focusout", onFocusOut);
   }
 
@@ -145,6 +152,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     if (container.isConnected) {
       place(kind, item, focus, container, before?.parentElement === container ? before : null);
     }
+    say("cancel", kind, item);
   }
 
   /**
@@ -180,6 +188,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       throw error;
     }
     follow();
+    say("move", kind, item);
   }
 
   root.addEventListener("keydown", onKeyDown);

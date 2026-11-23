@@ -575,7 +575,7 @@ shows it in the demo.
 - **References:** DEC-15.
 
 ### L4.4 · Live announcements
-- **Status:** waiting (L4.3)
+- **Status:** done (2026-11-23)
 - **Goal:** screen-reader users hear what a drag or a keyboard move does (DEC-16).
 - **Depends on:** L4.3, DEC-16.
 - **In scope:**

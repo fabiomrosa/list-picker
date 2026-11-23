@@ -82,6 +82,8 @@ function cardAt(id: string) {
 
 function renderList(list: Entity): HTMLElement {
   const head = el("header", "list-head", "");
+  // The name announced to screen readers (DEC-16), instead of the header's whole text.
+  head.setAttribute("aria-label", list.id);
   const tools = el("div", "list-tools", "");
   tools.append(
     action("←", `move list ${list.id} left`, "left", () => {
@@ -103,6 +105,7 @@ function renderList(list: Entity): HTMLElement {
 
 function renderCard(card: Entity): HTMLElement {
   const box = el("div", "card", "");
+  box.setAttribute("aria-label", card.id);
   const tools = el("div", "tools", "");
   tools.append(
     action("↑", `move ${card.id} up`, "up", () => {

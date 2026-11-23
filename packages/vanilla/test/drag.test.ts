@@ -32,6 +32,13 @@ function setup() {
   return { root, board, card };
 }
 
+/** `root`'s markup without the engine's live region, whose text changes as it announces. */
+function html(root: HTMLElement): string {
+  const copy = root.cloneNode(true) as HTMLElement;
+  copy.querySelector("[data-lp-live]")?.remove();
+  return copy.innerHTML;
+}
+
 function pointer(target: Element, type: string, x: number, y: number) {
   target.dispatchEvent(
     new PointerEvent(type, { bubbles: true, clientX: x, clientY: y, pointerId: 1, button: 0 }),
@@ -48,13 +55,13 @@ describe("createDrag: drag start", () => {
   afterEach(() => drag.destroy());
 
   it("leaves the DOM unchanged for a press and release under the threshold", () => {
-    const before = ctx.root.innerHTML;
+    const before = html(ctx.root);
     pointer(ctx.card("a"), "pointerdown", 50, 30);
     pointer(ctx.card("a"), "pointermove", 52, 32);
-    expect(ctx.root.innerHTML).toBe(before);
+    expect(html(ctx.root)).toBe(before);
     expect(document.querySelector("[data-lp-clone]")).toBeNull();
     pointer(ctx.card("a"), "pointerup", 52, 32);
-    expect(ctx.root.innerHTML).toBe(before);
+    expect(html(ctx.root)).toBe(before);
     expect(document.querySelector("[data-lp-clone]")).toBeNull();
   });
 
@@ -91,21 +98,21 @@ describe("createDrag: drag start", () => {
   });
 
   it("shows the card again, as it was, when released after a drag", () => {
-    const before = ctx.root.innerHTML;
+    const before = html(ctx.root);
     pointer(ctx.card("a"), "pointerdown", 50, 30);
     pointer(ctx.card("a"), "pointermove", 70, 30);
     pointer(ctx.card("a"), "pointerup", 70, 30);
-    expect(ctx.root.innerHTML).toBe(before);
+    expect(html(ctx.root)).toBe(before);
     expect(ctx.card("a").style.display).toBe("flex");
   });
 
   it.each(["pointercancel", "destroy"])("ends a drag on %s and listens no more", (how) => {
-    const before = ctx.root.innerHTML;
+    const before = html(ctx.root);
     pointer(ctx.card("a"), "pointerdown", 50, 30);
     pointer(ctx.card("a"), "pointermove", 70, 30);
     if (how === "destroy") drag.destroy();
     else pointer(ctx.card("a"), "pointercancel", 70, 30);
-    expect(ctx.root.innerHTML).toBe(before);
+    expect(html(ctx.root)).toBe(before);
     pointer(ctx.card("a"), "pointermove", 90, 30);
     expect(document.querySelector("[data-lp-clone]")).toBeNull();
   });
@@ -342,10 +349,10 @@ describe("createDrag: drop", () => {
   });
 
   it("changes nothing when dropped where it was", async () => {
-    const before = ctx.root.innerHTML;
+    const before = html(ctx.root);
     await dragTo(ctx.card("b"), 105);
     expect(moves).toEqual([]);
-    expect(ctx.root.innerHTML).toBe(before);
+    expect(html(ctx.root)).toBe(before);
   });
 
   it("cleans up after a drop: no Clone, no Placeholder, no drag state, no drag listener", async () => {
@@ -361,7 +368,7 @@ describe("createDrag: drop", () => {
 
   it("puts the card back where it was when the Board rejects the move", async () => {
     ctx.board.removeCard("a");
-    const before = ctx.root.innerHTML;
+    const before = html(ctx.root);
     const errors: unknown[] = [];
     const onError = (event: ErrorEvent) => {
       errors.push(event.error);
@@ -374,7 +381,7 @@ describe("createDrag: drop", () => {
       errors.push(error);
     }
     window.removeEventListener("error", onError);
-    expect(ctx.root.innerHTML).toBe(before);
+    expect(html(ctx.root)).toBe(before);
     expect(String(errors[0])).toContain('unknown id "a"');
   });
 });
@@ -482,14 +489,14 @@ describe("createDrag: cancel", () => {
   it.each(["Escape", "pointercancel", "destroy"])(
     "restores the DOM and moves nothing on %s",
     async (how) => {
-      const before = ctx.root.innerHTML;
+      const before = html(ctx.root);
       const remove = vi.spyOn(document, "removeEventListener");
       await dragToDone();
       expect(list("done").querySelector("[data-lp-placeholder]")).not.toBeNull();
       if (how === "Escape") pressEscape();
       else if (how === "destroy") drag.destroy();
       else pointer(ctx.card("a"), "pointercancel", 60, 300);
-      expect(ctx.root.innerHTML).toBe(before);
+      expect(html(ctx.root)).toBe(before);
       expect(remove.mock.calls.filter(([type]) => type === "keydown")).toHaveLength(1);
       // No ghost drag afterwards: moving and releasing the still-pressed pointer does nothing.
       pointer(ctx.card("a"), "pointermove", 90, 320);
@@ -698,7 +705,7 @@ describe("createDrag: lists", () => {
 
   it("puts a list back when the Board rejects the move", async () => {
     board.removeList("one");
-    const before = root.innerHTML;
+    const before = html(root);
     const errors: unknown[] = [];
     const onError = (event: ErrorEvent) => {
       errors.push(event.error);
@@ -711,19 +718,19 @@ describe("createDrag: lists", () => {
       errors.push(error);
     }
     window.removeEventListener("error", onError);
-    expect(root.innerHTML).toBe(before);
+    expect(html(root)).toBe(before);
     expect(String(errors[0])).toContain('unknown id "one"');
   });
 
   it("cancels a list drag with Esc, moving nothing", async () => {
-    const before = root.innerHTML;
+    const before = html(root);
     pointer(handle("one"), "pointerdown", 50, 10);
     pointer(handle("one"), "pointermove", 60, 10);
     under = root;
     pointer(handle("one"), "pointermove", 300, 10);
     await frame();
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    expect(root.innerHTML).toBe(before);
+    expect(html(root)).toBe(before);
     expect(moves).toEqual([]);
   });
 });

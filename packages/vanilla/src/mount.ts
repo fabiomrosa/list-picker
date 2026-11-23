@@ -1,4 +1,5 @@
 import type { Board } from "@list-picker/core";
+import type { DragOptions } from "./announce.ts";
 import { startDrag } from "./drag.ts";
 
 /** A mounted Board; `destroy()` removes what `mount` added and every listener. */
@@ -78,6 +79,7 @@ export function mount<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
   board: Board<L, C>,
   renderers: Renderers<L, C>,
+  options: DragOptions = {},
 ): Mount {
   if (!(root instanceof HTMLElement)) throw new Error("list-picker: mount needs a root element");
   // Weak: a removed element is not kept alive just to refuse it if it comes back.
@@ -180,9 +182,14 @@ export function mount<L extends { id: string }, C extends { id: string }>(
       if (!waiting) write();
     });
   };
-  const drag = startDrag(root, board, () => {
-    if (waiting) schedule();
-  });
+  const drag = startDrag(
+    root,
+    board,
+    () => {
+      if (waiting) schedule();
+    },
+    options.messages,
+  );
   /**
    * Whether the active drag can still drop: its card or list, and the list its Placeholder is in,
    * are still on the Board.

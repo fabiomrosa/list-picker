@@ -38,6 +38,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   engine, so `mount` writes in a microtask (its Renderers run in the listener itself).
 - Chrome fires `focusout` on a focused element moved in the DOM (`before`, `append`), and it loses
   the focus; happy-dom does neither, so only the browser test catches a missing guard or refocus.
+- The engine's live region sits in `root` and its text changes on every announcement: a test that
+  compares `root.innerHTML` before and after a drag leaves it out (`html()` in `drag.test.ts`).
 - During an active drag `mount` writes nothing: the DOM can show cards and lists the Board has
   moved or removed until the drag ends. Code that reads the mounted DOM after a `change` (the
   demo's `refresh`) must check each id against the Board; the engine's drop skips such items.

@@ -45,6 +45,13 @@ Every slice's pull request updates it (SESSION §3).
   each a `board.moveCard`, the element following with the focus; Space or Enter drops, Esc puts it
   back, the focus leaving drops. A list moves the same way by its focused handle, with ← → only
   (`board.moveList`). It never runs with a pointer drag.
+  Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
+  `aria-live="assertive"` region in `root` (removed by `destroy()`) says pick up, drop and cancel
+  of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
+  of 2." The label is the item's `aria-label`, else its text, else its id (a list's from its
+  handle); the position comes from the Board. `createDrag(root, board, { messages })` and
+  `mount(..., { messages })` replace any of `pickUp`, `move`, `drop`, `cancel` (types `Messages`,
+  `Announcement`, `DragOptions`).
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
   it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
   element (marked `data-lp-list-handle`, focusable like each card) and a `div[data-lp-cards]` of the card Renderer's elements
@@ -102,9 +109,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.4:** live announcements for drags and keyboard moves, English by default,
+  replaceable with `messages` (public API, additive); the demo labels cards and lists.
+- **Next:** L4.5 (package READMEs and metadata; needs the owner's license choice, P3).
 - **2026-11-23, L4.3:** lists move with the keyboard by their handle (← →, Esc back), through
   the same keyboard code as cards; `mount` makes handles focusable.
-- **Next:** L4.4 (live announcements).
 - **2026-11-23, L4.2:** cards move with the keyboard, in `createDrag`; `mount` makes cards
   focusable. Chrome blurs a focused element moved in the DOM (GOTCHAS).
 - **2026-11-23, L4.1:** `mount` runs the Renderers in the `change` listener (their errors reach
