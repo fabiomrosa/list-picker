@@ -7,6 +7,7 @@
     <style>
       body { font: 15px/1.4 system-ui, sans-serif; margin: 2rem; color: #1f2933; background: #f5f7fa; }
       h1 { font-size: 1.25rem; }
+      h1 small { font-size: 0.8rem; font-weight: normal; color: #616e7c; }
       form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0; }
       form strong { width: 5.5rem; }
       input, select, button { font: inherit; padding: 0.3rem 0.5rem; }
@@ -35,7 +36,7 @@
     </style>
   </head>
   <body>
-    <h1>Board</h1>
+    <h1>Board <small id="snapshot"></small></h1>
     <form id="add-list">
       <strong>Add list</strong>
       <input name="id" placeholder="list id" autocomplete="off" required />

@@ -1,5 +1,5 @@
 // A hand-test page for @list-picker/core (`npm run dev`). Not published, not covered.
-import { Board } from "../packages/core/src/index.ts";
+import { Board, type Snapshot } from "../packages/core/src/index.ts";
 
 type Entity = { id: string };
 
@@ -11,6 +11,7 @@ const error = byId<HTMLParagraphElement>("error");
 const boardView = byId<HTMLDivElement>("board");
 const moveForm = byId<HTMLFormElement>("move-card");
 const status = byId<HTMLParagraphElement>("status");
+const snapshotView = byId<HTMLElement>("snapshot");
 const field = <E extends Element>(form: HTMLFormElement, name: string) =>
   form.elements.namedItem(name) as unknown as E;
 
@@ -63,12 +64,24 @@ function fill(select: HTMLSelectElement, ids: string[], empty: string | null): v
   if (ids.includes(selected) || (selected === "" && empty !== null)) select.value = selected;
 }
 
+let lastSnapshot: Snapshot<Entity, Entity> | undefined;
+let version = 0;
+
+/** Draws the Board from its Snapshot, as a framework adapter would. */
 function render(): void {
   boardView.replaceChildren();
-  const listIds = [...board.lists()].map((list) => list.id);
+  const snapshot = board.snapshot();
+  if (snapshot !== lastSnapshot) {
+    lastSnapshot = snapshot;
+    version++;
+  }
+  snapshotView.textContent = `snapshot v${version}`;
+  const cardsOf = new Map(snapshot.lists.map(({ list, cards }) => [list.id, cards]));
+  const idsIn = (listId: string) => (cardsOf.get(listId) ?? []).map((card) => card.id);
+  const listIds = snapshot.lists.map(({ list }) => list.id);
   listIds.forEach((listId, li) => {
     const column = el("section", "list", "");
-    const cards = [...board.cards(listId)];
+    const cards = cardsOf.get(listId) ?? [];
     const header = el("div", "list-tools", "");
     const left = listIds[li - 1];
     const afterNext = listIds[li + 2] ?? null;
@@ -133,13 +146,13 @@ function render(): void {
   fill(field(listForm, "before"), listIds, "(end)");
   const target = field<HTMLSelectElement>(cardForm, "list");
   fill(target, listIds, null);
-  const cardIds = target.value ? [...board.cards(target.value)].map((card) => card.id) : [];
+  const cardIds = idsIn(target.value);
   fill(field(cardForm, "before"), cardIds, "(end)");
-  const allCards = listIds.flatMap((id) => [...board.cards(id)].map((card) => card.id));
+  const allCards = listIds.flatMap(idsIn);
   fill(field(moveForm, "card"), allCards, null);
   const moveTo = field<HTMLSelectElement>(moveForm, "list");
   fill(moveTo, listIds, null);
-  const moveBefore = moveTo.value ? [...board.cards(moveTo.value)].map((card) => card.id) : [];
+  const moveBefore = idsIn(moveTo.value);
   fill(field(moveForm, "before"), moveBefore, "(end)");
 }
 
