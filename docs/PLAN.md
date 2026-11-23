@@ -292,7 +292,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** ARCHITECTURE "Request flow", GOTCHAS "DOM and drag", DEC-08.
 
 ### L2.2 · The Clone follows the pointer
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** the Clone moves with the pointer smoothly, without forcing layout.
 - **Depends on:** L2.1.
 - **In scope:** `pointermove` only stores the pointer; one `requestAnimationFrame` per frame sets the
@@ -308,7 +308,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** AGENTS "Non-negotiable" (layout reads).
 
 ### L2.3 · The Placeholder follows the drop target
-- **Status:** waiting (L2.2)
+- **Status:** next
 - **Goal:** while dragging, the Placeholder shows where the card would land.
 - **Depends on:** L2.2.
 - **In scope:** each frame, the element under the pointer (`elementFromPoint`; the Clone ignores the
