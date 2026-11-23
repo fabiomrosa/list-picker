@@ -9,6 +9,7 @@ const form = byId<HTMLFormElement>("append");
 const error = byId<HTMLParagraphElement>("error");
 const listView = byId<HTMLDivElement>("list");
 const meta = byId<HTMLParagraphElement>("meta");
+const before = byId<HTMLSelectElement>("before");
 
 function el(tag: string, className: string, text: string): HTMLElement {
   const element = document.createElement(tag);
@@ -31,6 +32,10 @@ function render(): void {
     );
     listView.append(box);
   }
+  const selected = before.value;
+  before.replaceChildren(new Option("(end)", ""));
+  for (const item of list) before.append(new Option(item.id, item.id));
+  before.value = list.has(selected) ? selected : "";
   meta.textContent = `size ${list.size} · first ${list.first?.value.id ?? "–"} · last ${list.last?.value.id ?? "–"}`;
 }
 
@@ -40,7 +45,7 @@ form.addEventListener("submit", (event) => {
   const id = input.value.trim();
   if (!id) return;
   try {
-    list.insertBefore({ id }, null);
+    list.insertBefore({ id }, before.value || null);
     error.textContent = "";
     input.value = "";
   } catch (e) {

@@ -7,8 +7,8 @@
     <style>
       body { font: 15px/1.4 system-ui, sans-serif; margin: 2rem; color: #1f2933; }
       h1 { font-size: 1.25rem; }
-      form { display: flex; gap: 0.5rem; margin: 1rem 0; }
-      input, button { font: inherit; padding: 0.35rem 0.6rem; }
+      form { display: flex; gap: 0.5rem; align-items: center; margin: 1rem 0; }
+      input, select, button { font: inherit; padding: 0.35rem 0.6rem; }
       .error { color: #b42318; min-height: 1.4em; }
       .list { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem; }
       .node { border: 1px solid #9aa5b1; border-radius: 6px; padding: 0.5rem 0.75rem; min-width: 6rem; }
@@ -22,7 +22,8 @@
     <h1>LinkedList</h1>
     <form id="append">
       <input name="id" placeholder="id" autocomplete="off" required />
-      <button type="submit">Append</button>
+      <label>before <select name="before" id="before"></select></label>
+      <button type="submit">Insert</button>
     </form>
     <p class="error" id="error"></p>
     <div class="list" id="list"></div>

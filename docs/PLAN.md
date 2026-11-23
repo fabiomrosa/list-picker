@@ -79,7 +79,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants, ARCHITECTURE "The model".
 
 ### L1.2 · Linked list: insert before a node
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** a value can be inserted anywhere, before an existing node.
 - **Depends on:** L1.1.
 - **In scope:** `insertBefore(value, beforeId)` for the first node, a middle node and the last
@@ -95,7 +95,7 @@ Slices merge as usual (SESSION §4); the owner checks the playground in the brow
 - **References:** PRODUCT invariants.
 
 ### L1.3 · Linked list: remove
-- **Status:** waiting (L1.2)
+- **Status:** next
 - **Goal:** any value can be taken out of the list in O(1).
 - **Depends on:** L1.2.
 - **In scope:** `remove(id)` returns the value; works for the only, first, middle and last node; an
