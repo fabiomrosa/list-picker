@@ -70,6 +70,21 @@ export class Board<L extends Entity, C extends Entity> {
     return true;
   }
 
+  /**
+   * Moves the List with `id` (and its cards) before `beforeListId`, or to the end (`null`).
+   * Returns whether the order changed. Everything is checked before the List is unlinked.
+   */
+  moveList(id: string, beforeListId: string | null): boolean {
+    const node = this.#lists.get(id);
+    if (!node) throw new Error(`list-picker: unknown id "${id}"`);
+    if (beforeListId !== null && !this.#lists.has(beforeListId)) {
+      throw new Error(`list-picker: unknown id "${beforeListId}"`);
+    }
+    if (beforeListId === id || beforeListId === (node.next?.value.id ?? null)) return false;
+    this.#lists.insertBefore(this.#lists.remove(id), beforeListId);
+    return true;
+  }
+
   getList(id: string): L | undefined {
     return this.#lists.get(id)?.value.list;
   }
