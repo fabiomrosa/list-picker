@@ -222,4 +222,15 @@ for (const id of ["To do", "Doing", "Done"]) board.addList({ id }, null);
 for (const id of ["Design the model", "Write the tests"]) board.addCard("To do", { id }, null);
 board.addCard("Doing", { id: "Linked list" }, null);
 render();
+// Drops change the Board outside the buttons' handlers: redraw after every change, once the
+// engine has finished (a microtask later).
+let redraw = false;
+board.on("change", () => {
+  if (redraw) return;
+  redraw = true;
+  queueMicrotask(() => {
+    redraw = false;
+    render();
+  });
+});
 createDrag(boardView, board);

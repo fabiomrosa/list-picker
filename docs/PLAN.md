@@ -326,7 +326,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** DEC-08, ARCHITECTURE "Request flow".
 
 ### L2.4 · Drop
-- **Status:** next
+- **Status:** done (2026-11-22)
 - **Goal:** releasing the pointer moves the card to the Placeholder's place, in the model and the DOM.
 - **Depends on:** L2.3.
 - **In scope:** on `pointerup` after a drag: `board.moveCard(cardId, listId, beforeCardId)` from the
@@ -346,7 +346,7 @@ styles the user must fight, except the Clone's position and `transform`.
 - **References:** DEC-08, DEC-13.
 
 ### L2.5 · Cancel
-- **Status:** waiting (L2.4)
+- **Status:** next
 - **Goal:** a drag can be abandoned with nothing changed.
 - **Depends on:** L2.4.
 - **In scope:** Esc (a `keydown` listener only during a drag), `pointercancel`, and `destroy()`
