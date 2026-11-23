@@ -46,6 +46,22 @@ test("drags a card below another in the same list", async ({ page }) => {
     .toMatchObject({ "To do": ["Write the tests", "Design the model"] });
 });
 
+test("moves a card with the keyboard: down, to the next list, back with Esc", async ({ page }) => {
+  const design = card(page, "Design the model");
+  await design.focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowRight");
+  await expect(design).toBeFocused();
+  expect(await lists(page)).toMatchObject({
+    "To do": ["Write the tests"],
+    Doing: ["Linked list", "Design the model"],
+  });
+  await page.keyboard.press("Escape");
+  await expect(design).toBeFocused();
+  expect(await lists(page)).toMatchObject({ "To do": ["Design the model", "Write the tests"] });
+});
+
 test("drags a card to another list, before its card", async ({ page }) => {
   await drag(page, card(page, "Write the tests"), card(page, "Linked list"), 0.1);
   await expect

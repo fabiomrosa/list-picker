@@ -40,10 +40,14 @@ Every slice's pull request updates it (SESSION §3).
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
+  Keyboard (DEC-15, a `keydown` listener on `root`): Space or Enter on a focused card picks it up
+  (`data-lp-grabbed`); ↑ ↓ ← → move it (to the same position or the end of the neighbouring list),
+  each a `board.moveCard`, the element following with the focus; Space or Enter drops, Esc puts it
+  back, the focus leaving drops. It never runs with a pointer drag.
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
   it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
   element (marked `data-lp-list-handle`) and a `div[data-lp-cards]` of the card Renderer's elements
-  (each marked `data-lp-card`), then starts `createDrag`. Every Renderer runs and is checked first: a
+  (each marked `data-lp-card`, and `tabindex="0"` unless it has one), then starts `createDrag`. Every Renderer runs and is checked first: a
   missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
   document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
   added. It follows the Board by id: on each `change` it renders the new lists and cards at once
@@ -84,7 +88,8 @@ title, size, frozen-files and secret checks.
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
 - `playground/`: the demo board, a Vite page over the packages' source; not published, outside
   coverage.
-- `packages/vanilla`: `createDrag` (`src/drag.ts`), `mount` (`src/mount.ts`); imports only types
+- `packages/vanilla`: `createDrag` (`src/drag.ts`, with `src/keyboard.ts` and `src/landed.ts`,
+  internal), `mount` (`src/mount.ts`); imports only types
   from `core`.
 - `bench/`: the array board, seeded move fixtures, their equivalence test, the runner, and the drag
   trace (`drag-trace.ts`).
@@ -96,11 +101,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.2:** cards move with the keyboard, in `createDrag`; `mount` makes cards
+  focusable. Chrome blurs a focused element moved in the DOM (GOTCHAS).
+- **Next:** L4.3 (move a list with the keyboard).
 - **2026-11-23, L4.1:** `mount` runs the Renderers in the `change` listener (their errors reach
   the caller) and writes nothing during a drag; a change that removes what the drag needs abandons
   it. The live check found the demo reading cards from a DOM that now lags; it now checks
   each id against the Board.
-- **Next:** L4.2 (move a card with the keyboard).
 - **2026-11-23, plan M4:** M4 split into L4.1–L4.7 in PLAN; DEC-15 (keyboard: pick up, arrows,
   drop) and DEC-16 (English announcements, replaceable) accepted; P3 (license) added for the owner.
   The five M3 retro proposals landed (#41–#43).

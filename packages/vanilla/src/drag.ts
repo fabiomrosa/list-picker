@@ -1,4 +1,6 @@
 import type { Board } from "@list-picker/core";
+import { createKeyboard } from "./keyboard.ts";
+import { landed } from "./landed.ts";
 
 /** A running drag engine; `destroy()` removes every listener it added. */
 export interface Drag {
@@ -91,6 +93,8 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
 ): MountedDrag {
   let press: Press | undefined;
   let active: Active | undefined;
+  // A pointer drag and a keyboard move never run at once.
+  const keyboard = createKeyboard(root, board, () => press !== undefined);
   /** The latest pointer position; read once per animation frame. */
   let pointerAt = { x: 0, y: 0 };
   let frame: number | undefined;
@@ -110,6 +114,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   function onPointerDown(event: PointerEvent): void {
+    if (keyboard.grabbed()) return;
     if (press || event.button !== 0 || !(event.target instanceof Element)) return;
     const what = pressed(event.target);
     if (!what) return;
@@ -266,7 +271,8 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       else board.moveCard(id, listId, beforeId);
     } catch (error) {
       // A listener may throw after the Board has moved the item: keep the DOM in step anyway.
-      if (landed(kind, id, listId, beforeId)) placeholder.replaceWith(item);
+      if (landed(board, kind === LIST ? "list" : "card", id, listId, beforeId))
+        placeholder.replaceWith(item);
       end();
       throw error;
     }
@@ -278,14 +284,6 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   function holds(kind: Kind, element: Element, listId: string): boolean {
     const id = element.getAttribute(kind.attribute) ?? "";
     return kind === LIST ? board.getList(id) !== undefined : board.listOf(id)?.id === listId;
-  }
-
-  /** Whether the Board holds item `id` right before `beforeId` (or last), in `listId` for a card. */
-  function landed(kind: Kind, id: string, listId: string, beforeId: string | null): boolean {
-    if (kind === CARD && board.listOf(id)?.id !== listId) return false;
-    const items = kind === LIST ? board.lists() : board.cards(listId);
-    const ids = [...items].map((value) => value.id);
-    return ids.includes(id) && (ids[ids.indexOf(id) + 1] ?? null) === beforeId;
   }
 
   /** Reads the item's box once, then shows the Clone and holds the item's place. */
@@ -358,6 +356,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   return {
     destroy() {
       end();
+      keyboard.destroy();
       root.removeEventListener("pointerdown", onPointerDown);
     },
     dragged: () => active?.item,

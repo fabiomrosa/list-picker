@@ -533,7 +533,7 @@ shows it in the demo.
 - **References:** DEC-13, DEC-14; decision 0002 (frame order).
 
 ### L4.2 · Keyboard: move a card
-- **Status:** waiting (L4.1)
+- **Status:** done (2026-11-23)
 - **Goal:** a card can be moved with the keyboard alone (DEC-15).
 - **Depends on:** L4.1, DEC-15.
 - **In scope:**
