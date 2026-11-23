@@ -621,7 +621,7 @@ shows it in the demo.
 - **References:** DEC-12, DEC-07.
 
 ### L4.6 · The lab write-up
-- **Status:** waiting (L4.5)
+- **Status:** done (2026-11-23)
 - **Goal:** the lab's question gets its written answer (ROADMAP "The end goal").
 - **Depends on:** L4.5.
 - **In scope:** the root `README.md`: the question (do linked lists make a board simpler and faster
