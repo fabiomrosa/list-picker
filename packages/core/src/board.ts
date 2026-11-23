@@ -15,6 +15,11 @@ export interface MoveEvent {
   readonly nextId: string | null;
 }
 
+/** An immutable array view of the Board, in order, for renderers that need arrays. */
+export interface Snapshot<L, C> {
+  readonly lists: readonly { readonly list: L; readonly cards: readonly C[] }[];
+}
+
 /** `move` for persistence; `change`, with no payload, after every change, for renderers. */
 export interface BoardEvents extends Record<string, unknown> {
   move: MoveEvent;
@@ -36,6 +41,7 @@ export class Board<L extends Entity, C extends Entity> {
   #lists = new LinkedList<ListEntry<L, C>>();
   #listOfCard = new Map<string, ListEntry<L, C>>();
   #events = new Emitter<BoardEvents>();
+  #snapshot: Snapshot<L, C> | undefined;
 
   /**
    * Subscribes to `move` or `change`; the returned function unsubscribes. Listeners run
@@ -51,7 +57,7 @@ export class Board<L extends Entity, C extends Entity> {
 
   addList(list: L, beforeListId: string | null): void {
     this.#lists.insertBefore({ id: list.id, list, cards: new LinkedList<C>() }, beforeListId);
-    this.#events.emit("change", undefined);
+    this.#changed();
   }
 
   addCard(listId: string, card: C, beforeCardId: string | null): void {
@@ -61,7 +67,7 @@ export class Board<L extends Entity, C extends Entity> {
     }
     entry.cards.insertBefore(card, beforeCardId);
     this.#listOfCard.set(card.id, entry);
-    this.#events.emit("change", undefined);
+    this.#changed();
   }
 
   /** Removes the card with `id` from its List and the Board, and returns it. */
@@ -70,7 +76,7 @@ export class Board<L extends Entity, C extends Entity> {
     if (!entry) throw new Error(`list-picker: unknown id "${id}"`);
     const card = entry.cards.remove(id);
     this.#listOfCard.delete(id);
-    this.#events.emit("change", undefined);
+    this.#changed();
     return card;
   }
 
@@ -78,7 +84,7 @@ export class Board<L extends Entity, C extends Entity> {
   removeList(id: string): L {
     const entry = this.#lists.remove(id);
     for (const card of entry.cards) this.#listOfCard.delete(card.id);
-    this.#events.emit("change", undefined);
+    this.#changed();
     return entry.list;
   }
 
@@ -123,6 +129,18 @@ export class Board<L extends Entity, C extends Entity> {
     return true;
   }
 
+  /** The Board as one frozen value; the same object until the Board changes. */
+  snapshot(): Snapshot<L, C> {
+    this.#snapshot ??= Object.freeze({
+      lists: Object.freeze(
+        [...this.#lists].map((entry) =>
+          Object.freeze({ list: entry.list, cards: Object.freeze([...entry.cards]) }),
+        ),
+      ),
+    });
+    return this.#snapshot;
+  }
+
   getList(id: string): L | undefined {
     return this.#lists.get(id)?.value.list;
   }
@@ -143,6 +161,12 @@ export class Board<L extends Entity, C extends Entity> {
     return this.#entry(listId).cards;
   }
 
+  /** Drops the cached Snapshot and emits `change`. */
+  #changed(): void {
+    this.#snapshot = undefined;
+    this.#events.emit("change", undefined);
+  }
+
   /** Emits `move` with the node's new neighbours in `list`, then `change`. */
   #emitMove<T extends Entity>(
     kind: MoveEvent["kind"],
@@ -151,13 +175,14 @@ export class Board<L extends Entity, C extends Entity> {
     toListId: string | null,
     list: LinkedList<T>,
   ): void {
+    this.#snapshot = undefined;
     const node = list.get(id);
     const prevId = node?.prev?.value.id ?? null;
     const nextId = node?.next?.value.id ?? null;
     let failure: { error: unknown } | undefined;
     for (const emit of [
       () => this.#events.emit("move", { kind, id, fromListId, toListId, prevId, nextId }),
-      () => this.#events.emit("change", undefined),
+      () => this.#changed(),
     ]) {
       try {
         emit();

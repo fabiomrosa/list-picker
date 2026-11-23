@@ -149,6 +149,8 @@ function expectInvariants(board: Board<Entity, Entity>, model: Model): void {
     [...board.cards(l.id)].map((c) => c.id),
   ]);
   expect(actual).toEqual(model);
+  const snapshot = board.snapshot();
+  expect(snapshot.lists.map(({ list, cards }) => [list.id, cards.map((c) => c.id)])).toEqual(model);
   for (const id of CARDS) {
     const owner = model.find(([, cards]) => cards.includes(id));
     expect(board.listOf(id)?.id).toBe(owner?.[0]);
@@ -168,8 +170,11 @@ describe("Board invariants", () => {
         const model: Model = [];
         for (const o of [...start, ...ops]) {
           const expected = applyToModel(model, o);
+          const previous = board.snapshot();
           const [actual, removed] = applyToBoard(board, o);
           expect(actual).toBe(expected);
+          // A Snapshot is replaced exactly when the Board changed.
+          expect(board.snapshot() === previous).toBe(expected !== "changed");
           if (removed !== undefined) expect(removed).toBe("id" in o ? o.id : undefined);
           expectInvariants(board, model);
           const key = `${o.kind}:${expected}`;
