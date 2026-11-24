@@ -165,8 +165,19 @@ test("drags a card into an empty list", async ({ page }) => {
   await drag(page, card(page, "Linked list"), cardsOf(page, "Done"));
   await expect.poll(() => lists(page)).toMatchObject({ Doing: [], Done: ["Linked list"] });
   // The event log reads each move: what moved, from where to where.
-  await expect(page.locator("#log li").first()).toContainText("Linked list");
-  await expect(page.locator("#log li").first()).toContainText("Doing → Done");
+  const event = page.locator("#log li").first();
+  await expect(event.locator(".event-id")).toHaveText("Linked list");
+  await expect(event.locator(".event-fields")).toContainText("Doing");
+  // Beside it, the event as emitted: valid JSON, equal to what `board.on("move")` received.
+  const json = JSON.parse((await event.locator(".event-json").textContent()) ?? "");
+  expect(json).toEqual({
+    kind: "card",
+    id: "Linked list",
+    fromListId: "Doing",
+    toListId: "Done",
+    prevId: null,
+    nextId: null,
+  });
 });
 
 test("a click without moving changes nothing", async ({ page }) => {
