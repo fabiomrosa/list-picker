@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 // The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
 // not covered.
-import { Board, type Snapshot } from "../packages/core/src/index.ts";
+import { Board, type MoveEvent, type Snapshot } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
 // The site's look, the skins (L4.18), then the demo's own parts (L4.17).
 import "../site/style.css";
@@ -256,8 +256,41 @@ board.on("change", () => {
   changes++;
   changesView.textContent = `· ${changes} change events`;
 });
+/**
+ * One event as a line to read (what moved, from where to where, between which neighbours), with
+ * the event itself, as the Board emits it, beside it.
+ */
+function eventRow(event: MoveEvent): HTMLElement {
+  const item = el("li", "event", "");
+  const text = el("div", "event-text", "");
+  const where =
+    event.kind === "card"
+      ? event.fromListId === event.toListId
+        ? `in ${event.toListId}`
+        : `${event.fromListId} → ${event.toListId}`
+      : "among the lists";
+  text.append(
+    el("span", "event-kind", event.kind),
+    el("strong", "event-id", event.id),
+    el("span", "event-where", where),
+    el("span", "event-near", `after ${event.prevId ?? "—"} · before ${event.nextId ?? "—"}`),
+  );
+  // The event's JSON, one unbreakable piece per field, so a long line breaks only between fields.
+  const json = el("code", "event-json", "{");
+  const fields = Object.entries(event);
+  fields.forEach(([key, value], i) => {
+    const last = i === fields.length - 1;
+    json.append(
+      el("span", "", `${JSON.stringify(key)}:${JSON.stringify(value)}${last ? "" : ","}`),
+    );
+    if (!last) json.append(" ");
+  });
+  json.append("}");
+  item.append(text, json);
+  return item;
+}
 board.on("move", (event) => {
-  log.prepend(el("li", "", `move ${JSON.stringify(event)}`));
+  log.prepend(eventRow(event));
 });
 
 for (const id of ["To do", "Doing", "Done"]) board.addList({ id }, null);
