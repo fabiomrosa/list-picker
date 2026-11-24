@@ -13,8 +13,9 @@
 
 # list-picker
 
-A headless TypeScript library for kanban-style boards: lists of cards you can add, remove, reorder
-and drag, built on doubly linked lists. You bring the look of every card; it brings the behaviour.
+A headless TypeScript library for lists people reorder (a kanban board's lists of cards, a
+playlist's tracks): items you can add, remove, reorder and drag, built on doubly linked lists. You
+bring the look of every item; it brings the behaviour.
 A lab rewriting [list-picker-js](https://github.com/fabiomrosa/list-picker-js) (2017).
 
 | Package | |

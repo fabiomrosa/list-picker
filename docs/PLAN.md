@@ -976,7 +976,7 @@ shows it in the demo.
 - **References:** L4.17, L4.20.
 
 ### L4.22 · Ordered lists, not only kanban
-- **Status:** waiting (L4.21)
+- **Status:** done (2026-11-24)
 - **Goal:** the project presents itself as what the owner first imagined: ordered lists that people
   reorder, a kanban board being one case and a playlist another.
 - **Depends on:** L4.21.

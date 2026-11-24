@@ -169,6 +169,9 @@ None.
   one list: previous and next by `neighbours`, tick two tracks to swap (`swapCards`), drag and
   keyboard moves, a click or Enter plays; `e2e/player.e2e.ts`. The nav has a "player" link and two
   rows on phones.
+- **2026-11-24, L4.22:** the project presents itself as lists people reorder (a kanban board, a
+  playlist), not only kanban: the home, both READMEs, the packages' description and keywords, the
+  root README and PRODUCT. Wording only; nothing removed.
 - **2026-11-24, L4.24:** `Board.swapCards(a, b)`: two cards exchange places in O(1) (side by side,
   one moves; apart, each takes the other's place); the property test swaps at random and replays
   the emitted moves on a copy (a planted bug was caught).
