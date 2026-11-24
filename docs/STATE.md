@@ -162,6 +162,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner):** the brand's mark 20% larger and centred on the letters (tallest
+  to baseline, measured to 0 px), not on the line the "p" pulls down; the phone nav's gap 0.75rem
+  keeps it on one line at 375px.
 - **2026-11-24, docs (owner):** the home's links add the design decisions (on GitHub) and the
   project's origin, list-picker-js (2017, public, archived).
 - **2026-11-24, fix (owner review of L4.21):** the demo reads top to bottom: title, skin chooser,
