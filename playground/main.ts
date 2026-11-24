@@ -7,6 +7,8 @@ import { mount } from "../packages/vanilla/src/index.ts";
 import "../site/style.css";
 import "../site/home.css";
 import "./demo.css";
+// The theme button in the nav (the site's own).
+import "../site/theme.ts";
 
 /** `name` is what the page shows; the id never changes (renaming sets the name). */
 type Entity = { id: string; name?: string };

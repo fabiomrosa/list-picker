@@ -166,6 +166,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, feat (owner):** a theme button on every page and both demos: automatic (the
+  system's), light or dark, saved in the browser (`site/theme.ts`; an inline script in each
+  `<head>` applies it before the page paints); `e2e/theme.e2e.ts`.
 - **2026-11-24, fix (owner):** the player's equalizer bars alternate (three rhythms); the nav names
   both demos, "kanban" and "player" (addresses unchanged), and the home says "The kanban demo".
 - **2026-11-24, L4.25 (owner):** the player's pretend play: no sound, ten times faster, play/pause,
