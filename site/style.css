@@ -57,8 +57,12 @@ h1 {
   line-height: 1.15;
   overflow-wrap: break-word;
 }
+/* The break after the scope: a zero-width space, silent (a <wbr> is read as a space). */
 h1 .scope {
   white-space: nowrap;
+}
+h1 .scope::after {
+  content: "\200b" / "";
 }
 h2 {
   margin-top: 2.5rem;
