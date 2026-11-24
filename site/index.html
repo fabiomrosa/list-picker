@@ -31,6 +31,15 @@
       </header>
 
       <section class="showcase" aria-label="A live board">
+        <div class="skins">
+          <span>Same board, your look:</span>
+          <input type="radio" name="skin" id="skin-cards" value="cards" checked />
+          <label for="skin-cards">Cards</label>
+          <input type="radio" name="skin" id="skin-terminal" value="terminal" />
+          <label for="skin-terminal">Terminal</label>
+          <input type="radio" name="skin" id="skin-pop" value="pop" />
+          <label for="skin-pop">Pop</label>
+        </div>
         <div id="hero-board" data-skin="cards"></div>
         <p class="hint">
           Drag a card or a list title. Or focus a card, press <kbd>Space</kbd>, move it with the

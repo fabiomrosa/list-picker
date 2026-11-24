@@ -1,4 +1,4 @@
-/* The home page (L4.15): the hero and its live board, in the Cards skin. */
+/* The home page (L4.15, L4.16): the hero and its live board, in three skins. */
 main.home {
   max-width: 64rem;
 }
@@ -30,6 +30,37 @@ main.home > :not(.hero, .showcase) {
   color: var(--bg);
 }
 
+.skins {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+.skins span {
+  margin-right: 0.5rem;
+  color: var(--muted);
+}
+.skins input {
+  position: absolute;
+  opacity: 0;
+}
+.skins label {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.skins input:checked + label {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+.skins input:focus-visible + label {
+  outline: 2px solid var(--accent);
+}
 .hint {
   font-size: 0.9rem;
   color: var(--muted);
@@ -134,4 +165,122 @@ kbd {
 [data-skin="cards"] [data-lp-grabbed] {
   outline: 2px solid #0c66e4;
   outline-offset: 2px;
+}
+
+/* Terminal: monospace on black, lines instead of boxes. */
+[data-skin="terminal"] {
+  background: #0d0f0d;
+  color: #b8f5b0;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+[data-skin="terminal"] [data-lp-list],
+[data-skin="terminal"] [data-lp-clone]:has(> [data-lp-cards]) {
+  padding: 0.5rem;
+  border: 1px dashed #2f4a2c;
+}
+[data-skin="terminal"] .hb-head h3::before {
+  content: "[ ";
+}
+[data-skin="terminal"] .hb-head h3::after {
+  content: " ]";
+}
+[data-skin="terminal"] .hb-count {
+  color: #5f8f59;
+}
+[data-skin="terminal"] .hb-card {
+  padding: 0.4rem 0.5rem;
+  border-left: 2px solid #2f4a2c;
+  background: #0d0f0d;
+}
+[data-skin="terminal"] .hb-card p::before {
+  content: "> ";
+  color: #f2c14e;
+}
+[data-skin="terminal"] .hb-tag {
+  color: #f2c14e;
+}
+[data-skin="terminal"] .hb-tag::before {
+  content: "#";
+}
+#hero-board[data-skin="terminal"] [data-lp-clone] {
+  border-left-color: #f2c14e;
+  background: #182118;
+  rotate: none;
+}
+[data-skin="terminal"] [data-lp-placeholder] {
+  border: 1px dashed #5f8f59;
+}
+[data-skin="terminal"] :focus-visible,
+[data-skin="terminal"] [data-lp-grabbed] {
+  outline: none;
+  background: #b8f5b0;
+  color: #0d0f0d;
+}
+[data-skin="terminal"] :is(:focus-visible, [data-lp-grabbed]) .hb-tag,
+[data-skin="terminal"] :is(:focus-visible, [data-lp-grabbed]) p::before {
+  color: inherit;
+}
+
+/* Pop: loud colours, thick borders, hard shadows. */
+[data-skin="pop"] {
+  background: #ffe14d;
+  color: #111;
+}
+[data-skin="pop"] [data-lp-list],
+[data-skin="pop"] [data-lp-clone]:has(> [data-lp-cards]) {
+  padding: 0.75rem;
+  border: 3px solid #111;
+  border-radius: 6px;
+  box-shadow: 5px 5px 0 #111;
+}
+/* A list's Clone is not among the lists, so it has no colour of its own. */
+[data-skin="pop"] [data-lp-clone]:has(> [data-lp-cards]) {
+  background: #fff;
+}
+[data-skin="pop"] [data-lp-list]:nth-child(3n + 1) {
+  background: #ff8fab;
+}
+[data-skin="pop"] [data-lp-list]:nth-child(3n + 2) {
+  background: #7bdff2;
+}
+[data-skin="pop"] [data-lp-list]:nth-child(3n) {
+  background: #b9fbc0;
+}
+[data-skin="pop"] .hb-head h3 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+[data-skin="pop"] .hb-count {
+  padding: 0 0.5rem;
+  border: 2px solid #111;
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 700;
+}
+[data-skin="pop"] .hb-card {
+  padding: 0.6rem 0.75rem;
+  border: 2px solid #111;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 3px 3px 0 #111;
+  font-weight: 600;
+}
+[data-skin="pop"] .hb-tag {
+  padding: 0 0.35rem;
+  background: #111;
+  color: #ffe14d;
+}
+#hero-board[data-skin="pop"] [data-lp-clone] {
+  box-shadow: 8px 8px 0 #111;
+  rotate: -3deg;
+}
+[data-skin="pop"] [data-lp-placeholder] {
+  border: 2px dashed #111;
+  border-radius: 4px;
+}
+[data-skin="pop"] :focus-visible,
+[data-skin="pop"] [data-lp-grabbed] {
+  outline: 3px solid #111;
+  outline-offset: 3px;
 }

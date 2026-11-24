@@ -66,3 +66,10 @@ mount(
 );
 showCounts();
 board.on("change", showCounts);
+
+// The skin chooser changes only the board's `data-skin`: the Board and its elements stay.
+for (const input of document.querySelectorAll<HTMLInputElement>("input[name=skin]")) {
+  input.addEventListener("change", () => {
+    root.dataset.skin = input.value;
+  });
+}

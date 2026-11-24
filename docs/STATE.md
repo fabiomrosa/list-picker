@@ -89,7 +89,7 @@ Every slice's pull request updates it (SESSION §3).
   changes nothing; a click or Enter opens a card's dialog, and a drag (back in place or away) opens
   none; a renamed list and a picked-up card updated from code. And the site's home
   (`e2e/home.e2e.ts`, the site served on 5181): its board by pointer and keyboard, in the skin's
-  look, and Doing refusing a fourth card.
+  look, Doing refusing a fourth card, and the three skins.
 - `npm run trace` drags cards and a list on the demo in Chrome with a performance trace and counts
   forced layouts by where they ran; the result is in `docs/decisions/0002-drag-layout-trace.md`
   (none in `pointermove`; one per auto-scroll frame, and at most one in a drag's first frame).
@@ -141,7 +141,9 @@ title, size, frozen-files and secret checks.
   hidden below 52rem). The look: monospace headings and navigation, a warm palette in light and
   dark (the accent passes WCAG AA on both backgrounds), code blocks as a terminal; system fonts only.
   The home opens with a hero and a live board (`site/home.ts`, drawn by `mount`; To do, Doing
-  capped at 3 with `canMove`, Done) in the Cards skin (`data-skin`, `site/home.css`). `.github/workflows/pages.yml`
+  capped at 3 with `canMove`, Done) and a skin chooser (Cards, Terminal, Pop) that changes only
+  the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
+  included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 
 ## Contract
@@ -151,6 +153,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.16:** from the owner's patch 0004: the home's board in three skins (Cards,
+  Terminal, Pop); the browser test switches them, checks nothing is redrawn and that a list's Clone
+  and the Placeholder take each skin (the patch's list Clones did not: fixed).
 - **2026-11-24, L4.15:** from the owner's patch 0003: a hero and a live board on the home (Cards
   skin, Doing capped at 3); `e2e/home.e2e.ts` drives it (Playwright now also serves the site on
   port 5181); the cap removed, it fails.
@@ -161,7 +166,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.16 (skins for the home's board).
+- **Next:** L4.17 (first npm publish; the owner publishes from their account).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

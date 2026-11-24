@@ -835,12 +835,14 @@ shows it in the demo.
 - **References:** DEC-07, DEC-17.
 
 ### L4.16 · Skins for the home's board
-- **Status:** waiting (L4.15)
+- **Status:** done (2026-11-24)
 - **Goal:** the home shows the same board in three looks: the look is the user's (DEC-07).
 - **Depends on:** L4.15.
 - **In scope:** from patch 0004: a skin chooser (Cards, Terminal, Pop; radios) that only changes
   the board's `data-skin`; the Terminal and Pop styles in `site/home.css`.
 - **Out of scope:** more skins; remembering the choice.
+- **Note:** as in L4.15, a list's Clone is matched by `[data-lp-clone]:has(> [data-lp-cards])`
+  (the patch's skins missed it); in Pop it is white, having no place among the lists' colours.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Each skin restyles the same board, the Clone and the Placeholder included, without redrawing
