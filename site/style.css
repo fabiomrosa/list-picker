@@ -74,8 +74,16 @@ nav a:first-child {
   font-weight: 700;
   margin-right: auto;
 }
+/* The brand's mark: a symbol, larger than the name and centred on its line. */
+nav a:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
 nav a:first-child::before {
-  content: "▤ " / "";
+  content: "▤" / "";
+  font-size: 1.45em;
+  line-height: 1;
   color: var(--accent);
 }
 /* Read by screen readers, not shown. */

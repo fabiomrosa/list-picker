@@ -92,7 +92,8 @@ dialog :is(input, button) {
   box-sizing: border-box;
   height: 2.25rem;
   padding: 0 0.6rem;
-  border: 1px solid var(--line);
+  /* 3:1 or more against the page (WCAG 1.4.11), so a field reads as a box like the buttons. */
+  border: 1px solid color-mix(in srgb, var(--text) 50%, var(--bg));
   border-radius: 8px;
   background: var(--bg);
   color: var(--text);
