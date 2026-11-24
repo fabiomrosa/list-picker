@@ -37,26 +37,62 @@ main.demo form strong {
   font-family: var(--mono);
   font-size: 0.9rem;
 }
+/* Labels ("to", "before") in the headings' font, quieter. */
+main.demo form label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+/* One height, corners and colours for fields, selects and buttons, in either theme. */
 main.demo :is(input, select),
 main.demo form button,
 dialog :is(input, button) {
-  font: inherit;
-  padding: 0.3rem 0.5rem;
-  color: var(--text);
-  background: var(--bg);
+  box-sizing: border-box;
+  height: 2.25rem;
+  padding: 0 0.6rem;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-family: var(--mono); /* every control alike, inside a label or not */
+  font-size: 0.9rem;
 }
 main.demo form input {
-  width: 7rem;
+  width: 8rem;
+}
+/* The select's own arrow, in `currentColor`, so it follows the theme. */
+main.demo select {
+  appearance: none;
+  padding-right: 2rem;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) 50%,
+    calc(100% - 11px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
 }
 :is(main.demo form, dialog) button[type="submit"] {
-  background: var(--text);
   border-color: var(--text);
+  background: var(--text);
   color: var(--bg);
   font-family: var(--mono);
   font-weight: 700;
   cursor: pointer;
+}
+:is(main.demo form, dialog) button[type="submit"]:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+main.demo :is(input, select, button):focus-visible,
+dialog :is(input, button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .status,
 .error {
@@ -133,31 +169,48 @@ main.demo form input {
   top: 0.3rem;
   right: 0.35rem;
   display: flex;
-  gap: 0.1rem;
+  gap: 0.2rem;
 }
 .tools {
   display: flex;
-  gap: 0.15rem;
+  gap: 0.25rem;
   margin-top: 0.3rem;
 }
-/* The demo's own buttons take the skin's colours. */
+/* The demo's own icon buttons take the skin's colours (`currentColor`). */
 .board .action {
-  padding: 0 0.35rem;
-  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
-  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  border-radius: 6px;
   background: transparent;
   color: inherit;
-  font-size: 0.8rem;
   cursor: pointer;
 }
+.board .action svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .list-tools .action {
-  border: 0;
+  border-color: transparent;
 }
 .board .action:hover:enabled {
-  background: color-mix(in srgb, currentColor 12%, transparent);
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.board .action:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
 }
 .board .action:disabled {
-  opacity: 0.35;
+  opacity: 0.6; /* 3:1 or more in every skin, list headers included */
   cursor: default;
 }
 

@@ -43,12 +43,34 @@ function attempt(act: () => void): boolean {
   }
 }
 
-/** A button that runs `act` when clicked; `role` lets `refresh` find it to enable or disable it. */
-function action(text: string, title: string, role: string, act: () => void): HTMLButtonElement {
-  const button = el("button", "action", text) as HTMLButtonElement;
+/** The buttons' icons (24px grid, drawn in `currentColor`, so each skin colours them). */
+const ICONS = {
+  up: "M12 19V5M5 12l7-7 7 7",
+  down: "M12 5v14M19 12l-7 7-7-7",
+  left: "M19 12H5M12 19l-7-7 7-7",
+  right: "M5 12h14M12 5l7 7-7 7",
+  remove: "M18 6 6 18M6 6l12 12",
+} as const;
+
+function icon(name: keyof typeof ICONS): SVGSVGElement {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("aria-hidden", "true");
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", ICONS[name]);
+  svg.append(path);
+  return svg;
+}
+
+/** An icon button that runs `act`; `label` is its name for screen readers and its tooltip. */
+function action(name: keyof typeof ICONS, label: string, act: () => void): HTMLButtonElement {
+  const button = el("button", "action", "") as HTMLButtonElement;
   button.type = "button";
-  button.title = title;
-  button.dataset.role = role;
+  button.title = label;
+  button.setAttribute("aria-label", label);
+  // `refresh` finds a button by its role to enable or disable it.
+  button.dataset.role = name;
+  button.append(icon(name));
   button.addEventListener("click", () => attempt(act));
   return button;
 }
@@ -90,16 +112,15 @@ function renderList(list: Entity): HTMLElement {
   const head = el("header", "list-head", "");
   // The name announced to screen readers (DEC-16), instead of the header's whole text.
   head.setAttribute("aria-label", list.name ?? list.id);
+  const name = list.name ?? list.id; // a rename redraws the header, so the labels follow
   const tools = el("div", "list-tools", "");
   tools.append(
-    action("←", `move list ${list.id} left`, "left", () => {
+    action("left", `move list ${name} left`, () => {
       const { left } = listAt(list.id);
       if (left) moveList(list.id, left);
     }),
-    action("→", `move list ${list.id} right`, "right", () =>
-      moveList(list.id, listAt(list.id).afterRight),
-    ),
-    action("×", `remove list ${list.id}`, "remove", () => board.removeList(list.id)),
+    action("right", `move list ${name} right`, () => moveList(list.id, listAt(list.id).afterRight)),
+    action("remove", `remove list ${name}`, () => board.removeList(list.id)),
   );
   head.append(
     Object.assign(el("h2", "hb-title", list.name ?? list.id), { title: `drag to move ${list.id}` }),
@@ -111,26 +132,27 @@ function renderList(list: Entity): HTMLElement {
 
 function renderCard(card: Entity): HTMLElement {
   const box = el("div", "card hb-card", "");
-  box.setAttribute("aria-label", card.name ?? card.id);
+  const name = card.name ?? card.id; // a rename redraws the card, so the labels follow
+  box.setAttribute("aria-label", name);
   const tools = el("div", "tools", "");
   tools.append(
-    action("↑", `move ${card.id} up`, "up", () => {
+    action("up", `move ${name} up`, () => {
       const { listId, up } = cardAt(card.id);
       if (up) move(card.id, listId, up);
     }),
-    action("↓", `move ${card.id} down`, "down", () => {
+    action("down", `move ${name} down`, () => {
       const { listId, afterDown } = cardAt(card.id);
       move(card.id, listId, afterDown);
     }),
-    action("←", `move ${card.id} left`, "left", () => {
+    action("left", `move ${name} left`, () => {
       const { left } = cardAt(card.id);
       if (left) move(card.id, left, null);
     }),
-    action("→", `move ${card.id} right`, "right", () => {
+    action("right", `move ${name} right`, () => {
       const { right } = cardAt(card.id);
       if (right) move(card.id, right, null);
     }),
-    action("×", `remove card ${card.id}`, "remove", () => board.removeCard(card.id)),
+    action("remove", `remove card ${name}`, () => board.removeCard(card.id)),
   );
   box.append(el("strong", "hb-text", card.name ?? card.id), el("small", "neighbours", ""), tools);
   return box;

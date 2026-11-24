@@ -923,7 +923,7 @@ shows it in the demo.
 - **References:** L4.15–L4.18, GOTCHAS, DEC-07.
 
 ### L4.20 · The demo's controls
-- **Status:** waiting (L4.19)
+- **Status:** done (2026-11-24)
 - **Goal:** the demo's forms and its list and card buttons look like the site, in every skin and
   theme, and say what they do to a screen reader.
 - **Depends on:** L4.19.
@@ -934,6 +934,10 @@ shows it in the demo.
   ("move Design the model up") instead of a bare glyph.
 - **Out of scope:** new demo behaviour; the selectors the tests use (`data-role`); the compact
   header the auto-scroll tests need.
+- **Note:** asked by the owner during the slice: the navigation's GitHub link became a round button
+  apart from the pages, with the Octocat (Octicons' `mark-github`, MIT) and a visually hidden "GitHub",
+  on every page; the nav now fits one line at 375px. Icon contrast, every button in every
+  skin: enabled 8.8–18.9:1, disabled 3.7–6.0:1 (opacity 0.6).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Every browser test passes unchanged; screenshots in each skin and theme show the controls
