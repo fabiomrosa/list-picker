@@ -76,8 +76,8 @@ Returns `{ destroy() }`, which removes what it added and every listener.
 - A Renderer runs again for a list or card whose value is a different object than the one it drew
   (`board.updateCard({ ...card, text })`); changing the same object draws nothing.
 - `options.onActivate({ kind, id })`: called on a click on a card or a list header that started
-  no drag, and on Enter on a focused one; open your modal from it. The click that ends a drag never
-  reaches the card or the page. Clicks and Enter on controls inside an item keep their own
+  no drag, and on Enter on a focused one; open your modal from it. A click that would follow a drag
+  never reaches the card. Clicks and Enter on controls inside an item keep their own
   behaviour.
 - `options.messages`: see [Announcements](#announcements).
 

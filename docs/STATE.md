@@ -47,13 +47,19 @@ Every slice's pull request updates it (SESSION §3).
   each a `board.moveCard`, the element following with the focus; Space drops, Esc puts it
   back, the focus leaving drops. A list moves the same way by its focused handle, with ← → only
   (`board.moveList`). It never runs with a pointer drag.
+  Activation (DEC-17): `options.onActivate({ kind, id })` (type `Activation`) runs on a click on a
+  card or a list's handle (not on a control inside it) that started no drag, and on Enter on a
+  focused one when nothing is picked up and no press is pending. A capture-phase `click` listener
+  on `root` swallows a click after a drag, until the next press (a capture-phase `pointerdown`
+  clears it); Chrome and WebKit fire no such click.
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
   `aria-live="assertive"` region in the document's body, not in `root` (removed by `destroy()`) says pick up, drop and cancel
   of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
   of 2." The label is the item's `aria-label`, else its text (which runs block contents together:
   "Designthe model"), else its id (a list's from its handle); the position comes from the Board. `createDrag(root, board, { messages })` and
   `mount(..., { messages })` replace any of `pickUp`, `move`, `drop`, `cancel` (types `Messages`,
-  `Announcement` `{ kind, label, listLabel, position, count }`, `DragOptions`).
+  `Announcement` `{ kind, label, listLabel, position, count }`; `DragOptions`, in `src/drag.ts`,
+  holds `messages` and `onActivate`).
 - `mount(root, board, { renderList, renderCard })` (`@list-picker/vanilla`) returns `{ destroy }`:
   it appends to `root`, per list in Board order, a `div[data-lp-list]` holding the list Renderer's
   element (marked `data-lp-list-handle`, focusable like each card) and a `div[data-lp-cards]` of the card Renderer's elements
@@ -75,7 +81,8 @@ Every slice's pull request updates it (SESSION §3).
 - Browser tests (`npm run e2e`, part of the gate): Playwright drags cards in the playground in
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll (downward, and upward without ever being pushed back), a list by its title; a click
-  changes nothing.
+  changes nothing; a click or Enter opens a card's dialog, and a drag (back in place or away) opens
+  none; a renamed list and a picked-up card updated from code.
 - `npm run trace` drags cards and a list on the demo in Chrome with a performance trace and counts
   forced layouts by where they ran; the result is in `docs/decisions/0002-drag-layout-trace.md`
   (none in `pointermove`; one per auto-scroll frame, and at most one in a drag's first frame).
@@ -87,7 +94,8 @@ Every slice's pull request updates it (SESSION §3).
   and ← → ×; positions are read at click time and the neighbours, counts and button states refresh
   after every change. Forms add lists and cards at the end or before a chosen one and move cards
   (showing "same place" when nothing changed); the page logs every `move` event, the `change`
-  count and the Snapshot version. A tall Backlog list (14 cards, lists scroll past 22rem) and a
+  count and the Snapshot version. ✎ renames a list or a card (`updateList`, `updateCard`); a click
+  or Enter on a card or header opens a dialog (`onActivate`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
   board narrower than its lists (52rem) show auto-scroll both ways. Styles live in the demo only.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate

@@ -90,6 +90,30 @@ describe("createDrag: activating a card or a list", () => {
     expect(own).toEqual(["card", "page"]);
   });
 
+  it("swallows no click after a drag whose next press a control keeps from `root`", () => {
+    card("a").getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    document.elementFromPoint = () => null;
+    pointer(card("a"), "pointerdown", 50, 30);
+    pointer(card("a"), "pointermove", 80, 30);
+    pointer(card("a"), "pointerup", 80, 30);
+    const button = card("b").appendChild(document.createElement("span"));
+    button.addEventListener("pointerdown", (event) => event.stopPropagation());
+    const clicks: string[] = [];
+    button.addEventListener("click", () => clicks.push("control"));
+    pointer(button, "pointerdown", 50, 120);
+    click(button);
+    expect(clicks).toEqual(["control"]);
+  });
+
+  it("activates nothing on Enter during a pointer press", () => {
+    card("a").getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    pointer(card("a"), "pointerdown", 50, 30);
+    card("a").focus();
+    key(card("a"), "Enter");
+    pointer(card("a"), "pointerup", 50, 30);
+    expect(activated).toEqual([]);
+  });
+
   it("activates on Enter on a focused card or handle; Space still picks up", () => {
     card("a").focus();
     expect(key(card("a"), "Enter").defaultPrevented).toBe(true);

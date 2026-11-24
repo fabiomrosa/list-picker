@@ -37,11 +37,12 @@ function itemsIn(container: Element, kind: Kind): HTMLElement[] {
 
 /**
  * Moves cards and lists with the keyboard (DEC-15), in the drag engine's markup (DEC-13): on a
- * focused card, or a list's focused `[data-lp-list-handle]`, Space or Enter picks it up; a card's
- * ↑ ↓ move it one place in its list and ← → to the same position (or the end) in the neighbouring
- * list; a list's ← → move it one place; Space or Enter drops it; Esc moves it back to where it was
- * picked up; the focus leaving drops it. Each step is one Board move, then the element moves and
- * the focus stays. Nothing is picked up while `pointerBusy()`.
+ * focused card, or a list's focused `[data-lp-list-handle]`, Space picks it up; a card's ↑ ↓ move
+ * it one place in its list and ← → to the same position (or the end) in the neighbouring list; a
+ * list's ← → move it one place; Space drops it; Esc moves it back to where it was picked up; the
+ * focus leaving drops it. Each step is one Board move, then the element moves and the focus stays.
+ * Enter, when nothing is picked up, calls `activate` instead (DEC-17). Nothing is picked up or
+ * activated while `pointerBusy()`.
  */
 export function createKeyboard<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
@@ -76,7 +77,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     if (event.key === "Enter") {
       // Enter activates (DEC-17); it never picks up or drops (DEC-15, amended).
       const what = held ? undefined : movable(focus);
-      if (!what || !activate) return;
+      if (!what || !activate || pointerBusy()) return;
       activate(what.kind, what.item.getAttribute(ATTRIBUTE[what.kind]) ?? "");
       event.preventDefault();
       return;

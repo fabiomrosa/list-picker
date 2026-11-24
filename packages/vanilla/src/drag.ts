@@ -149,7 +149,6 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
 
   function onPointerDown(event: PointerEvent): void {
     keyboard.drop(); // a pointer drag and a keyboard move never run at once
-    dragged = false;
     if (press || event.button !== 0 || !(event.target instanceof Element)) return;
     const what = pressed(event.target);
     if (!what) return;
@@ -399,6 +398,14 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     }
   }
 
+  /**
+   * Every press in `root`, even one a control stops from bubbling: a click after it is its own,
+   * not the one ending the last drag (no browser tested fires that one at all).
+   */
+  function onPressCapture(): void {
+    dragged = false;
+  }
+
   /** First of every click in `root` (capture): the one ending a drag goes no further. */
   function onClickCapture(event: MouseEvent): void {
     // A keyboard's click (`detail` 0, Enter on a control) never ends a drag.
@@ -415,6 +422,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       onActivate({ kind: name(what.kind), id: what.item.getAttribute(what.kind.attribute) ?? "" });
   }
 
+  root.addEventListener("pointerdown", onPressCapture, true);
   root.addEventListener("pointerdown", onPointerDown);
   root.addEventListener("click", onClickCapture, true);
   root.addEventListener("click", onClick);
@@ -423,6 +431,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       end();
       keyboard.destroy();
       announcer.destroy();
+      root.removeEventListener("pointerdown", onPressCapture, true);
       root.removeEventListener("pointerdown", onPointerDown);
       root.removeEventListener("click", onClickCapture, true);
       root.removeEventListener("click", onClick);
