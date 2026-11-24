@@ -1,4 +1,6 @@
-/* The home page (L4.15, L4.16): the hero and its live board, in three skins. */
+/* The home page (L4.15, L4.16): the hero and its live board. The skins (`[data-skin]` and the
+   `hb-*` classes a board's Renderers set: hb-head, hb-title, hb-count, hb-card, hb-text, hb-tag)
+   style any board: the demo's uses them too (L4.18). */
 main.home {
   max-width: 64rem;
 }
@@ -98,13 +100,13 @@ kbd {
   gap: 0.5rem;
   min-height: 3rem;
 }
-#hero-board [data-lp-card],
-#hero-board [data-lp-list-handle] {
+/* What is dragged, on any skinned board: `touch-action: none` or a touch drag is cancelled. */
+[data-skin] :is([data-lp-card], [data-lp-list-handle]) {
   cursor: grab;
   user-select: none;
   touch-action: none;
 }
-#hero-board [data-lp-clone] {
+[data-skin] [data-lp-clone] {
   cursor: grabbing;
   rotate: 2deg;
 }
@@ -114,11 +116,11 @@ kbd {
   align-items: baseline;
   margin-bottom: 0.6rem;
 }
-.hb-head h3 {
+.hb-title {
   margin: 0;
   font-size: 0.95rem;
 }
-.hb-card p {
+.hb-text {
   margin: 0.25rem 0 0;
   line-height: 1.35;
 }
@@ -139,7 +141,7 @@ kbd {
   border-radius: 12px;
   background: #f1f4f7;
 }
-[data-skin="cards"] .hb-head h3 {
+[data-skin="cards"] .hb-title {
   font-family: system-ui, sans-serif;
   letter-spacing: 0;
 }
@@ -184,10 +186,10 @@ kbd {
   padding: 0.5rem;
   border: 1px dashed #2f4a2c;
 }
-[data-skin="terminal"] .hb-head h3::before {
+[data-skin="terminal"] .hb-title::before {
   content: "[ ";
 }
-[data-skin="terminal"] .hb-head h3::after {
+[data-skin="terminal"] .hb-title::after {
   content: " ]";
 }
 [data-skin="terminal"] .hb-count {
@@ -198,7 +200,7 @@ kbd {
   border-left: 2px solid #2f4a2c;
   background: #0d0f0d;
 }
-[data-skin="terminal"] .hb-card p::before {
+[data-skin="terminal"] .hb-text::before {
   content: "> ";
   color: #f2c14e;
 }
@@ -208,7 +210,7 @@ kbd {
 [data-skin="terminal"] .hb-tag::before {
   content: "#";
 }
-#hero-board[data-skin="terminal"] [data-lp-clone].hb-card {
+[data-skin="terminal"] [data-lp-clone].hb-card {
   border-left-color: #f2c14e;
   background: #182118;
   rotate: none;
@@ -226,7 +228,7 @@ kbd {
 }
 [data-skin="terminal"]
   :is(.hb-card, [data-lp-list-handle]):is(:focus-visible, [data-lp-grabbed])
-  :is(.hb-tag, .hb-count, p::before),
+  :is(.hb-tag, .hb-count, .hb-text::before),
 [data-skin="terminal"] [data-lp-grabbed] > [data-lp-list-handle] .hb-count {
   color: inherit;
 }
@@ -259,7 +261,7 @@ kbd {
 [data-skin="pop"] [data-lp-list]:nth-child(3n of [data-lp-list]) {
   background: #b9fbc0;
 }
-[data-skin="pop"] .hb-head h3 {
+[data-skin="pop"] .hb-title {
   font-size: 1.1rem;
   text-transform: uppercase;
 }
@@ -283,7 +285,8 @@ kbd {
   background: #111;
   color: #ffe14d;
 }
-#hero-board[data-skin="pop"] [data-lp-clone] {
+[data-skin="pop"] [data-lp-clone],
+[data-skin="pop"] [data-lp-clone]:has(> [data-lp-cards]) {
   box-shadow: 8px 8px 0 #111;
   rotate: -3deg;
 }

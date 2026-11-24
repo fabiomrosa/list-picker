@@ -14,7 +14,18 @@
       <a href="https://github.com/fabiomrosa/list-picker">GitHub</a>
     </nav>
     <main class="demo">
-    <h1>Board <small id="snapshot"></small></h1>
+    <header class="demo-head">
+      <h1>Board <small id="snapshot"></small></h1>
+      <div class="skins" role="radiogroup" aria-labelledby="skins-label">
+        <span id="skins-label">Same board, your look:</span>
+        <input type="radio" name="skin" id="skin-cards" value="cards" checked />
+        <label for="skin-cards">Cards</label>
+        <input type="radio" name="skin" id="skin-terminal" value="terminal" />
+        <label for="skin-terminal">Terminal</label>
+        <input type="radio" name="skin" id="skin-pop" value="pop" />
+        <label for="skin-pop">Pop</label>
+      </div>
+    </header>
     <form id="add-list">
       <strong>Add list</strong>
       <input name="id" placeholder="list id" autocomplete="off" required />
@@ -37,7 +48,7 @@
     </form>
     <p class="status" id="status"></p>
     <p class="error" id="error"></p>
-    <div class="board" id="board"></div>
+    <div class="board" id="board" data-skin="cards"></div>
     <h2 class="log-title">Events <small id="changes"></small></h2>
     <ol class="log" id="log" reversed></ol>
     </main>

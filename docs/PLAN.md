@@ -878,7 +878,7 @@ shows it in the demo.
 - **References:** L4.14, L4.15, decision 0002.
 
 ### L4.18 · Skins on the demo
-- **Status:** waiting (L4.17)
+- **Status:** done (2026-11-24)
 - **Goal:** the demo shows its whole board (renaming, dialog, rules, event log) in the three skins
   of the home, to show that the look is the user's (DEC-07).
 - **Depends on:** L4.17.
@@ -888,6 +888,10 @@ shows it in the demo.
   styles the demo's own parts (the ↑ ↓ ← → × buttons, the neighbours line). What the browser
   tests and the trace rely on stays (the default skin, the sizes of L4.17).
 - **Out of scope:** more skins; remembering the choice.
+- **Note:** the skins stay in `site/home.css`, keyed on `[data-skin]` and the `hb-*` classes a
+  board's Renderers set (the title and card text took `hb-title`, `hb-text`); the demo imports it.
+  The chooser shares the title's row, so the Backlog still ends inside the tests' 720px window.
+  Trace: 0 forced layouts in `pointermove`.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. On the demo each skin restyles the same board, nothing redrawn, and a move made in one shows

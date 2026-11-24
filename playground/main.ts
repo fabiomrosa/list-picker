@@ -3,8 +3,9 @@
 // not covered.
 import { Board, type Snapshot } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
-// The site's look first, then the demo's own parts (L4.17).
+// The site's look, the skins (L4.18), then the demo's own parts (L4.17).
 import "../site/style.css";
+import "../site/home.css";
 import "./demo.css";
 
 /** `name` is what the page shows; the id never changes (renaming sets the name). */
@@ -101,15 +102,15 @@ function renderList(list: Entity): HTMLElement {
     action("×", `remove list ${list.id}`, "remove", () => board.removeList(list.id)),
   );
   head.append(
-    Object.assign(el("h2", "", list.name ?? list.id), { title: `drag to move ${list.id}` }),
-    Object.assign(el("small", "", ""), { className: "count" }),
+    Object.assign(el("h2", "hb-title", list.name ?? list.id), { title: `drag to move ${list.id}` }),
+    el("small", "count hb-count", ""),
     tools,
   );
   return head;
 }
 
 function renderCard(card: Entity): HTMLElement {
-  const box = el("div", "card", "");
+  const box = el("div", "card hb-card", "");
   box.setAttribute("aria-label", card.name ?? card.id);
   const tools = el("div", "tools", "");
   tools.append(
@@ -131,7 +132,7 @@ function renderCard(card: Entity): HTMLElement {
     }),
     action("×", `remove card ${card.id}`, "remove", () => board.removeCard(card.id)),
   );
-  box.append(el("strong", "", card.name ?? card.id), el("small", "neighbours", ""), tools);
+  box.append(el("strong", "hb-text", card.name ?? card.id), el("small", "neighbours", ""), tools);
   return box;
 }
 
@@ -311,6 +312,14 @@ const canMove = ({ kind, id, toListId }: { kind: string; id: string; toListId: s
   board.listOf(id)?.id === "Doing" ||
   cardIds("Doing").length < DOING_LIMIT;
 mount(boardView, board, { renderList, renderCard }, { onActivate: open, canMove });
+// The skin chooser (L4.18) changes only the board's `data-skin`: the same Board and elements.
+const skins = document.querySelectorAll<HTMLInputElement>("input[name=skin]");
+boardView.dataset.skin = [...skins].find((input) => input.checked)?.value ?? "cards";
+for (const input of skins) {
+  input.addEventListener("change", () => {
+    boardView.dataset.skin = input.value;
+  });
+}
 // For the browser tests and the console: changes made from code, as a server push would.
 Object.assign(window, { board });
 refresh();

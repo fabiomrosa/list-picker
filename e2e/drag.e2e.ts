@@ -274,3 +274,31 @@ test("the Placeholder takes the width of the list it is in, scrollbar or not", a
   await page.keyboard.press("Escape");
   await page.mouse.up();
 });
+
+test("the demo's board in three skins: the same elements, a move kept", async ({ page }) => {
+  const board = page.locator("#board");
+  // A mark on an element `mount` drew: still there after a skin change means no redraw.
+  await card(page, "Design the model").evaluate((el) => el.setAttribute("data-mark", ""));
+  await card(page, "Design the model").focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Space");
+  const order = await lists(page);
+  for (const skin of ["terminal", "pop", "cards"]) {
+    await page.locator(`label[for=skin-${skin}]`).click();
+    await expect(board).toHaveAttribute("data-skin", skin);
+    expect(await lists(page)).toEqual(order);
+    await expect(card(page, "Design the model")).toHaveAttribute("data-mark", "");
+  }
+  // A touch drag needs `touch-action: none` on what is dragged, in every skin (GOTCHAS).
+  await expect(card(page, "Linked list")).toHaveCSS("touch-action", "none");
+  await expect(page.locator('[data-lp-list="Doing"] [data-lp-list-handle]')).toHaveCSS(
+    "touch-action",
+    "none",
+  );
+  // Each skin styles the demo's cards: Terminal's are black, Pop's have a thick border.
+  await page.locator("label[for=skin-terminal]").click();
+  await expect(card(page, "Linked list")).toHaveCSS("background-color", "rgb(13, 15, 13)");
+  await page.locator("label[for=skin-pop]").click();
+  await expect(card(page, "Linked list")).toHaveCSS("border-top-width", "2px");
+});

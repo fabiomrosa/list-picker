@@ -36,6 +36,7 @@ mount(
       head.className = "hb-head";
       head.setAttribute("aria-label", list.title);
       const title = document.createElement("h3");
+      title.className = "hb-title";
       title.textContent = list.title;
       const count = document.createElement("span");
       count.className = "hb-count";
@@ -51,6 +52,7 @@ mount(
       tag.className = "hb-tag";
       tag.textContent = card.tag;
       const text = document.createElement("p");
+      text.className = "hb-text";
       text.textContent = card.text;
       element.append(tag, text);
       return element;
