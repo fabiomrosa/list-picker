@@ -731,7 +731,7 @@ shows it in the demo.
 - **References:** DEC-17, DEC-15.
 
 ### L4.11 · Rules for where items may move
-- **Status:** waiting (L4.10)
+- **Status:** done (2026-11-23)
 - **Goal:** an app locks a card, keeps a list from receiving cards, or caps a list's cards.
 - **Depends on:** L4.10, DEC-17.
 - **In scope:** a `canMove({ kind, id, toListId, beforeId })` option of `createDrag` and `mount`

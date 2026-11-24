@@ -109,6 +109,24 @@ test("a click or Enter opens a card; the click ending a drag opens nothing", asy
   await expect(dialog).toBeHidden();
 });
 
+test("a full list (Doing takes at most 3 cards) refuses another card", async ({ page }) => {
+  await page.evaluate(() => {
+    const { board } = window as unknown as {
+      board: { addCard(list: string, card: object, before: null): void };
+    };
+    board.addCard("Doing", { id: "Second" }, null);
+    board.addCard("Doing", { id: "Third" }, null);
+  });
+  await drag(page, card(page, "Write the tests"), card(page, "Linked list"), 0.1);
+  await page.waitForTimeout(100);
+  expect(await lists(page)).toMatchObject({
+    "To do": ["Design the model", "Write the tests"],
+    Doing: ["Linked list", "Second", "Third"],
+  });
+  await drag(page, card(page, "Third"), card(page, "Linked list"), 0.1);
+  await expect.poll(() => lists(page)).toMatchObject({ Doing: ["Third", "Linked list", "Second"] });
+});
+
 test("drags a card to another list, before its card", async ({ page }) => {
   await drag(page, card(page, "Write the tests"), card(page, "Linked list"), 0.1);
   await expect

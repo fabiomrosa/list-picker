@@ -79,6 +79,22 @@ Returns `{ destroy() }`, which removes what it added and every listener.
   no drag, and on Enter on a focused one; open your modal from it. A click that would follow a drag
   never reaches the card. Clicks and Enter on controls inside an item keep their own
   behaviour.
+- `options.canMove({ kind, id, toListId, beforeId })`: return `false` to refuse a place, for
+  example a locked card, a list that takes no cards, or a list that is full. It is asked before a
+  drag shows the item there (each frame the place changes) and before a keyboard step, so keep it
+  quick. A refused place is never shown: the Placeholder stays at the last allowed one, and the
+  keyboard skips to the next allowed place in that direction. Where the item was picked up is
+  always allowed. `toListId` is `null` for a list. The Board itself is not guarded: your own calls
+  are yours.
+
+  ```ts
+  const LIMIT = 3;
+  mount(root, board, renderers, {
+    canMove: ({ kind, id, toListId }) =>
+      kind === "list" || toListId !== "doing" || board.listOf(id)?.id === "doing" ||
+      [...board.cards("doing")].length < LIMIT,
+  });
+  ```
 - `options.messages`: see [Announcements](#announcements).
 
 A Renderer's error is thrown from the Board operation that needed it. A list or card removed from

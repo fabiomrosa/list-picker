@@ -257,7 +257,14 @@ function open({ kind, id }: { kind: "card" | "list"; id: string }): void {
   (opened.querySelector("p") as HTMLElement).textContent = `Opened ${kind} ${value?.name ?? id}`;
   opened.showModal();
 }
-mount(boardView, board, { renderList, renderCard }, { onActivate: open });
+/** A rule (`canMove`): Doing takes at most 3 cards. */
+const DOING_LIMIT = 3;
+const canMove = ({ kind, id, toListId }: { kind: string; id: string; toListId: string | null }) =>
+  kind === "list" ||
+  toListId !== "Doing" ||
+  board.listOf(id)?.id === "Doing" ||
+  cardIds("Doing").length < DOING_LIMIT;
+mount(boardView, board, { renderList, renderCard }, { onActivate: open, canMove });
 // For the browser tests and the console: changes made from code, as a server push would.
 Object.assign(window, { board });
 refresh();

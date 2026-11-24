@@ -50,6 +50,12 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   pointerBusy: () => boolean,
   say: Announcer["say"],
   activate?: (kind: Kind, id: string) => void,
+  canMove?: (move: {
+    kind: Kind;
+    id: string;
+    toListId: string | null;
+    beforeId: string | null;
+  }) => boolean,
 ): Keyboard {
   let grab: Grab | undefined;
   /** Set while the focused element (or the list around it) moves: leaving the document may blur it. */
@@ -129,30 +135,58 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     grab = undefined;
   }
 
-  /** One place back (`-1`) or forward (`1`) among its siblings; nothing past either end. */
+  /** Whether `canMove` lets `item` go before `before` (or last) in `container`. */
+  function allowed(
+    kind: Kind,
+    item: HTMLElement,
+    container: HTMLElement,
+    before: HTMLElement | null,
+  ) {
+    return (
+      !canMove ||
+      canMove({
+        kind,
+        id: item.getAttribute(ATTRIBUTE[kind]) ?? "",
+        toListId: kind === "card" ? container.getAttribute("data-lp-cards") : null,
+        beforeId: before?.getAttribute(ATTRIBUTE[kind]) ?? null,
+      })
+    );
+  }
+
+  /**
+   * One place back (`-1`) or forward (`1`) among its siblings, or further to the first place
+   * `canMove` allows; nothing past either end.
+   */
   function within({ kind, item, focus }: Grab, by: -1 | 1): void {
     const container = item.parentElement as HTMLElement;
     const items = itemsIn(container, kind);
     const at = items.indexOf(item);
-    if (by === -1 && at > 0) place(kind, item, focus, container, items[at - 1] ?? null);
-    if (by === 1 && at < items.length - 1) {
-      place(kind, item, focus, container, items[at + 2] ?? null);
+    // Before items[at - 1], items[at - 2]… going back; before items[at + 2]… (or last) forward.
+    for (let k = by === -1 ? at - 1 : at + 2; by === -1 ? k >= 0 : k <= items.length; k += by) {
+      const before = items[k] ?? null;
+      if (allowed(kind, item, container, before)) {
+        place(kind, item, focus, container, before);
+        return;
+      }
     }
   }
 
-  /** A card to the same position (or the end) in the previous (`-1`) or next (`1`) list. */
+  /**
+   * A card to the same position (or the end) in the previous (`-1`) or next (`1`) list, or the
+   * first list beyond it that `canMove` allows there.
+   */
   function across({ item, focus }: Grab, by: -1 | 1): void {
     const from = item.parentElement as HTMLElement;
+    const at = itemsIn(from, "card").indexOf(item);
     const lists = [...root.querySelectorAll<HTMLElement>("[data-lp-cards]")];
-    const to = lists[lists.indexOf(from) + by];
-    if (!to) return;
-    place(
-      "card",
-      item,
-      focus,
-      to,
-      itemsIn(to, "card")[itemsIn(from, "card").indexOf(item)] ?? null,
-    );
+    for (let i = lists.indexOf(from) + by; i >= 0 && i < lists.length; i += by) {
+      const to = lists[i] as HTMLElement;
+      const before = itemsIn(to, "card")[at] ?? null;
+      if (allowed("card", item, to, before)) {
+        place("card", item, focus, to, before);
+        return;
+      }
+    }
   }
 
   /**
