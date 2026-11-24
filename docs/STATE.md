@@ -162,6 +162,8 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, docs (owner):** the home's links add the design decisions (on GitHub) and the
+  project's origin, list-picker-js (2017, public, archived).
 - **2026-11-24, fix (owner review of L4.21):** the demo reads top to bottom: title, skin chooser,
   board, "Edit the board" (sentence-like rows, labels muted), "Events" (per move two cards: a
   readable one and the JSON `on("move")` receives); status and error are live regions that take
