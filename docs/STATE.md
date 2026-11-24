@@ -53,9 +53,9 @@ Every slice's pull request updates it (SESSION §3).
   on `root` swallows a click after a drag, until the next press (a capture-phase `pointerdown`
   clears it); Chrome and WebKit fire no such click.
   Rules (DEC-17): `options.canMove({ kind, id, toListId, beforeId })` (type `ProposedMove`;
-  `toListId` `null` for a list) is asked each frame before the Placeholder goes to a new place, and
-  before each keyboard step; a refused place is never shown, so a drop lands only on an allowed
-  one (where the item was picked up always is). The keyboard skips to the next allowed place in
+  `toListId` `null` for a list) is asked each frame before the Placeholder goes to a place, again
+  at the drop with the ids it applies (refused: the drop cancels), and before each keyboard step;
+  where the item was picked up is always allowed while shown. The keyboard skips to the next allowed place in
   that direction (within a container, or the next list across), or does nothing.
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
   `aria-live="assertive"` region in the document's body, not in `root` (removed by `destroy()`) says pick up, drop and cancel

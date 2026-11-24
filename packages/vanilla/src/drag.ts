@@ -33,9 +33,10 @@ export interface DragOptions {
    */
   readonly onActivate?: (item: Activation) => void;
   /**
-   * Whether an item may go to a place (DEC-17), asked before a pointer drag shows it there (in
-   * each frame the place changes) and before a keyboard step: a refused place is never shown or
-   * applied. Where the item was picked up is always allowed. Synchronous and cheap.
+   * Whether an item may go to a place (DEC-17), asked in each frame of a pointer drag before the
+   * Placeholder goes there, again at the drop (a refused drop cancels), and before a keyboard
+   * step: a refused place is never shown or applied. Where the item was picked up is always
+   * allowed while it is shown. Synchronous and cheap.
    */
   readonly canMove?: (move: ProposedMove) => boolean;
 }
@@ -211,8 +212,10 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
     const target = dropTarget(active, under);
     const steps = scrollSteps(under);
+    // Asked before any write, so a rule that reads layout forces none.
+    const ok = target !== undefined && allowed(active, target);
     active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
-    if (target && allowed(active, target)) place(active, target);
+    if (target && ok) place(active, target);
     for (const { element, left, top } of steps) {
       if (left !== undefined) element.scrollLeft = left;
       if (top !== undefined) element.scrollTop = top;
@@ -340,6 +343,12 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       next = next.nextElementSibling;
     }
     const beforeId = next?.getAttribute(kind.attribute) ?? null;
+    // Asked again with what is applied: the Board or the rule may have changed since it was shown.
+    const toListId = kind === LIST ? null : listId;
+    if (canMove && !canMove({ kind: name(kind), id, toListId, beforeId })) {
+      cancel();
+      return;
+    }
     try {
       if (kind === LIST) board.moveList(id, beforeId);
       else board.moveCard(id, listId, beforeId);

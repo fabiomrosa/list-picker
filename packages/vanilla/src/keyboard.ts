@@ -1,5 +1,6 @@
 import type { Board } from "@list-picker/core";
 import type { Announcer } from "./announce.ts";
+import type { ProposedMove } from "./drag.ts";
 import { landed } from "./landed.ts";
 
 /** The engine's keyboard moving; `destroy()` removes its listeners. */
@@ -50,12 +51,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   pointerBusy: () => boolean,
   say: Announcer["say"],
   activate?: (kind: Kind, id: string) => void,
-  canMove?: (move: {
-    kind: Kind;
-    id: string;
-    toListId: string | null;
-    beforeId: string | null;
-  }) => boolean,
+  canMove?: (move: ProposedMove) => boolean,
 ): Keyboard {
   let grab: Grab | undefined;
   /** Set while the focused element (or the list around it) moves: leaving the document may blur it. */
@@ -135,15 +131,18 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     grab = undefined;
   }
 
-  /** Whether `canMove` lets `item` go before `before` (or last) in `container`. */
+  /**
+   * Whether `canMove` lets the grabbed item go before `before` (or last) in `container`; where it
+   * was picked up always may.
+   */
   function allowed(
-    kind: Kind,
-    item: HTMLElement,
+    { kind, item, ...origin }: Grab,
     container: HTMLElement,
     before: HTMLElement | null,
   ) {
     return (
       !canMove ||
+      (container === origin.container && before === origin.before) ||
       canMove({
         kind,
         id: item.getAttribute(ATTRIBUTE[kind]) ?? "",
@@ -157,14 +156,15 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
    * One place back (`-1`) or forward (`1`) among its siblings, or further to the first place
    * `canMove` allows; nothing past either end.
    */
-  function within({ kind, item, focus }: Grab, by: -1 | 1): void {
+  function within(held: Grab, by: -1 | 1): void {
+    const { kind, item, focus } = held;
     const container = item.parentElement as HTMLElement;
     const items = itemsIn(container, kind);
     const at = items.indexOf(item);
     // Before items[at - 1], items[at - 2]… going back; before items[at + 2]… (or last) forward.
     for (let k = by === -1 ? at - 1 : at + 2; by === -1 ? k >= 0 : k <= items.length; k += by) {
       const before = items[k] ?? null;
-      if (allowed(kind, item, container, before)) {
+      if (allowed(held, container, before)) {
         place(kind, item, focus, container, before);
         return;
       }
@@ -175,14 +175,15 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
    * A card to the same position (or the end) in the previous (`-1`) or next (`1`) list, or the
    * first list beyond it that `canMove` allows there.
    */
-  function across({ item, focus }: Grab, by: -1 | 1): void {
+  function across(held: Grab, by: -1 | 1): void {
+    const { item, focus } = held;
     const from = item.parentElement as HTMLElement;
     const at = itemsIn(from, "card").indexOf(item);
     const lists = [...root.querySelectorAll<HTMLElement>("[data-lp-cards]")];
     for (let i = lists.indexOf(from) + by; i >= 0 && i < lists.length; i += by) {
       const to = lists[i] as HTMLElement;
       const before = itemsIn(to, "card")[at] ?? null;
-      if (allowed("card", item, to, before)) {
+      if (allowed(held, to, before)) {
         place("card", item, focus, to, before);
         return;
       }

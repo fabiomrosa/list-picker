@@ -145,4 +145,68 @@ describe("createDrag: rules for where items may move (canMove)", () => {
     key(handle, "ArrowRight");
     expect([...board.lists()].map((list) => list.id)).toEqual(["done", "later", "todo"]);
   });
+
+  it("asks again at the drop: a place refused since it was shown is not applied", async () => {
+    drag?.destroy();
+    let full = false;
+    drag = createDrag(root, board, { canMove: (move) => !(full && move.toListId === "done") });
+    await dragOver("a", cards("done"), 300);
+    expect(placeholderIn()).toBe("done");
+    full = true;
+    pointer(card("a"), "pointerup", 70, 300);
+    expect(moves).toEqual([]);
+  });
+
+  it("gives canMove the place the drop applies, past a card the Board removed", async () => {
+    drag?.destroy();
+    const seen: (string | null)[] = [];
+    drag = createDrag(root, board, {
+      canMove: (move) => {
+        seen.push(move.beforeId);
+        return move.beforeId !== null || move.toListId !== "done";
+      },
+    });
+    card("c").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    await dragOver("a", card("c"), 105);
+    expect(placeholderIn()).toBe("done");
+    board.removeCard("c");
+    pointer(card("a"), "pointerup", 70, 105);
+    expect(seen.at(-1)).toBeNull();
+    expect(moves).toEqual([]);
+  });
+
+  it("always allows the origin: back there by pointer or by keyboard", async () => {
+    drag?.destroy();
+    // Refuses card a before b: where a was picked up.
+    drag = createDrag(root, board, { canMove: (move) => move.beforeId !== "b" });
+    await dragOver("a", cards("later"), 300);
+    expect(placeholderIn()).toBe("later");
+    card("b").getBoundingClientRect = () => new DOMRect(10, 100, 200, 40);
+    document.elementFromPoint = () => card("b");
+    pointer(card("a"), "pointermove", 70, 105);
+    await frame();
+    expect(placeholderIn()).toBe("todo");
+    pointer(card("a"), "pointerup", 70, 105);
+    expect(moves).toEqual([]);
+    card("a").focus();
+    key(card("a"), " ");
+    key(card("a"), "ArrowDown");
+    key(card("a"), "ArrowUp");
+    expect(boardOrder()[0]).toEqual(["todo", ["a", "b"]]);
+  });
+
+  it("asks for a pointer drag of a list, with a null list", async () => {
+    const list = root.querySelector('[data-lp-list="later"]') as HTMLElement;
+    const handle = list.querySelector("[data-lp-list-handle]") as HTMLElement;
+    const todo = root.querySelector('[data-lp-list="todo"]') as HTMLElement;
+    list.getBoundingClientRect = () => new DOMRect(400, 0, 100, 300);
+    todo.getBoundingClientRect = () => new DOMRect(0, 0, 100, 300);
+    document.elementFromPoint = () => todo;
+    pointer(handle, "pointerdown", 450, 10);
+    pointer(handle, "pointermove", 10, 10);
+    await frame();
+    expect(asked).toContainEqual({ kind: "list", id: "later", toListId: null, beforeId: "todo" });
+    pointer(handle, "pointerup", 10, 10);
+    expect([...board.lists()].map((l) => l.id)).toEqual(["todo", "done", "later"]);
+  });
 });
