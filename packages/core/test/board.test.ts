@@ -491,3 +491,74 @@ describe("Board.neighbours", () => {
     expect(() => b.neighbours("todo")).toThrow('list-picker: unknown id "todo"');
   });
 });
+
+describe("Board.swapCards", () => {
+  const setup = () => {
+    const b = new Board<List, Card>();
+    b.addList({ id: "todo" }, null);
+    b.addList({ id: "done" }, null);
+    for (const id of ["a", "b", "c", "d"]) b.addCard("todo", { id }, null);
+    b.addCard("done", { id: "x" }, null);
+    const events: MoveEvent[] = [];
+    let changes = 0;
+    b.on("move", (event) => events.push(event));
+    b.on("change", () => changes++);
+    return { b, events, changes: () => changes };
+  };
+  /** Replays move events as a consumer would: each card before its new next (or last). */
+  const replay = (into: Board<List, Card>, events: MoveEvent[]) => {
+    for (const e of events) into.moveCard(e.id, e.toListId as string, e.nextId);
+  };
+  const copy = (from: Board<List, Card>) => {
+    const b = new Board<List, Card>();
+    for (const list of from.lists()) {
+      b.addList(list, null);
+      for (const card of from.cards(list.id)) b.addCard(list.id, card, null);
+    }
+    return b;
+  };
+
+  it("swaps two cards apart in one list, or side by side either way, or across lists", () => {
+    for (const [first, second, expected] of [
+      ["a", "c", [["c", "b", "a", "d"], ["x"]]],
+      ["a", "b", [["b", "a", "c", "d"], ["x"]]],
+      ["c", "b", [["a", "c", "b", "d"], ["x"]]],
+      ["b", "x", [["a", "x", "c", "d"], ["b"]]],
+      ["d", "a", [["d", "b", "c", "a"], ["x"]]],
+    ] as const) {
+      const { b, events, changes } = setup();
+      const before = copy(b);
+      expect(b.swapCards(first, second)).toBe(true);
+      expect([...b.lists()].map((list) => cardIds(b, list.id))).toEqual(expected);
+      expect(changes()).toBe(1);
+      // A consumer replaying the move events reaches the same order.
+      replay(before, events);
+      expect([...before.lists()].map((list) => cardIds(before, list.id))).toEqual(expected);
+    }
+  });
+
+  it("names each moved card's lists and final neighbours in its move event", () => {
+    const apart = setup();
+    apart.b.swapCards("b", "x");
+    expect(apart.events).toEqual([
+      { kind: "card", id: "b", fromListId: "todo", toListId: "done", prevId: null, nextId: null },
+      { kind: "card", id: "x", fromListId: "done", toListId: "todo", prevId: "a", nextId: "c" },
+    ]);
+    const adjacent = setup();
+    adjacent.b.swapCards("a", "b");
+    expect(adjacent.events).toEqual([
+      { kind: "card", id: "b", fromListId: "todo", toListId: "todo", prevId: null, nextId: "a" },
+    ]);
+  });
+
+  it("does nothing for the same card; unknown ids throw and change nothing", () => {
+    const { b, events, changes } = setup();
+    const snapshot = b.snapshot();
+    expect(b.swapCards("a", "a")).toBe(false);
+    expect(() => b.swapCards("a", "nope")).toThrow('list-picker: unknown id "nope"');
+    expect(() => b.swapCards("nope", "a")).toThrow('list-picker: unknown id "nope"');
+    expect(b.snapshot()).toBe(snapshot);
+    expect(events).toEqual([]);
+    expect(changes()).toBe(0);
+  });
+});

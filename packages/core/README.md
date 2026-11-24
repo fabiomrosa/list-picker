@@ -52,6 +52,7 @@ Positions are given by the item to go before (`null` for the end), never by an i
 | `updateCard(card)` | Replaces the card with `card.id` (same place); returns the old one. |
 | `moveList(id, beforeListId)` | Moves a list (with its cards); returns whether the order changed. |
 | `moveCard(id, toListId, beforeCardId)` | Moves a card, in its list or to another; returns whether the order changed. |
+| `swapCards(a, b)` | Exchanges two cards' places, in one list or across lists, in O(1); returns whether the order changed. |
 | `getList(id)`, `getCard(id)` | The list or card with that id, or `undefined`. |
 | `listOf(cardId)` | The list holding a card, or `undefined`. |
 | `neighbours(cardId)` | The cards before and after it in its list, `{ prev, next }` (`null` at an end), in O(1): a playlist's previous and next track. |
@@ -67,7 +68,8 @@ the Board is left unchanged.
 
 ### Events
 
-- `move`: after a move that changed the order. It names the new neighbours rather than indexes:
+- `move`: after a move that changed the order (a `swapCards` emits one per card that moved, in an
+  order you can replay with `moveCard(id, toListId, nextId)`). It names the new neighbours rather than indexes:
   `{ kind: "card" | "list", id, fromListId, toListId, prevId, nextId }` (`fromListId` and
   `toListId` are `null` for a list; `prevId` and `nextId` are `null` at an end).
 - `change`: after every change (add, remove, update or move), with no payload; redraw from it.

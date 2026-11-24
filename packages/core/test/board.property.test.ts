@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { Board } from "../src/index.ts";
+import { Board, type MoveEvent } from "../src/index.ts";
 
 /** `v` counts the updates of an item, so a read shows whether it sees the latest value. */
 type Entity = { id: string; v: number };
@@ -12,7 +12,8 @@ type Op =
   | { kind: "moveCard"; id: string; list: string; before: string | null }
   | { kind: "moveList"; id: string; before: string | null }
   | { kind: "updateCard"; id: string }
-  | { kind: "updateList"; id: string };
+  | { kind: "updateList"; id: string }
+  | { kind: "swapCards"; id: string; other: string };
 
 const LISTS = ["L1", "L2", "L3"];
 const CARDS = ["a", "b", "c", "d", "e"];
@@ -51,6 +52,10 @@ const op: fc.Arbitrary<Op> = fc.oneof(
   },
   { weight: 1, arbitrary: fc.record({ kind: fc.constant("updateCard" as const), id: card }) },
   { weight: 1, arbitrary: fc.record({ kind: fc.constant("updateList" as const), id: list }) },
+  {
+    weight: 2,
+    arbitrary: fc.record({ kind: fc.constant("swapCards" as const), id: card, other: card }),
+  },
 );
 
 /** Every run starts from a populated Board: all lists, each card in a random list or absent. */
@@ -127,6 +132,17 @@ function applyToModel(model: Model, o: Op): Result {
       model.splice(j, 0, entry);
       return JSON.stringify(model) === before ? "same" : "changed";
     }
+    case "swapCards": {
+      const a = holder(o.id);
+      const b = holder(o.other);
+      if (!a || !b) return "error";
+      if (o.id === o.other) return "same";
+      const ia = a[1].indexOf(o.id);
+      const ib = b[1].indexOf(o.other);
+      a[1][ia] = o.other;
+      b[1][ib] = o.id;
+      return "changed";
+    }
     case "updateCard":
     case "updateList": {
       const present = o.kind === "updateCard" ? holder(o.id) : at(o.id) >= 0;
@@ -147,6 +163,28 @@ function applyToBoard(board: Board<Entity, Entity>, o: Op): [Result, string?] {
       case "addCard":
         board.addCard(o.list, { id: o.id, v: 0 }, o.before);
         return ["changed"];
+      case "swapCards": {
+        // A consumer replaying the move events on a copy must reach the same order.
+        const copy = new Board<Entity, Entity>();
+        for (const l of board.lists()) {
+          copy.addList(l, null);
+          for (const c of board.cards(l.id)) copy.addCard(l.id, c, null);
+        }
+        const events: MoveEvent[] = [];
+        const off = board.on("move", (event) => events.push(event));
+        let changed: boolean;
+        try {
+          changed = board.swapCards(o.id, o.other);
+        } finally {
+          off();
+        }
+        for (const e of events) copy.moveCard(e.id, e.toListId as string, e.nextId);
+        const order = (b: Board<Entity, Entity>) =>
+          JSON.stringify([...b.lists()].map((l) => [...b.cards(l.id)].map((c) => c.id)));
+        // A replay that differs comes back in place of the id, so the property names it.
+        const replayed = order(copy) === order(board) ? o.id : `replay differs: ${order(copy)}`;
+        return [changed ? "changed" : "same", replayed];
+      }
       // The id of the replaced value only if it is the value read just before.
       case "updateCard": {
         const old = board.getCard(o.id);
@@ -238,6 +276,7 @@ describe("Board invariants", () => {
       "moveList:same",
       "updateCard:changed",
       "updateList:changed",
+      "swapCards:changed",
     ]) {
       expect(reached.get(key) ?? 0, key).toBeGreaterThan(50);
     }
