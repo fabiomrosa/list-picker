@@ -1026,7 +1026,7 @@ shows it in the demo.
 - **References:** DEC-06, DEC-11.
 
 ### L4.25 · The music player example
-- **Status:** waiting (L4.24)
+- **Status:** done (2026-11-24)
 - **Goal:** the site shows a second use of the library beside the kanban: the owner's playlist.
 - **Depends on:** L4.24.
 - **In scope:** a page in the site (`player.html` or a `player/` demo build, linked from the nav and
@@ -1034,6 +1034,9 @@ shows it in the demo.
   drawn by `mount` (one list), each track with a checkbox to pick it and pick another to swap
   (`swapCards`), plus the engine's drag and keyboard moves; a browser test. The kanban demo stays.
 - **Out of scope:** playing audio, Spotify (the sketch's extras).
+- **Note:** `site/player.html` (Coldplay's "Parachutes", as in the sketch); a click or Enter plays
+  a track (`onActivate`). With a fifth link the nav no longer fits a phone's width: below 30rem it
+  takes two rows (the brand and GitHub, then the pages). L4.22's wording merges right before it.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Previous and next step through the playlist in its current order; picking two tracks swaps
