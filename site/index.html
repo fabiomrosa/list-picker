@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>list-picker</title>
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./home.css" />
   </head>
   <body>
     <nav>
@@ -14,19 +15,28 @@
       <a href="./demo/">demo</a>
       <a href="https://github.com/fabiomrosa/list-picker">GitHub</a>
     </nav>
-    <main>
-      <h1>list-picker</h1>
-      <p>
-        A headless TypeScript library for kanban-style boards: lists of cards that people reorder.
-        You render every card and list header; list-picker owns the containers, the moves and the
-        order, and ships no styles.
-      </p>
-      <ul>
-        <li>The model is a Board of doubly linked lists with an id index: a position is "before this card", never an index.</li>
-        <li>Cards and lists move by pointer (mouse, pen, touch) and by keyboard.</li>
-        <li>Every pick up, move, drop and cancel is announced to screen readers.</li>
-      </ul>
-      <p><a class="button" href="./demo/">Try the demo board</a></p>
+    <main class="home">
+      <header class="hero">
+        <p class="eyebrow">headless kanban for TypeScript</p>
+        <h1>The board's behaviour.<br />Your board's look.</h1>
+        <p class="lede">
+          list-picker owns the containers, the moves and the order of a kanban board: dragging by
+          pointer or keyboard, screen reader announcements, a linked-list model. You render every
+          card and list header, and it ships no styles.
+        </p>
+        <p>
+          <a class="button" href="#install">Install</a>
+          <a class="button ghost" href="./demo/">The full demo</a>
+        </p>
+      </header>
+
+      <section class="showcase" aria-label="A live board">
+        <div id="hero-board" data-skin="cards"></div>
+        <p class="hint">
+          Drag a card or a list title. Or focus a card, press <kbd>Space</kbd>, move it with the
+          arrows and press <kbd>Space</kbd> again. Doing holds 3 cards.
+        </p>
+      </section>
 
       <h2 id="packages">Packages</h2>
       <table>
@@ -66,5 +76,6 @@
         <li><a href="https://github.com/fabiomrosa/list-picker">The source on GitHub</a></li>
       </ul>
     </main>
+    <script type="module" src="./home.ts"></script>
   </body>
 </html>

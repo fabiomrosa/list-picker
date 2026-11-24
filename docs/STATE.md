@@ -87,7 +87,9 @@ Every slice's pull request updates it (SESSION §3).
   Chrome: within a list, across lists, into an empty list, to the end of a tall list by
   auto-scroll (downward, and upward without ever being pushed back), a list by its title; a click
   changes nothing; a click or Enter opens a card's dialog, and a drag (back in place or away) opens
-  none; a renamed list and a picked-up card updated from code.
+  none; a renamed list and a picked-up card updated from code. And the site's home
+  (`e2e/home.e2e.ts`, the site served on 5181): its board by pointer and keyboard, in the skin's
+  look, and Doing refusing a fourth card.
 - `npm run trace` drags cards and a list on the demo in Chrome with a performance trace and counts
   forced layouts by where they ran; the result is in `docs/decisions/0002-drag-layout-trace.md`
   (none in `pointermove`; one per auto-scroll frame, and at most one in a drag's first frame).
@@ -137,7 +139,9 @@ title, size, frozen-files and secret checks.
   package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it.
   A package's page has an index of its README's `##` sections beside it (`main.doc`, sticky,
   hidden below 52rem). The look: monospace headings and navigation, a warm palette in light and
-  dark (the accent passes WCAG AA on both backgrounds), code blocks as a terminal; system fonts only. `.github/workflows/pages.yml`
+  dark (the accent passes WCAG AA on both backgrounds), code blocks as a terminal; system fonts only.
+  The home opens with a hero and a live board (`site/home.ts`, drawn by `mount`; To do, Doing
+  capped at 3 with `canMove`, Done) in the Cards skin (`data-skin`, `site/home.css`). `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 
 ## Contract
@@ -147,6 +151,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.15:** from the owner's patch 0003: a hero and a live board on the home (Cards
+  skin, Doing capped at 3); `e2e/home.e2e.ts` drives it (Playwright now also serves the site on
+  port 5181); the cap removed, it fails.
 - **2026-11-24, L4.14:** from the owner's patch 0002 (merged by hand over L4.13): the site's own
   look and a section index beside each package's page.
 - **2026-11-24, L4.13:** from the owner's patch 0001: the home lists the four packages with an
@@ -154,7 +161,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.15 (a live board on the home).
+- **Next:** L4.16 (skins for the home's board).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

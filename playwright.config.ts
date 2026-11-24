@@ -13,9 +13,17 @@ export default defineConfig({
     // Real scrollbars take room, as for users (headless Chrome hides them by default).
     launchOptions: { ignoreDefaultArgs: ["--hide-scrollbars"] },
   },
-  webServer: {
-    command: "npx vite playground --port 5180 --strictPort",
-    url: "http://localhost:5180",
-    reuseExistingServer: false,
-  },
+  webServer: [
+    {
+      command: "npx vite playground --port 5180 --strictPort",
+      url: "http://localhost:5180",
+      reuseExistingServer: false,
+    },
+    // The site, for the home's live board (`e2e/home.e2e.ts`).
+    {
+      command: "npx vite site --port 5181 --strictPort",
+      url: "http://localhost:5181/list-picker/",
+      reuseExistingServer: false,
+    },
+  ],
 });
