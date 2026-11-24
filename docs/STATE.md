@@ -135,8 +135,10 @@ title, size, frozen-files and secret checks.
   hooks, the keys and the announcements), the MIT `LICENSE`, and `description`, `license`,
   `repository`, `keywords`, `sideEffects: false`; `npm pack --dry-run` lists only `dist`, the
   README, the license and `package.json`. Version `1.0.0`, public (`publishConfig.access`),
-  vanilla depending on core `^1.0.0`; `prepublishOnly` builds. The owner publishes from their npm
-  account (core first), from `main`; the tag `v1.0.0` marks the published commit.
+  vanilla depending on core `^1.0.0`; `prepublishOnly` builds. **Published on npm** (2026-11-24,
+  L4.26): `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`, by the owner from their
+  account (the `list-picker` org, 2FA: `npm publish --otp=<code>`), core first, from `main`; the
+  tag `v1.0.0` marks the published commit. A new version is a new number: npm never reuses one.
 
 ## Site
 - `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, a table of the
@@ -163,9 +165,16 @@ title, size, frozen-files and secret checks.
 None yet.
 
 ## Known issues
-None.
+- Six e2e drag tests fail under WebKit (Safari's engine); CI runs Chrome only. Seen in #55's
+  review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, L4.26:** v1 is on npm: `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`,
+  published by the owner; tag `v1.0.0` on `4384a16`. Criterion 1 checked against the registry:
+  `npm install @list-picker/vanilla` in an empty folder brings both, and the vanilla README's
+  example (strict types, a build, a drag and a keyboard move in Chrome) runs against them.
+- **Next:** close M4 (SESSION §7: a docs pull request, merged only after the owner's ok; it takes
+  the WebKit failures under Known issues).
 - **2026-11-24, feat (owner):** the home's Install command switches by package manager (npm,
   yarn, pnpm: small links under it, radios and `:has()`, no script; npm without `:has()`); the
   READMEs keep npm only.

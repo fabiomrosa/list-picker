@@ -69,8 +69,8 @@ demo and a live board on the home, and the first npm publish.
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
 - **P2** · The npm account and package names (DEC-12). Done: `@list-picker/core` and
-  `@list-picker/vanilla` (the owner's `list-picker` npm org), to be published from the owner's
-  account in L4.26.
+  `@list-picker/vanilla` (the owner's `list-picker` npm org), published from the owner's account
+  in L4.26 (2026-11-24, `1.0.0`, tag `v1.0.0`).
 - **P3** · The license of the packages. Done: MIT (left to the agent by the owner, 2026-11-23).
 - **P4** · GitHub Pages turned on for the repository (Settings → Pages → Source: GitHub Actions).
   Needed by L4.12.

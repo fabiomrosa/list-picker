@@ -1049,7 +1049,7 @@ shows it in the demo.
 - **References:** L4.23, L4.24, DEC-07.
 
 ### L4.26 · First npm publish
-- **Status:** waiting (L4.25)
+- **Status:** done (2026-11-24)
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.25, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
