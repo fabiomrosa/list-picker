@@ -1,62 +1,104 @@
 :root {
   color-scheme: light dark;
-  --text: #1f2933;
-  --muted: #616e7c;
-  --bg: #fbfcfd;
-  --code: #eef1f4;
-  --accent: #2a6fdb;
+  --text: #1b1a17;
+  --muted: #6b675e;
+  --bg: #f6f4ef;
+  --line: #e2ddd2;
+  --code: #ebe7de;
+  --accent: #d9480f;
+  --term: #1b1a17;
+  --term-text: #ece8df;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #e4e7eb;
-    --muted: #9aa5b1;
-    --bg: #14171a;
-    --code: #22272c;
-    --accent: #7aa7f0;
+    --text: #ece8df;
+    --muted: #a29d92;
+    --bg: #141311;
+    --line: #2a2723;
+    --code: #24211d;
+    --accent: #ff7a45;
+    --term: #0c0b0a;
   }
 }
 body {
   margin: 0;
   font:
-    16px / 1.6 system-ui,
+    16px / 1.65 system-ui,
     sans-serif;
   color: var(--text);
   background: var(--bg);
+}
+h1,
+h2,
+h3,
+nav {
+  font-family: var(--mono);
+  letter-spacing: -0.02em;
+}
+h1 {
+  font-size: 2.4rem;
+  line-height: 1.15;
+}
+h2 {
+  margin-top: 2.5rem;
+  font-size: 1.35rem;
+}
+h2::before {
+  content: "## ";
+  color: var(--accent);
 }
 nav {
   display: flex;
   flex-wrap: wrap;
   gap: 1.25rem;
-  padding: 1rem;
-  border-bottom: 1px solid var(--code);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+nav a:hover {
+  color: var(--accent);
 }
 nav a:first-child {
-  font-weight: 600;
+  color: var(--text);
+  font-weight: 700;
   margin-right: auto;
+}
+nav a:first-child::before {
+  content: "▤ ";
+  color: var(--accent);
 }
 main {
   max-width: 46rem;
   margin: 0 auto;
-  padding: 1rem 1rem 4rem;
+  padding: 1rem 1.5rem 4rem;
 }
 a {
   color: var(--accent);
+  text-underline-offset: 0.2em;
 }
 code {
+  font-family: var(--mono);
   background: var(--code);
   padding: 0.1em 0.3em;
   border-radius: 4px;
-  font-size: 0.9em;
+  font-size: 0.88em;
 }
 pre {
-  background: var(--code);
-  padding: 1rem;
-  border-radius: 6px;
+  background: var(--term);
+  color: var(--term-text);
+  padding: 1rem 1.2rem;
+  border-radius: 8px;
   overflow-x: auto;
 }
 pre code {
   padding: 0;
   background: none;
+  color: inherit;
 }
 table {
   border-collapse: collapse;
@@ -65,24 +107,41 @@ table {
 }
 th,
 td {
-  border: 1px solid var(--code);
-  padding: 0.35rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  padding: 0.45rem 0.7rem;
   text-align: left;
   vertical-align: top;
 }
+th {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+td code {
+  white-space: nowrap;
+}
 .button {
   display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background: var(--accent);
+  padding: 0.55rem 1.1rem;
+  border: 2px solid var(--text);
+  border-radius: 8px;
+  background: var(--text);
   color: var(--bg);
+  font-family: var(--mono);
+  font-weight: 700;
   text-decoration: none;
-  font-weight: 600;
 }
+.button:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* The Install chooser: radios as tabs, no script. */
 .install label {
   display: inline-block;
   padding: 0.3rem 0.8rem;
   border-radius: 6px;
+  font-family: var(--mono);
   cursor: pointer;
 }
 .install input {
@@ -90,8 +149,8 @@ td {
   opacity: 0;
 }
 .install input:checked + label {
-  background: var(--code);
-  font-weight: 600;
+  background: var(--term);
+  color: var(--term-text);
 }
 .install input:focus-visible + label {
   outline: 2px solid var(--accent);
@@ -100,11 +159,58 @@ td {
 .install .soon {
   display: none;
 }
+.install pre code::before {
+  content: "$ ";
+  color: var(--accent);
+}
 #install-vanilla:checked ~ .install-vanilla,
 #install-react:checked ~ .install-react,
 #install-angular:checked ~ .install-angular {
   display: block;
 }
-td code {
-  white-space: nowrap;
+
+/* A package's page: its README with the index of its sections beside it on wide screens. */
+main.doc {
+  max-width: 64rem;
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 46rem);
+  gap: 3rem;
+}
+.toc {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+  padding-top: 2rem;
+  font-size: 0.85rem;
+}
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.toc li {
+  margin: 0.35rem 0;
+}
+.toc a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.toc a:hover {
+  color: var(--accent);
+}
+.toc strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+@media (max-width: 52rem) {
+  main.doc {
+    display: block;
+  }
+  .toc {
+    display: none;
+  }
 }

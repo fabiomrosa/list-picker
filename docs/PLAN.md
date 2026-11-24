@@ -797,7 +797,7 @@ shows it in the demo.
 - **References:** L4.12.
 
 ### L4.14 · The site's look and a section index
-- **Status:** waiting (L4.13)
+- **Status:** done (2026-11-24)
 - **Goal:** the site has its own look, and a package's page shows the index of its sections.
 - **Depends on:** L4.13.
 - **In scope:** from patch 0002: monospace headings and navigation, a warm palette in light and
