@@ -282,7 +282,10 @@ function editName(id: string): void {
  * dialog, where its name can be changed.
  */
 function open({ kind, id }: { kind: "card" | "list"; id: string }): void {
-  if (kind === "list") return editName(id);
+  if (kind === "list") {
+    editName(id);
+    return;
+  }
   const card = board.getCard(id);
   openedCard = id;
   (opened.querySelector("p") as HTMLElement).textContent = `Opened card ${card?.name ?? id}`;
