@@ -48,7 +48,7 @@ framework adapters without the vanilla mount, it splits into its own package the
 The flow of one drag (DEC-08):
 1. `pointerdown` on a card: remember the card and the pointer; nothing visible yet.
 2. Past the threshold: read the card's rect once, create the Clone (fixed position, moved by
-   `transform`), put a Placeholder of the same size where the card was, and hide the card.
+   the `translate` property), put a Placeholder of the same size where the card was, and hide the card.
 3. `pointermove`: store the pointer; one `requestAnimationFrame` per frame moves the Clone and finds
    the Drop target: the List under the pointer, then the card under the pointer, compared with its
    vertical middle: above → Placeholder before it, below → after it; past the last card or in an

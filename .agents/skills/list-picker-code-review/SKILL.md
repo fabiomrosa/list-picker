@@ -32,7 +32,7 @@ reference. Any "no" is fixed before the pull request (or explicitly listed as a 
 - [ ] Events: one per completed change, none on a no-op or a cancel.
 
 ## DOM and performance
-- [ ] No absolute positioning or computed size of cards; only the Clone moves, with `transform`.
+- [ ] No absolute positioning or computed size of cards; only the Clone moves, with a transform (the `translate` property).
 - [ ] No layout read after a write in the same `pointermove` frame; reads are batched.
 - [ ] Every listener added is removed on drop, cancel and `destroy()`.
 - [ ] Nothing changes the inside of the user's card; no `innerHTML` with user values.

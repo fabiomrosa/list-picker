@@ -115,6 +115,8 @@ main.demo form input {
   min-height: 2rem;
   max-height: 22rem;
   overflow-y: auto;
+  /* Room inside the scrolling list for the skins' card shadows (Pop's is 3px), which it clips. */
+  padding: 2px 5px 5px 2px;
 }
 .card {
   position: relative;

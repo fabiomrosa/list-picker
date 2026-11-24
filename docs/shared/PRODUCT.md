@@ -46,7 +46,7 @@ None. Success is learning: the theory tested, measured and written down.
 | Move | Taking a node out of its place and inserting it before or after another node, possibly in another List |
 | Snapshot | An immutable array view of the Board, in order, for renderers that need arrays |
 | Drag | The gesture: from pointer down past the threshold until drop or cancel |
-| Clone | The copy of the dragged card that follows the pointer (moved only with `transform`) |
+| Clone | The copy of the dragged card that follows the pointer (moved only with a transform (the `translate` property)) |
 | Placeholder | An empty element the size of the dragged card, placed where the card would drop |
 | Drop target | The List (and position in it) under the pointer during a Drag |
 | Renderer | The user's function or component that renders a Card or a List |

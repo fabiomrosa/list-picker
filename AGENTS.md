@@ -51,7 +51,8 @@ Follow YAGNI and KISS strictly, in code and in communication.
 - The model is the doubly linked list plus its Index; no array is the source of truth (DEC-06). Every
   operation keeps the PRODUCT invariants, and each invariant has a test.
 - Cards stay in the document flow: no absolute positioning of cards, no computed `top`/`height`
-  (DEC-08). The Clone moves only with `transform`, inside `requestAnimationFrame`.
+  (DEC-08). The Clone moves only with a transform (the `translate` property), inside
+  `requestAnimationFrame`.
 - No layout read (`getBoundingClientRect`, `offset*`) in a `pointermove` handler after a write in the
   same frame. Batch reads, then writes.
 - Never `innerHTML` with user values; the user's Renderer returns an element (or a component).

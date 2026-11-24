@@ -38,7 +38,8 @@ Every slice's pull request updates it (SESSION §3).
   Lists drag the same way, pressed by a `[data-lp-list-handle]` inside a `[data-lp-list]`:
   horizontally among the sibling lists, dropped with `board.moveList`; a press on a card inside a
   list still drags the card. The Clone follows the pointer: moves only
-  store it, one `requestAnimationFrame` per frame writes `transform`. Each frame the Placeholder
+  store it, one `requestAnimationFrame` per frame writes `translate` (applied before a skin's
+  `rotate` or `scale`, so a tilted Clone stays under the pointer). Each frame the Placeholder
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
@@ -158,6 +159,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner note):** the demo's scrolling lists clipped the skins' card shadows (now
+  padded); found with it, a tilted Clone drifted off the pointer (Pop: ~29px on a 560px drag)
+  because the engine moved it with `transform`; it now writes the `translate` property.
 - **2026-11-24, L4.18:** the demo's board in the three skins (Cards, Terminal, Pop), sharing the
   home's styles; its buttons and texts take each skin's colours; a browser test switches them.
 - **2026-11-24, L4.17:** the demo in the site's look (palette, nav, Cards board); every browser
