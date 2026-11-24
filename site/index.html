@@ -31,8 +31,8 @@
       </header>
 
       <section class="showcase" aria-label="A live board">
-        <div class="skins">
-          <span>Same board, your look:</span>
+        <div class="skins" role="radiogroup" aria-labelledby="skins-label">
+          <span id="skins-label">Same board, your look:</span>
           <input type="radio" name="skin" id="skin-cards" value="cards" checked />
           <label for="skin-cards">Cards</label>
           <input type="radio" name="skin" id="skin-terminal" value="terminal" />

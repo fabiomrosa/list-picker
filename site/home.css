@@ -44,8 +44,13 @@ main.home > :not(.hero, .showcase) {
   color: var(--muted);
 }
 .skins input {
+  /* Visually hidden, still focusable: off the text around it. */
   position: absolute;
+  width: 1px;
+  height: 1px;
   opacity: 0;
+  clip-path: inset(50%);
+  pointer-events: none;
 }
 .skins label {
   padding: 0.25rem 0.7rem;
@@ -203,7 +208,7 @@ kbd {
 [data-skin="terminal"] .hb-tag::before {
   content: "#";
 }
-#hero-board[data-skin="terminal"] [data-lp-clone] {
+#hero-board[data-skin="terminal"] [data-lp-clone].hb-card {
   border-left-color: #f2c14e;
   background: #182118;
   rotate: none;
@@ -211,15 +216,22 @@ kbd {
 [data-skin="terminal"] [data-lp-placeholder] {
   border: 1px dashed #5f8f59;
 }
-[data-skin="terminal"] :focus-visible,
-[data-skin="terminal"] [data-lp-grabbed] {
+/* Focus and a keyboard pick up invert a card or a list's title; a picked-up list (the engine
+   marks the whole list) gets a solid border instead, so its cards stay readable. */
+[data-skin="terminal"] :is(.hb-card, [data-lp-list-handle]):is(:focus-visible, [data-lp-grabbed]),
+[data-skin="terminal"] [data-lp-grabbed] > [data-lp-list-handle] {
   outline: none;
   background: #b8f5b0;
   color: #0d0f0d;
 }
-[data-skin="terminal"] :is(:focus-visible, [data-lp-grabbed]) .hb-tag,
-[data-skin="terminal"] :is(:focus-visible, [data-lp-grabbed]) p::before {
+[data-skin="terminal"]
+  :is(.hb-card, [data-lp-list-handle]):is(:focus-visible, [data-lp-grabbed])
+  :is(.hb-tag, .hb-count, p::before),
+[data-skin="terminal"] [data-lp-grabbed] > [data-lp-list-handle] .hb-count {
   color: inherit;
+}
+[data-skin="terminal"] [data-lp-list][data-lp-grabbed] {
+  border: 1px solid #b8f5b0;
 }
 
 /* Pop: loud colours, thick borders, hard shadows. */
@@ -238,13 +250,13 @@ kbd {
 [data-skin="pop"] [data-lp-clone]:has(> [data-lp-cards]) {
   background: #fff;
 }
-[data-skin="pop"] [data-lp-list]:nth-child(3n + 1) {
+[data-skin="pop"] [data-lp-list]:nth-child(3n + 1 of [data-lp-list]) {
   background: #ff8fab;
 }
-[data-skin="pop"] [data-lp-list]:nth-child(3n + 2) {
+[data-skin="pop"] [data-lp-list]:nth-child(3n + 2 of [data-lp-list]) {
   background: #7bdff2;
 }
-[data-skin="pop"] [data-lp-list]:nth-child(3n) {
+[data-skin="pop"] [data-lp-list]:nth-child(3n of [data-lp-list]) {
   background: #b9fbc0;
 }
 [data-skin="pop"] .hb-head h3 {

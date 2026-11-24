@@ -111,3 +111,29 @@ test("three skins restyle the same board, without redrawing it", async ({ page }
     await release();
   }
 });
+
+test("Terminal: a list picked up by keyboard keeps its cards readable", async ({ page }) => {
+  await page.locator("label[for=skin-terminal]").click();
+  await page.locator('#hero-board [data-lp-list="todo"] [data-lp-list-handle]').focus();
+  await page.keyboard.press("Space");
+  const text = card(page, "a").locator("p");
+  const color = await text.evaluate((el) => getComputedStyle(el).color);
+  const background = await card(page, "a").evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(color).not.toBe(background);
+});
+
+test("Pop: a list drag keeps the other lists' colours; the skin label is only text", async ({
+  page,
+}) => {
+  await page.locator(".skins span").click({ position: { x: 4, y: 6 } });
+  await expect(page.locator("#hero-board")).toHaveAttribute("data-skin", "cards");
+  await page.locator("label[for=skin-pop]").click();
+  const doing = page.locator('#hero-board [data-lp-list="doing"]');
+  const before = await doing.evaluate((el) => getComputedStyle(el).backgroundColor);
+  const title = page.locator('#hero-board [data-lp-list="todo"] [data-lp-list-handle]');
+  const release = await dragTo(page, title, page.locator('#hero-board [data-lp-list="todo"]'));
+  await expect(page.locator("#hero-board [data-lp-placeholder]")).toBeVisible();
+  await expect(doing).toHaveCSS("background-color", before);
+  await page.keyboard.press("Escape");
+  await release();
+});
