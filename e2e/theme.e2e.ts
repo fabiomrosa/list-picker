@@ -53,3 +53,13 @@ test("a stored theme is there in the first frame, before the page's scripts run"
     )
     .toBe("dark");
 });
+
+test("the home's outlined button fills with the accent on hover, its label readable", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:5181/list-picker/");
+  const ghost = page.locator(".hero a.button.ghost");
+  await ghost.hover();
+  await expect(ghost).toHaveCSS("background-color", "rgb(184, 60, 12)");
+  await expect(ghost).toHaveCSS("color", "rgb(246, 244, 239)");
+});

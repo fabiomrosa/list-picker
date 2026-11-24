@@ -80,6 +80,7 @@ nav {
 /* The docs, then the demos, apart by a line. */
 .nav-group {
   display: flex;
+  align-items: baseline;
   gap: 1.25rem;
   margin: 0;
   padding: 0;
@@ -88,6 +89,19 @@ nav {
 .nav-group + .nav-group {
   padding-left: 1.25rem;
   border-left: 1px solid var(--line);
+}
+/* The demos' visible label; the list's own name already says it to screen readers. */
+.nav-demos::before {
+  content: "demos:" / "";
+  margin-right: -0.5rem; /* closer to its links than they are to each other */
+  color: var(--muted);
+  font-size: 0.8em;
+}
+/* Below 22.5rem it would push the demos to a third row: the line alone parts them there. */
+@media (max-width: 22.5rem) {
+  .nav-demos::before {
+    content: none;
+  }
 }
 nav a {
   color: var(--muted);
@@ -330,8 +344,8 @@ main.doc {
   text-transform: uppercase;
 }
 /* On a phone, two rows: the brand and the buttons, then the pages (one line no longer fits
-   them below about 36rem). */
-@media (max-width: 37rem) {
+   them below about 39.5rem). */
+@media (max-width: 40rem) {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem 1.5rem; /* the content's edges */
