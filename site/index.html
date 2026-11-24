@@ -90,7 +90,15 @@
         <label for="install-react">React</label>
         <input type="radio" name="install" id="install-angular" />
         <label for="install-angular">Angular</label>
-        <pre class="install-vanilla"><code>npm install @list-picker/core @list-picker/vanilla</code></pre>
+        <pre class="install-vanilla"><code><span class="pm-npm">npm install</span><span class="pm-yarn">yarn add</span><span class="pm-pnpm">pnpm add</span> @list-picker/core @list-picker/vanilla</code></pre>
+        <div class="pm install-vanilla" role="radiogroup" aria-label="Package manager">
+          <input type="radio" name="pm" id="pm-npm" checked />
+          <label for="pm-npm">npm</label>
+          <input type="radio" name="pm" id="pm-yarn" />
+          <label for="pm-yarn">yarn</label>
+          <input type="radio" name="pm" id="pm-pnpm" />
+          <label for="pm-pnpm">pnpm</label>
+        </div>
         <!-- No command until the package is published: copying one would fail. -->
         <p class="install-react soon">Coming soon: <code>@list-picker/react</code> is on its way.</p>
         <p class="install-angular soon">

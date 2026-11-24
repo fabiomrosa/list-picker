@@ -151,3 +151,19 @@ test("no page scrolls sideways on a 320px phone", async ({ page }) => {
     expect(width, path || "home").toBeLessThanOrEqual(320);
   }
 });
+
+test("the install command follows the package manager chosen under it, by pointer and keys", async ({
+  page,
+}) => {
+  await page.goto(HOME);
+  const command = page.locator(".install pre.install-vanilla");
+  const npm = "npm install @list-picker/core @list-picker/vanilla";
+  expect(await command.innerText()).toBe(npm); // the visible text: what a copy takes
+  await page.locator('label[for="pm-pnpm"]').click();
+  expect(await command.innerText()).toBe("pnpm add @list-picker/core @list-picker/vanilla");
+  await page.keyboard.press("ArrowLeft"); // the group's arrows: pnpm → yarn
+  expect(await command.innerText()).toBe("yarn add @list-picker/core @list-picker/vanilla");
+  await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeVisible();
+  await page.locator('label[for="install-react"]').click(); // no command for React yet
+  await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeHidden();
+});

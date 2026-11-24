@@ -166,6 +166,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, feat (owner):** the home's Install command switches by package manager (npm,
+  yarn, pnpm: small links under it, radios and `:has()`, no script; npm without `:has()`); the
+  READMEs keep npm only.
 - **2026-11-24, fix (owner):** gentle hovers on the site and both demos: colours ease in (0.15s),
   text links thicken their underline, solid buttons lift a pixel and press back, the round buttons
   and the player's controls fill lightly; only where a pointer hovers (none after a tap), none
