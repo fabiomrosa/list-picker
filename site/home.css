@@ -100,8 +100,8 @@ kbd {
   gap: 0.5rem;
   min-height: 3rem;
 }
-#hero-board [data-lp-card],
-#hero-board [data-lp-list-handle] {
+/* What is dragged, on any skinned board: `touch-action: none` or a touch drag is cancelled. */
+[data-skin] :is([data-lp-card], [data-lp-list-handle]) {
   cursor: grab;
   user-select: none;
   touch-action: none;
@@ -285,7 +285,8 @@ kbd {
   background: #111;
   color: #ffe14d;
 }
-[data-skin="pop"] [data-lp-clone] {
+[data-skin="pop"] [data-lp-clone],
+[data-skin="pop"] [data-lp-clone]:has(> [data-lp-cards]) {
   box-shadow: 8px 8px 0 #111;
   rotate: -3deg;
 }

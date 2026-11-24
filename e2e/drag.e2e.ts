@@ -290,6 +290,12 @@ test("the demo's board in three skins: the same elements, a move kept", async ({
     expect(await lists(page)).toEqual(order);
     await expect(card(page, "Design the model")).toHaveAttribute("data-mark", "");
   }
+  // A touch drag needs `touch-action: none` on what is dragged, in every skin (GOTCHAS).
+  await expect(card(page, "Linked list")).toHaveCSS("touch-action", "none");
+  await expect(page.locator('[data-lp-list="Doing"] [data-lp-list-handle]')).toHaveCSS(
+    "touch-action",
+    "none",
+  );
   // Each skin styles the demo's cards: Terminal's are black, Pop's have a thick border.
   await page.locator("label[for=skin-terminal]").click();
   await expect(card(page, "Linked list")).toHaveCSS("background-color", "rgb(13, 15, 13)");

@@ -139,8 +139,9 @@ title, size, frozen-files and secret checks.
   links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
   demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
   board in the same three skins as the home, with the same chooser) in `demo/`. The skins
-  (`site/home.css`) style any board by `[data-skin]` and the `hb-*` classes its Renderers set. Every `site/*.html` is a page, so a
-  package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it.
+  (`site/home.css`) style any board by `[data-skin]` and the `hb-*` classes its Renderers set.
+  Every `site/*.html` is a page, so a package's page is one more `<name>.html`, and a README link
+  to `packages/<name>` goes to it.
   A package's page has an index of its README's `##` sections beside it (`main.doc`, sticky,
   hidden below 52rem). The look: monospace headings and navigation, a warm palette in light and
   dark (the accent passes WCAG AA on both backgrounds), code blocks as a terminal; system fonts only.

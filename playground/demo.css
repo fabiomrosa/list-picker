@@ -98,6 +98,8 @@ main.demo form input {
 .list-head small,
 .card small {
   display: block;
+}
+.card small {
   opacity: 0.8;
 }
 .list-head small {
@@ -122,7 +124,7 @@ main.demo form input {
 }
 /* A card sits in a scrolling list, which clips an outline outside it: draw it inside. */
 .board .card:is(:focus-visible, [data-lp-grabbed]) {
-  outline-offset: -2px;
+  outline-offset: -5px; /* inside Pop's 2px border too */
 }
 .list-tools {
   position: absolute;
