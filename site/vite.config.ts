@@ -1,4 +1,4 @@
-// The site (L4.12, L4.14): the home page, a page per package built from its README (one source for
+// The site (L4.12, L4.13): the home page, a page per package built from its README (one source for
 // npm and the site), and the demo board (`playground/`, built into `demo/` by `npm run site:build`).
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -7,15 +7,21 @@ import { defineConfig, type Plugin } from "vite";
 
 const REPO = "https://github.com/fabiomrosa/list-picker";
 const SITE = new URL("./", import.meta.url);
+/** The site's pages, by name: a package's page is one more `<name>.html` in `site/`. */
+const PAGES = readdirSync(SITE)
+  .filter((file) => file.endsWith(".html"))
+  .map((file) => file.slice(0, -5));
 const read = (path: string) =>
   readFileSync(fileURLToPath(new URL(`../${path}`, import.meta.url)), "utf8");
 
-/** Links that leave the site go to GitHub; links to a package go to its page here. */
+/** Links that leave the site go to GitHub; links to a package go to its page here, if it has one. */
 function rewrite(dir: string) {
   return (token: Token) => {
     if (token.type !== "link") return;
     const href = token.href.replace(`${REPO}/tree/main/packages/`, "packages/");
-    if (/^packages\/[\w-]+\/?$/.test(href)) token.href = `${href.split("/")[1]}.html`;
+    const name = /^packages\/([\w-]+)\/?$/.exec(href)?.[1];
+    if (name)
+      token.href = PAGES.includes(name) ? `${name}.html` : `${REPO}/tree/main/packages/${name}`;
     else if (href.startsWith("#running-locally")) token.href = `${REPO}#running-locally`;
     else if (!/^([a-z]+:|#)/.test(href)) token.href = `${REPO}/blob/main/${dir}${href}`;
   };
@@ -60,9 +66,7 @@ export default defineConfig({
     rollupOptions: {
       // Every page in `site/`: a package's page is one more `<name>.html` here.
       input: Object.fromEntries(
-        readdirSync(SITE)
-          .filter((file) => file.endsWith(".html"))
-          .map((file) => [file.slice(0, -5), fileURLToPath(new URL(file, SITE))]),
+        PAGES.map((name) => [name, fileURLToPath(new URL(`${name}.html`, SITE))]),
       ),
     },
   },
