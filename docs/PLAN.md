@@ -1010,7 +1010,7 @@ shows it in the demo.
 - **References:** DEC-06.
 
 ### L4.24 · Swap two cards
-- **Status:** waiting (L4.23)
+- **Status:** done (2026-11-24)
 - **Goal:** an app swaps two items' places (pick one, then the other), in O(1).
 - **Depends on:** L4.23.
 - **In scope:** `board.swapCards(a, b)`: the two cards exchange places, in one list or across

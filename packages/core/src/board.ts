@@ -134,6 +134,42 @@ export class Board<L extends Entity, C extends Entity> {
   }
 
   /**
+   * Exchanges the places of the cards `a` and `b`, in one List or across two, in O(1) (a pick then
+   * a pick: a playlist's two tracks). Returns whether the order changed (`false` for the same
+   * card). Emits a `move` for each card that moved, with its final neighbours, in an order a
+   * consumer can replay with `moveCard(id, toListId, nextId)`, then one `change`. Unknown ids throw
+   * and change nothing.
+   */
+  swapCards(a: string, b: string): boolean {
+    const listA = this.#listOfCard.get(a);
+    if (!listA) throw new Error(`list-picker: unknown id "${a}"`);
+    const listB = this.#listOfCard.get(b);
+    if (!listB) throw new Error(`list-picker: unknown id "${b}"`);
+    if (a === b) return false;
+    const nextOf = (list: ListEntry<L, C>, id: string) =>
+      list.cards.get(id)?.next?.value.id ?? null;
+    const afterA = nextOf(listA, a);
+    const afterB = nextOf(listB, b);
+    // Side by side: one move puts the second before the first.
+    if (afterA === b || afterB === a) {
+      const [moved, before] = afterA === b ? [b, a] : [a, b];
+      listA.cards.insertBefore(listA.cards.remove(moved), before);
+      this.#emitMoves([["card", moved, listA.id, listA.id, listA.cards]]);
+      return true;
+    }
+    // Apart: each takes the other's place, before the card that followed it.
+    listB.cards.insertBefore(listA.cards.remove(a), afterB);
+    this.#listOfCard.set(a, listB);
+    listA.cards.insertBefore(listB.cards.remove(b), afterA);
+    this.#listOfCard.set(b, listA);
+    this.#emitMoves([
+      ["card", a, listA.id, listB.id, listB.cards],
+      ["card", b, listB.id, listA.id, listA.cards],
+    ]);
+    return true;
+  }
+
+  /**
    * Moves the List with `id` (and its cards) before `beforeListId`, or to the end (`null`).
    * Returns whether the order changed. Everything is checked before the List is unlinked.
    */
@@ -205,13 +241,26 @@ export class Board<L extends Entity, C extends Entity> {
     toListId: string | null,
     list: LinkedList<T>,
   ): void {
+    this.#emitMoves([[kind, id, fromListId, toListId, list]]);
+  }
+
+  /**
+   * Emits a `move` for each moved node (its neighbours read once all have moved), then one
+   * `change`. Every listener runs; the first error is rethrown after.
+   */
+  #emitMoves(
+    moves: [MoveEvent["kind"], string, string | null, string | null, LinkedList<Entity>][],
+  ): void {
     this.#snapshot = undefined;
-    const node = list.get(id);
-    const prevId = node?.prev?.value.id ?? null;
-    const nextId = node?.next?.value.id ?? null;
+    const events = moves.map(([kind, id, fromListId, toListId, list]): MoveEvent => {
+      const node = list.get(id);
+      const prevId = node?.prev?.value.id ?? null;
+      const nextId = node?.next?.value.id ?? null;
+      return { kind, id, fromListId, toListId, prevId, nextId };
+    });
     let failure: { error: unknown } | undefined;
     for (const emit of [
-      () => this.#events.emit("move", { kind, id, fromListId, toListId, prevId, nextId }),
+      ...events.map((event) => () => this.#events.emit("move", event)),
       () => this.#events.emit("change", undefined),
     ]) {
       try {
