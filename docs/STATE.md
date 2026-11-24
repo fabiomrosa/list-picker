@@ -166,6 +166,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner):** the nav's contents stop at the pages' widest content (64rem),
+  centred, and line up with it on phones; its links come in two labelled lists, Docs (core,
+  vanilla) and Demos (kanban, player), apart by a line.
 - **2026-11-24, feat (owner):** a theme button on every page and both demos: automatic (the
   system's), light or dark, saved in the browser (`site/theme.ts`; an inline script in each
   `<head>` applies it before the page paints); `e2e/theme.e2e.ts`.
