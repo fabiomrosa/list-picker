@@ -41,13 +41,15 @@ test("a stored theme is there in the first frame, before the page's scripts run"
   await page.emulateMedia({ colorScheme: "light" });
   await page.addInitScript(() => {
     localStorage.setItem("list-picker-theme", "dark");
-    const w = window as unknown as { firstTheme?: string };
+    const w = window as unknown as { firstTheme?: string | undefined };
     requestAnimationFrame(() => {
       w.firstTheme = document.documentElement.dataset.theme;
     });
   });
   await page.goto("http://localhost:5181/list-picker/");
   await expect
-    .poll(() => page.evaluate(() => (window as unknown as { firstTheme?: string }).firstTheme))
+    .poll(() =>
+      page.evaluate(() => (window as unknown as { firstTheme?: string | undefined }).firstTheme),
+    )
     .toBe("dark");
 });
