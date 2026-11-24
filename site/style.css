@@ -155,13 +155,11 @@ nav .nav-theme svg {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-nav .nav-theme[data-mode="auto"] .icon-auto,
-nav .nav-theme[data-mode="light"] .icon-light,
-nav .nav-theme[data-mode="dark"] .icon-dark {
+/* The icon from the theme itself, set before the page paints: right from the first frame. */
+:root:not([data-theme]) nav .nav-theme .icon-auto,
+:root[data-theme="light"] nav .nav-theme .icon-light,
+:root[data-theme="dark"] nav .nav-theme .icon-dark {
   display: block;
-}
-nav .nav-theme + a.nav-github {
-  margin-left: 0;
 }
 /* GitHub: apart from the pages, an Octocat (Octicons' mark-github, MIT) in a round button. */
 nav a.nav-github {
@@ -184,6 +182,9 @@ nav a.nav-github svg {
   width: 1.1rem;
   height: 1.1rem;
   fill: currentColor;
+}
+nav .nav-theme + a.nav-github {
+  margin-left: 0;
 }
 main {
   max-width: 46rem;

@@ -22,7 +22,6 @@ function apply(mode: Mode): void {
   if (mode === "auto") delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = mode;
   for (const button of document.querySelectorAll<HTMLButtonElement>(".nav-theme")) {
-    button.dataset.mode = mode;
     button.setAttribute("aria-label", NAME[mode]);
     button.title = NAME[mode];
   }
