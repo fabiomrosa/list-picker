@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.17). The publish, the tag and criterion 1 against the registry moved to
-  L4.18; the version stays `1.0.0`.
+  a site first (L4.8–L4.18). The publish, the tag and criterion 1 against the registry moved to
+  L4.19; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -862,7 +862,8 @@ shows it in the demo.
   look of the home; the forms, buttons, status, error and event log restyled with the site's
   tokens. What the browser tests and the trace rely on stays: the Backlog list scrolls past 22rem,
   the board is narrower than its lists (52rem), real scrollbars, the selectors.
-- **Out of scope:** the skin chooser on the demo (the home has it); new demo behaviour.
+- **Out of scope:** the skin chooser on the demo (L4.18, asked by the owner afterwards); new demo
+  behaviour.
 - **Note:** the demo's styles moved to `playground/demo.css`, imported after `site/style.css` by
   `main.ts`. The header is kept compact: the auto-scroll tests drag to the Backlog's bottom inside
   a 720px window (it ends at 704px). The trace: 0 forced layouts in `pointermove`; 381 frames, 12
@@ -876,10 +877,30 @@ shows it in the demo.
 - **Files:** ~5: `playground/index.html`, `playground/main.ts` (the stylesheet), PLAN, STATE.
 - **References:** L4.14, L4.15, decision 0002.
 
-### L4.18 · First npm publish
+### L4.18 · Skins on the demo
 - **Status:** waiting (L4.17)
+- **Goal:** the demo shows its whole board (renaming, dialog, rules, event log) in the three skins
+  of the home, to show that the look is the user's (DEC-07).
+- **Depends on:** L4.17.
+- **In scope:** the home's skin chooser (Cards, Terminal, Pop) on the demo, changing only its
+  board's `data-skin`; the skins' styles no longer tied to the home's board (`#hero-board`), so
+  both boards use the same rules; the demo's Renderers take the skins' classes; each skin also
+  styles the demo's own parts (the ↑ ↓ ← → × buttons, the neighbours line). What the browser
+  tests and the trace rely on stays (the default skin, the sizes of L4.17).
+- **Out of scope:** more skins; remembering the choice.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. On the demo each skin restyles the same board, nothing redrawn, and a move made in one shows
+     in the others (browser test).
+  2. Every existing browser test passes unchanged, and the home's skins look as before.
+- **Files:** ~8: `site/home.css` (or a shared skins stylesheet), `playground/index.html`,
+  `playground/main.ts`, `playground/demo.css`, `e2e/drag.e2e.ts`, PLAN, STATE.
+- **References:** L4.16, L4.17, DEC-07.
+
+### L4.19 · First npm publish
+- **Status:** waiting (L4.18)
 - **Goal:** v1 is on npm.
-- **Depends on:** L4.17, P2.
+- **Depends on:** L4.18, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
   first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
 - **Out of scope:** a release workflow in CI.
