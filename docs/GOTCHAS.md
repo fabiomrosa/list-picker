@@ -48,5 +48,6 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - A `MutationObserver` with a callback hands its records to the callback in a microtask, so
   `takeRecords()` after an `await` returns nothing even when the DOM changed (it misled L3.2).
 - `mount` keys elements by id: a card removed and added again with the same id before `mount`
-  writes (the same tick, or during a drag) keeps its old element (its Renderer is not called again).
+  writes (the same tick, or during a drag) keeps its old element if the value is the same object;
+  another object is drawn again, like an update.
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.

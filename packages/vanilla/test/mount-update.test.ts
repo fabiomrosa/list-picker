@@ -158,4 +158,33 @@ describe("mount: a changed value", () => {
     expect(old.isConnected).toBe(false);
     expect(texts()).toEqual([["To do", "A1", "B"], ["Done"]]);
   });
+
+  it("keeps a pointer press on a card redrawn before the drag starts", async () => {
+    const old = rendered.get("a") as HTMLElement;
+    pointer(old, "pointerdown", 50, 30);
+    board.updateCard({ id: "a", title: "A1" });
+    await settle();
+    const card = rendered.get("a") as HTMLElement;
+    card.getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    document.elementFromPoint = () => null;
+    pointer(card, "pointermove", 80, 30);
+    expect(root.querySelector("[data-lp-clone]")?.textContent).toBe("A1");
+    pointer(card, "pointerup", 80, 30);
+    expect(root.querySelector("[data-lp-clone]")).toBeNull();
+  });
+
+  it("makes a header focusable even when its Renderer marks it as the handle", async () => {
+    mounted.destroy();
+    document.body.innerHTML = `<main id="root"></main>`;
+    root = document.getElementById("root") as HTMLElement;
+    mounted = mount(root, board, {
+      renderList: (list) => {
+        const header = element("h2")(list);
+        header.setAttribute("data-lp-list-handle", "");
+        return header;
+      },
+      renderCard: element("article"),
+    });
+    expect(rendered.get("todo")?.tabIndex).toBe(0);
+  });
 });

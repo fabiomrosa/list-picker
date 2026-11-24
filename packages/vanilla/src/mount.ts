@@ -70,10 +70,11 @@ function arrange(parent: HTMLElement, items: readonly HTMLElement[], attribute: 
  * Draws `board` into `root` from the user's Renderers, in the markup the drag engine reads
  * (DEC-13, DEC-14): per list a `[data-lp-list]` holding its header (`[data-lp-list-handle]`) and a
  * `[data-lp-cards]` container of its cards (`[data-lp-card]`). Then it follows the Board by id: on
- * each change a Renderer runs only for a new list or card, so its error throws from the Board
- * operation and writes nothing; the DOM writes follow once the change's own writes (a drop's) are
- * done, or once the active drag ends, and kept elements are moved, never redrawn. A drag whose card
- * or list leaves the Board is abandoned.
+ * each change a Renderer runs only for a new list or card, or one whose value is another object
+ * than the one it drew, so its error throws from the Board operation and writes nothing; the DOM
+ * writes follow once the change's own writes (a drop's) are done, or once the active drag ends:
+ * kept elements are moved, a redrawn one takes its old element's place (focus, a keyboard pick up
+ * and a press follow it). A drag whose card or list leaves the Board is abandoned.
  */
 export function mount<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
@@ -135,10 +136,9 @@ export function mount<L extends { id: string }, C extends { id: string }>(
     const snapshot = board.snapshot().lists;
     for (const { list, cards: listCards } of snapshot) {
       const header = headers.get(list.id) as HTMLElement;
-      if (!header.hasAttribute("data-lp-list-handle")) {
+      if (!header.hasAttribute("data-lp-list-handle"))
         header.setAttribute("data-lp-list-handle", "");
-        if (!header.hasAttribute("tabindex")) header.tabIndex = 0;
-      }
+      if (!header.hasAttribute("tabindex")) header.tabIndex = 0;
       for (const card of listCards) {
         const element = cards.get(card.id) as HTMLElement;
         if (!element.hasAttribute("data-lp-card")) {
