@@ -143,7 +143,8 @@ None.
 ## Last session
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.13 (first npm publish).
+- **Next:** L4.13 (the site for every package; the M4 plan takes the owner's site patches as
+  L4.13–L4.16, and the publish is now L4.17).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the
