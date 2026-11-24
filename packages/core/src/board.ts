@@ -169,6 +169,16 @@ export class Board<L extends Entity, C extends Entity> {
     return this.#listOfCard.get(id)?.cards.get(id)?.value;
   }
 
+  /**
+   * The cards before and after the card with `id` in its List (`null` at either end), in O(1):
+   * a playlist's previous and next track. An unknown id throws.
+   */
+  neighbours(cardId: string): { prev: C | null; next: C | null } {
+    const node = this.#listOfCard.get(cardId)?.cards.get(cardId);
+    if (!node) throw new Error(`list-picker: unknown id "${cardId}"`);
+    return { prev: node.prev?.value ?? null, next: node.next?.value ?? null };
+  }
+
   listOf(cardId: string): L | undefined {
     return this.#listOfCard.get(cardId)?.list;
   }

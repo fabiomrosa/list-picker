@@ -54,6 +54,7 @@ Positions are given by the item to go before (`null` for the end), never by an i
 | `moveCard(id, toListId, beforeCardId)` | Moves a card, in its list or to another; returns whether the order changed. |
 | `getList(id)`, `getCard(id)` | The list or card with that id, or `undefined`. |
 | `listOf(cardId)` | The list holding a card, or `undefined`. |
+| `neighbours(cardId)` | The cards before and after it in its list, `{ prev, next }` (`null` at an end), in O(1): a playlist's previous and next track. |
 | `lists()`, `cards(listId)` | The lists, or a list's cards, in order. |
 | `snapshot()` | The Board as one frozen value, `{ lists: [{ list, cards }] }`; the same object until the Board changes. |
 | `on(event, listener)` | Subscribes to an event; returns the function that unsubscribes. |

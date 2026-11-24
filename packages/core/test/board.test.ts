@@ -467,3 +467,27 @@ describe("Board updates", () => {
     expect(events).toEqual([]);
   });
 });
+
+describe("Board.neighbours", () => {
+  it("gives a card's previous and next card in its list, null at either end", () => {
+    const b = new Board<List, Card>();
+    b.addList({ id: "todo" }, null);
+    for (const id of ["a", "b", "c"]) b.addCard("todo", { id }, null);
+    expect(b.neighbours("b")).toEqual({ prev: { id: "a" }, next: { id: "c" } });
+    expect(b.neighbours("a")).toEqual({ prev: null, next: { id: "b" } });
+    expect(b.neighbours("c")).toEqual({ prev: { id: "b" }, next: null });
+    b.moveCard("a", "todo", null);
+    expect(b.neighbours("a")).toEqual({ prev: { id: "c" }, next: null });
+    // The values themselves, as stored (an update shows).
+    const c = { id: "c", text: "C" };
+    b.updateCard(c);
+    expect(b.neighbours("a").prev).toBe(c);
+  });
+
+  it("throws for an unknown card", () => {
+    const b = new Board<List, Card>();
+    b.addList({ id: "todo" }, null);
+    expect(() => b.neighbours("nope")).toThrow('list-picker: unknown id "nope"');
+    expect(() => b.neighbours("todo")).toThrow('list-picker: unknown id "todo"');
+  });
+});
