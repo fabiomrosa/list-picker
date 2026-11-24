@@ -76,8 +76,10 @@ describe("createDrag: moving a card with the keyboard", () => {
     expect(ctx.card("a").hasAttribute("data-lp-grabbed")).toBe(false);
     press("a", "ArrowUp");
     expect(ctx.moves).toHaveLength(2);
-    // Enter works as Space; nothing moves past the top.
-    press("a", "Enter", "ArrowUp", "ArrowUp", "ArrowUp", "Enter");
+    // Enter neither picks up nor drops (it activates, DEC-15); nothing moves past the top.
+    press("a", "Enter", "ArrowUp");
+    expect(ctx.moves).toHaveLength(2);
+    press("a", " ", "ArrowUp", "ArrowUp", "Enter", "ArrowUp", " ");
     expect(boardOrder()).toEqual([["a", "b", "c"], ["d"], []]);
     expect(domOrder()).toEqual(boardOrder());
     expect(ctx.moves).toHaveLength(4);
@@ -204,7 +206,7 @@ describe("createDrag: moving a list with the keyboard", () => {
   });
 
   it("puts a list back on Esc; ↑ ↓ and moves past either end do nothing", () => {
-    press("two", "Enter", "ArrowUp", "ArrowDown");
+    press("two", " ", "ArrowUp", "ArrowDown");
     expect(moves).toHaveLength(0);
     press("two", "ArrowLeft", "ArrowLeft");
     expect(boardOrder()).toEqual(["two", "one", "three"]);

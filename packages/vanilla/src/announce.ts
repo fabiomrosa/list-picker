@@ -20,11 +20,6 @@ export interface Messages {
   cancel(item: Announcement): string;
 }
 
-/** Options of `createDrag` and `mount`. */
-export interface DragOptions {
-  readonly messages?: Partial<Messages>;
-}
-
 const where = ({ listLabel, position, count }: Announcement) =>
   `${listLabel === null ? "Position" : `${listLabel}, position`} ${position} of ${count}.`;
 

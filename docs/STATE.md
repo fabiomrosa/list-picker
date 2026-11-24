@@ -42,9 +42,9 @@ Every slice's pull request updates it (SESSION §3).
   goes, in the list container under the pointer, before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
-  Keyboard (DEC-15, a `keydown` listener on `root`): Space or Enter on a focused card picks it up
+  Keyboard (DEC-15, a `keydown` listener on `root`): Space on a focused card picks it up
   (`data-lp-grabbed`); ↑ ↓ ← → move it (to the same position or the end of the neighbouring list),
-  each a `board.moveCard`, the element following with the focus; Space or Enter drops, Esc puts it
+  each a `board.moveCard`, the element following with the focus; Space drops, Esc puts it
   back, the focus leaving drops. A list moves the same way by its focused handle, with ← → only
   (`board.moveList`). It never runs with a pointer drag.
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
@@ -120,11 +120,15 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.10:** `onActivate({ kind, id })` (`createDrag` and `mount` options): a click on
+  a card or a list's handle that started no drag, or Enter on a focused one; Enter no longer picks
+  up (DEC-15 amended). The click after a drag is swallowed (capture listener on `root`; Chrome
+  fires none). The demo opens a dialog.
+- **Next:** L4.11 (rules for where items may move).
 - **2026-11-23, L4.9:** `mount` runs a Renderer again for an item whose value is another object
   and swaps the new element in at the next write, keeping the focus and a keyboard pick up
   (`keyboard.replace`, under the `moving` guard: Chrome's `focusout`, seen red in the browser
   test). The demo renames lists and cards (✎) and exposes `window.board`.
-- **Next:** L4.10 (activate a card or a list).
 - **2026-11-23, L4.8:** `Board.updateList(list)` and `updateCard(card)` replace a value in place
   (`change`, no `move`), over `LinkedList.replace`; the property test covers both (two planted
   bugs caught). `mount` does not redraw them yet (L4.9).

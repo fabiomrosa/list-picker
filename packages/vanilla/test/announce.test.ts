@@ -67,7 +67,7 @@ describe("createDrag: live announcements", () => {
     expect(said()).toBe("Moved Card A. Done, position 1 of 1.");
     press(card("a"), " ");
     expect(said()).toBe("Dropped Card A. Done, position 1 of 1.");
-    press(card("b"), "Enter", "ArrowRight", "Escape");
+    press(card("b"), " ", "ArrowRight", "Escape");
     expect(said()).toBe("Cancelled moving B. To do, position 1 of 1.");
   });
 

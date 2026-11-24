@@ -48,6 +48,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   board: Board<L, C>,
   pointerBusy: () => boolean,
   say: Announcer["say"],
+  activate?: (kind: Kind, id: string) => void,
 ): Keyboard {
   let grab: Grab | undefined;
   /** Set while the focused element (or the list around it) moves: leaving the document may blur it. */
@@ -72,16 +73,24 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     if (event.repeat && (event.key === " " || event.key === "Enter")) return;
     if (!grab?.item.isConnected) release(); // its item removed by other code
     const held = grab;
+    if (event.key === "Enter") {
+      // Enter activates (DEC-17); it never picks up or drops (DEC-15, amended).
+      const what = held ? undefined : movable(focus);
+      if (!what || !activate) return;
+      activate(what.kind, what.item.getAttribute(ATTRIBUTE[what.kind]) ?? "");
+      event.preventDefault();
+      return;
+    }
     const horizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
     const vertical = event.key === "ArrowUp" || event.key === "ArrowDown";
     const by = event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1;
     if (!held) {
       const what = movable(focus);
-      if ((event.key !== " " && event.key !== "Enter") || !what || pointerBusy()) return;
+      if (event.key !== " " || !what || pointerBusy()) return;
       pick(what);
     } else if (held.focus !== focus) {
       return;
-    } else if (event.key === " " || event.key === "Enter") {
+    } else if (event.key === " ") {
       release();
       say("drop", held.kind, held.item);
     } else if (event.key === "Escape") {

@@ -1,6 +1,5 @@
 import type { Board } from "@list-picker/core";
-import type { DragOptions } from "./announce.ts";
-import { startDrag } from "./drag.ts";
+import { type DragOptions, startDrag } from "./drag.ts";
 
 /** A mounted Board; `destroy()` removes what `mount` added and every listener. */
 export interface Mount {
@@ -168,7 +167,7 @@ export function mount<L extends { id: string }, C extends { id: string }>(
       }
     }
 
-    for (const { list, cards: listCards } of snapshot) {
+    for (const { list } of snapshot) {
       if (!lists.has(list.id)) {
         const header = headers.get(list.id) as HTMLElement;
         const container = document.createElement("div");
@@ -217,7 +216,7 @@ export function mount<L extends { id: string }, C extends { id: string }>(
     () => {
       if (waiting) schedule();
     },
-    options.messages,
+    options,
   );
   /**
    * Whether the active drag can still drop: its card or list, and the list its Placeholder is in,
