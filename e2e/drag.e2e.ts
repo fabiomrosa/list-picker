@@ -147,6 +147,18 @@ test("drags a card to another list, before its card", async ({ page }) => {
     .toMatchObject({ "To do": ["Design the model"], Doing: ["Write the tests", "Linked list"] });
 });
 
+test("drops a card below a short list, in its column, at its end", async ({ page }) => {
+  const doing = await page.locator('[data-lp-list="Doing"]').boundingBox();
+  const from = await card(page, "Write the tests").locator("strong").boundingBox();
+  if (!doing || !from) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  // Below Doing's last card and below the list itself: the board's background, in Doing's column.
+  await page.mouse.move(doing.x + doing.width / 2, doing.y + doing.height + 40, { steps: 12 });
+  await page.mouse.up();
+  await expect.poll(() => lists(page)).toMatchObject({ Doing: ["Linked list", "Write the tests"] });
+});
+
 test("drags a card into an empty list", async ({ page }) => {
   await drag(page, card(page, "Linked list"), cardsOf(page, "Done"));
   await expect.poll(() => lists(page)).toMatchObject({ Doing: [], Done: ["Linked list"] });
