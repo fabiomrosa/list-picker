@@ -57,19 +57,19 @@ becomes the demo board; a recorded trace shows no forced layout per pointer move
 ## M4 · v1 release
 Keyboard moving for cards and lists (DEC-15), live announcements with overridable English defaults
 (DEC-16), the two M3 known issues fixed, a README per package, the lab write-up in the root README,
-the rest of the v1 API (DEC-17: changing values, activating, move rules), the site with docs and
-demo, and the first npm publish.
+the rest of the v1 API (DEC-17: changing values, activating, move rules), the site with docs, the
+demo and a live board on the home, and the first npm publish.
 
 | Repository | Slices |
 |---|---|
-| `list-picker` | L4.1 → L4.2 → L4.3 → L4.4 → L4.5 → L4.6 → L4.7 → L4.8 → L4.9 → L4.10 → L4.11 → L4.12 → L4.13 |
+| `list-picker` | L4.1 → L4.2 → L4.3 → L4.4 → L4.5 → L4.6 → L4.7 → L4.8 → L4.9 → L4.10 → L4.11 → L4.12 → L4.13 → L4.14 → L4.15 → L4.16 → L4.17 |
 
 ## Prerequisites (only the owner can do these)
 - **P1** · The GitHub repository `list-picker`, `main` pushed, labels and squash settings
   (OWNER_PLAN §0). Done.
 - **P2** · The npm account and package names (DEC-12). Done: `@list-picker/core` and
   `@list-picker/vanilla` (the owner's `list-picker` npm org), to be published from the owner's
-  account in L4.13.
+  account in L4.17.
 - **P3** · The license of the packages. Done: MIT (left to the agent by the owner, 2026-11-23).
 - **P4** · GitHub Pages turned on for the repository (Settings → Pages → Source: GitHub Actions).
   Needed by L4.12.
@@ -78,7 +78,7 @@ demo, and the first npm publish.
 - **M5 · React adapter.** **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
-L4.1 to L4.13 in order; P3 before L4.5, GitHub Pages turned on before L4.12, P2 before L4.13.
+L4.1 to L4.17 in order; P3 before L4.5, GitHub Pages turned on before L4.12, P2 before L4.17.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |

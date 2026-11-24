@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.12). The publish, the tag and criterion 1 against the registry moved to
-  L4.13; the version stays `1.0.0`.
+  a site first (L4.8–L4.16). The publish, the tag and criterion 1 against the registry moved to
+  L4.17; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -775,10 +775,79 @@ shows it in the demo.
   PLAN, STATE; may split into skeleton plus deploy, and package pages.
 - **References:** DEC-12, DEC-07.
 
-### L4.13 · First npm publish
+### L4.13 · The site for every package
 - **Status:** waiting (L4.12)
+- **Goal:** the home presents the four packages and how to install each; a later package needs
+  only its page.
+- **Depends on:** L4.12.
+- **In scope:** from the owner's patch 0001 (list-picker-js): the build takes every `site/*.html`
+  as a page; a README link to any `packages/<name>` goes to `<name>.html`; the home: what it is, a
+  table of `core`, `vanilla`, `react`, `angular` (the last two "coming soon", no page), an Install
+  chooser (vanilla, React, Angular; radios, no script; React and Angular say "coming soon", no
+  command, until they are published), the lab's answer, links to the demo and GitHub. The demo
+  links back to the site.
+- **Out of scope:** `react.html`, `angular.html` and their demos (M5, M6).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. The built home shows the four packages and one install line at a time, switched by pointer
+     and by arrow keys; no line installs a package that does not exist.
+  2. The demo's link opens the site.
+- **Files:** ~6: `site/index.html`, `site/style.css`, `site/vite.config.ts`,
+  `playground/index.html`, PLAN, STATE.
+- **References:** L4.12.
+
+### L4.14 · The site's look and a section index
+- **Status:** waiting (L4.13)
+- **Goal:** the site has its own look, and a package's page shows the index of its sections.
+- **Depends on:** L4.13.
+- **In scope:** from patch 0002: monospace headings and navigation, a warm palette in light and
+  dark, code blocks as a terminal, `$` before install lines; the build puts an index of a README's
+  `##` sections beside a package's page (sticky, hidden on narrow screens).
+- **Out of scope:** web fonts (system stacks only); the home's board (L4.15).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. `core.html` and `vanilla.html` list every `##` section of their README, each link reaching it.
+  2. Every page reads in light and dark, and none scrolls sideways at 375px.
+- **Files:** ~6: `site/style.css`, `site/vite.config.ts`, `site/core.html`, `site/vanilla.html`,
+  PLAN, STATE.
+- **References:** L4.12.
+
+### L4.15 · A live board on the home
+- **Status:** waiting (L4.14)
+- **Goal:** a visitor tries the library on the home page.
+- **Depends on:** L4.14.
+- **In scope:** from patch 0003: a hero (tagline, Install and demo buttons) and a Board drawn by
+  `mount` from `site/home.ts` (three lists, Doing capped at 3 with `canMove`) in a Cards skin
+  (`data-skin`, `site/home.css`); a narrower navigation on phones; a browser test of the home
+  (the patch has none).
+- **Out of scope:** the skin chooser (L4.16); activation and renaming (the demo has them).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. On the built home a card moves by pointer and by keyboard, and Doing takes no fourth card
+     (browser test).
+  2. The Clone and the Placeholder take the skin's look.
+- **Files:** ~7: `site/index.html`, `site/home.ts`, `site/home.css`, `site/style.css`, an e2e
+  test (and its config, to serve the site), PLAN, STATE.
+- **References:** DEC-07, DEC-17.
+
+### L4.16 · Skins for the home's board
+- **Status:** waiting (L4.15)
+- **Goal:** the home shows the same board in three looks: the look is the user's (DEC-07).
+- **Depends on:** L4.15.
+- **In scope:** from patch 0004: a skin chooser (Cards, Terminal, Pop; radios) that only changes
+  the board's `data-skin`; the Terminal and Pop styles in `site/home.css`.
+- **Out of scope:** more skins; remembering the choice.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Each skin restyles the same board, the Clone and the Placeholder included, without redrawing
+     it; a move made in one skin shows in the others (browser test).
+- **Files:** ~6: `site/index.html`, `site/home.ts`, `site/home.css`, the e2e test, PLAN, STATE.
+- **References:** DEC-07.
+
+### L4.17 · First npm publish
+- **Status:** waiting (L4.16)
 - **Goal:** v1 is on npm.
-- **Depends on:** L4.12, P2.
+- **Depends on:** L4.16, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
   first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
 - **Out of scope:** a release workflow in CI.
