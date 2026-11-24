@@ -42,7 +42,9 @@ test("moves a card by pointer and by keyboard, in the skin's look", async ({ pag
   // The engine's Clone and Placeholder take the skin's styles (DEC-07).
   const placeholder = page.locator("#hero-board [data-lp-placeholder]");
   await expect(placeholder).toHaveCSS("background-color", "rgb(212, 219, 227)");
-  await expect(page.locator("#hero-board [data-lp-clone]")).not.toHaveCSS("box-shadow", "none");
+  const clone = page.locator("#hero-board [data-lp-clone]");
+  await expect(clone).toHaveCSS("box-shadow", "rgba(9, 30, 66, 0.3) 0px 10px 24px 0px");
+  await expect(clone).toHaveCSS("rotate", "2deg");
   await release();
   await expect.poll(() => lists(page)).toMatchObject({ todo: ["b", "c"], done: ["f", "a"] });
   await card(page, "b").focus();
@@ -70,4 +72,15 @@ test("Doing takes no fourth card, by pointer or by keyboard", async ({ page }) =
   await page.keyboard.press("Space");
   expect((await lists(page)).done).toContain("b");
   await expect(count).toHaveText("3/3");
+});
+
+test("a dragged list keeps the skin's look", async ({ page }) => {
+  const title = page.locator('#hero-board [data-lp-list="todo"] [data-lp-list-handle]');
+  const release = await dragTo(page, title, page.locator('#hero-board [data-lp-list="done"]'));
+  // The engine takes `data-lp-list` off the Clone: the skin styles it by what it holds.
+  await expect(page.locator("#hero-board [data-lp-clone]")).toHaveCSS(
+    "background-color",
+    "rgb(241, 244, 247)",
+  );
+  await release();
 });

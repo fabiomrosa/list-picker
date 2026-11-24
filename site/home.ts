@@ -49,7 +49,6 @@ mount(
       element.setAttribute("aria-label", card.text);
       const tag = document.createElement("span");
       tag.className = "hb-tag";
-      tag.dataset.tag = card.tag;
       tag.textContent = card.tag;
       const text = document.createElement("p");
       text.textContent = card.text;

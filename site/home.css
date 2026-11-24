@@ -1,4 +1,4 @@
-/* The home page (L4.16): the hero and its live board in three skins. */
+/* The home page (L4.15): the hero and its live board, in the Cards skin. */
 main.home {
   max-width: 64rem;
 }
@@ -96,7 +96,9 @@ kbd {
   background: #dfe6ee;
   color: #172b4d;
 }
-[data-skin="cards"] [data-lp-list] {
+/* A list's Clone has no `data-lp-list` (the engine takes it off): it is matched by what it holds. */
+[data-skin="cards"] [data-lp-list],
+[data-skin="cards"] [data-lp-clone]:has(> [data-lp-cards]) {
   padding: 0.75rem;
   border-radius: 12px;
   background: #f1f4f7;

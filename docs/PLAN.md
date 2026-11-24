@@ -821,6 +821,10 @@ shows it in the demo.
   (`data-skin`, `site/home.css`); a narrower navigation on phones; a browser test of the home
   (the patch has none).
 - **Out of scope:** the skin chooser (L4.16); activation and renaming (the demo has them).
+- **Note:** the browser test drives the site's dev server (`vite site`), not the build; the build
+  was checked by hand. Cards and titles have `touch-action: none` (GOTCHAS), so on a phone a swipe
+  on them does not scroll the page; the gaps do. A list's Clone has no `data-lp-list`, so the skin
+  matches it with `[data-lp-clone]:has(> [data-lp-cards])`.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. On the built home a card moves by pointer and by keyboard, and Doing takes no fourth card
