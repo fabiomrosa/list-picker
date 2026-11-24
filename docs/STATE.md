@@ -106,7 +106,8 @@ Every slice's pull request updates it (SESSION §3).
   or leaving saves, Esc cancels; `updateList`), and on a card opens a dialog that renames it
   (`updateCard`), both through `onActivate`; no browser prompt; Doing takes at most 3 cards
   (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
-  board narrower than its lists (52rem) show auto-scroll both ways. Its look is the site's
+  board that scrolls sideways when the window is narrower than its lists (under ~1040px; the
+  auto-scroll tests and the trace use 900px) show auto-scroll both ways. Its look is the site's
   (`site/style.css`, then `playground/demo.css`); the package ships no styles. Its nav links are
   relative to the site (`../`), so under `npm run dev` they stay on the demo.
 
@@ -159,6 +160,8 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.21:** the demo in sections: the board under the title, then "Edit the board"
+  (the forms in a grid) beside "Events"; every browser test unchanged.
 - **2026-11-24, L4.20:** the demo's forms (one height, the site's colours, a select arrow of their
   own) and its list and card buttons (SVG icons in `currentColor`, `aria-label`s); the GitHub link
   is an Octocat button on every page.
@@ -184,7 +187,8 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.21 (the demo's layout), then L4.22 (first npm publish).
+- **Next:** the hotfix the owner approved (a drop below a short list lands nowhere), then L4.22
+  (first npm publish).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

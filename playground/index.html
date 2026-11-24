@@ -30,31 +30,44 @@
         <label for="skin-pop">Pop</label>
       </div>
     </header>
-    <form id="add-list">
-      <strong>Add list</strong>
-      <input name="id" placeholder="list id" autocomplete="off" required />
-      <label>before <select name="before"></select></label>
-      <button type="submit">Add</button>
-    </form>
-    <form id="add-card">
-      <strong>Add card</strong>
-      <input name="id" placeholder="card id" autocomplete="off" required />
-      <label>to <select name="list"></select></label>
-      <label>before <select name="before"></select></label>
-      <button type="submit">Add</button>
-    </form>
-    <form id="move-card">
-      <strong>Move card</strong>
-      <select name="card"></select>
-      <label>to <select name="list"></select></label>
-      <label>before <select name="before"></select></label>
-      <button type="submit">Move</button>
-    </form>
-    <p class="status" id="status"></p>
-    <p class="error" id="error"></p>
     <div class="board" id="board" data-skin="cards"></div>
-    <h2 class="log-title">Events <small id="changes"></small></h2>
-    <ol class="log" id="log" reversed></ol>
+    <div class="panels">
+      <section class="panel" aria-labelledby="edit-title">
+        <h2 id="edit-title">Edit the board</h2>
+        <form id="add-list">
+          <strong>Add list</strong>
+          <div class="fields">
+            <input name="id" placeholder="list id" autocomplete="off" required />
+            <label>before <select name="before"></select></label>
+            <button type="submit">Add</button>
+          </div>
+        </form>
+        <form id="add-card">
+          <strong>Add card</strong>
+          <div class="fields">
+            <input name="id" placeholder="card id" autocomplete="off" required />
+            <label>to <select name="list"></select></label>
+            <label>before <select name="before"></select></label>
+            <button type="submit">Add</button>
+          </div>
+        </form>
+        <form id="move-card">
+          <strong>Move card</strong>
+          <div class="fields">
+            <select name="card" aria-label="card"></select>
+            <label>to <select name="list"></select></label>
+            <label>before <select name="before"></select></label>
+            <button type="submit">Move</button>
+          </div>
+        </form>
+        <p class="status" id="status"></p>
+        <p class="error" id="error"></p>
+      </section>
+      <section class="panel" aria-labelledby="events-title">
+        <h2 class="log-title"><span id="events-title">Events</span> <small id="changes"></small></h2>
+        <ol class="log" id="log" reversed></ol>
+      </section>
+    </div>
     </main>
     <script type="module" src="./main.ts"></script>
     <dialog id="opened">
