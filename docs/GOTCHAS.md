@@ -50,6 +50,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - `mount` keys elements by id: a card removed and added again with the same id before `mount`
   writes (the same tick, or during a drag) keeps its old element if the value is the same object;
   another object is drawn again, like an update.
+- With the pointer captured (`setPointerCapture` on press), Chrome sends the `click` to the
+  capturing element: for a list pressed by its handle, the list container, not the handle.
 - Chrome fires no `click` after a pointer drag (the pressed card is hidden while dragged), even
   one released where it started; the engine still swallows the next click after a drag, for
   browsers that do fire it, so only the happy-dom test sees that path.

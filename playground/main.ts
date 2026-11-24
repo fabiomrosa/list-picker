@@ -81,22 +81,12 @@ function cardAt(id: string) {
   return { listId, up: ids[i - 1], down: ids[i + 1], afterDown: ids[i + 2] ?? null, ...lists };
 }
 
-/** Asks for a new name and updates the value on the Board: `mount` draws it again. */
-function rename(kind: "list" | "card", id: string): void {
-  const value = kind === "list" ? board.getList(id) : board.getCard(id);
-  const name = prompt(`New name of ${kind} ${id}`, value?.name ?? id)?.trim();
-  if (!value || !name) return;
-  if (kind === "list") board.updateList({ ...value, name });
-  else board.updateCard({ ...value, name });
-}
-
 function renderList(list: Entity): HTMLElement {
   const head = el("header", "list-head", "");
   // The name announced to screen readers (DEC-16), instead of the header's whole text.
   head.setAttribute("aria-label", list.name ?? list.id);
   const tools = el("div", "list-tools", "");
   tools.append(
-    action("✎", `rename list ${list.id}`, "rename", () => rename("list", list.id)),
     action("←", `move list ${list.id} left`, "left", () => {
       const { left } = listAt(list.id);
       if (left) moveList(list.id, left);
@@ -119,7 +109,6 @@ function renderCard(card: Entity): HTMLElement {
   box.setAttribute("aria-label", card.name ?? card.id);
   const tools = el("div", "tools", "");
   tools.append(
-    action("✎", `rename ${card.id}`, "rename", () => rename("card", card.id)),
     action("↑", `move ${card.id} up`, "up", () => {
       const { listId, up } = cardAt(card.id);
       if (up) move(card.id, listId, up);
@@ -251,10 +240,54 @@ board.addCard("Doing", { id: "Linked list" }, null);
 board.addList({ id: "Backlog" }, null);
 for (let i = 1; i <= 14; i++) board.addCard("Backlog", { id: `Idea ${i}` }, null);
 const opened = byId<HTMLDialogElement>("opened");
-/** What an app does on `onActivate`: open its own view of the card or list. */
+const nameField = field<HTMLInputElement>(opened.querySelector("form") as HTMLFormElement, "name");
+let openedCard: string | undefined;
+// "Save" closes the dialog with its value; the card's new name goes to the Board (`mount` redraws it).
+opened.addEventListener("close", () => {
+  const card = openedCard === undefined ? undefined : board.getCard(openedCard);
+  const name = nameField.value.trim();
+  if (opened.returnValue === "save" && card && name)
+    attempt(() => board.updateCard({ ...card, name }));
+});
+
+/** A list's name, edited in place: Enter or leaving saves, Esc cancels. */
+function editName(id: string): void {
+  const title = boardView.querySelector(`[data-lp-list="${CSS.escape(id)}"] h2`);
+  const list = board.getList(id);
+  if (!title || !list) return;
+  const input = Object.assign(document.createElement("input"), {
+    value: list.name ?? id,
+    ariaLabel: `Name of list ${id}`,
+  });
+  let done = false;
+  const finish = (save: boolean) => {
+    if (done) return;
+    done = true;
+    const name = input.value.trim();
+    if (save && name && name !== (list.name ?? id))
+      attempt(() => board.updateList({ ...list, name }));
+    else input.replaceWith(title);
+  };
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") finish(true);
+    if (event.key === "Escape") finish(false);
+  });
+  input.addEventListener("blur", () => finish(true));
+  title.replaceWith(input);
+  input.select();
+}
+
+/**
+ * What an app does on `onActivate`: a list's header edits its name in place; a card opens its
+ * dialog, where its name can be changed.
+ */
 function open({ kind, id }: { kind: "card" | "list"; id: string }): void {
-  const value = kind === "list" ? board.getList(id) : board.getCard(id);
-  (opened.querySelector("p") as HTMLElement).textContent = `Opened ${kind} ${value?.name ?? id}`;
+  if (kind === "list") return editName(id);
+  const card = board.getCard(id);
+  openedCard = id;
+  (opened.querySelector("p") as HTMLElement).textContent = `Opened card ${card?.name ?? id}`;
+  nameField.value = card?.name ?? id;
+  opened.returnValue = "";
   opened.showModal();
 }
 /** A rule (`canMove`): Doing takes at most 3 cards. */

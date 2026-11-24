@@ -65,9 +65,17 @@ test("moves a card with the keyboard: down, to the next list, back with Esc", as
 test("renames a list and a card; a picked-up card keeps its pick up when redrawn", async ({
   page,
 }) => {
-  page.on("dialog", (dialog) => dialog.accept("Now"));
-  await page.locator('[data-lp-list="To do"] [data-lp-list-handle] [data-role="rename"]').click();
+  // A click on a list's title edits it in place; Enter saves (Esc would cancel).
+  await page.locator('[data-lp-list="To do"] h2').click();
+  await page.getByLabel("Name of list To do").fill("Now");
+  await page.keyboard.press("Enter");
   await expect(page.locator('[data-lp-list="To do"] h2')).toHaveText("Now");
+  await expect(page.locator('[data-lp-list="To do"] [data-lp-list-handle]')).toBeFocused();
+  // A card's dialog changes its name.
+  await card(page, "Write the tests").locator("strong").click();
+  await page.locator("#opened input").fill("Tests");
+  await page.getByRole("button", { name: "Save" }).click();
+  await expect(card(page, "Write the tests").locator("strong")).toHaveText("Tests");
   const design = card(page, "Design the model");
   await design.focus();
   await page.keyboard.press("Space");
