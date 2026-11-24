@@ -216,7 +216,9 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     const steps = scrollSteps(under);
     // Asked before any write, so a rule that reads layout forces none.
     const ok = target !== undefined && allowed(active, target);
-    active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
+    // The `translate` property, not `transform`: it applies before a skin's `rotate` or `scale`,
+    // which would otherwise turn the offset too and pull the Clone off the pointer.
+    active.clone.style.translate = `${pointerAt.x - press.x}px ${pointerAt.y - press.y}px`;
     if (target && ok) place(active, target);
     for (const { element, left, top } of steps) {
       if (left !== undefined) element.scrollLeft = left;

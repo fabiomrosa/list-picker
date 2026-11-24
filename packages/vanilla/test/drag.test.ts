@@ -166,7 +166,9 @@ describe("createDrag: the Clone follows the pointer", () => {
     pointer(ctx.card("a"), "pointermove", 70, 30);
     pointer(ctx.card("a"), "pointermove", 95, 12);
     await frame();
-    expect(clone().style.transform).toBe("translate(45px, -18px)");
+    // The `translate` property, applied before a user's `rotate` or `scale` (no drift).
+    expect(clone().style.translate).toBe("45px -18px");
+    expect(clone().style.transform).toBe("");
   });
 
   it("writes once per frame however many moves arrive", async () => {
@@ -177,7 +179,7 @@ describe("createDrag: the Clone follows the pointer", () => {
     for (const x of [71, 72, 73, 74]) pointer(ctx.card("a"), "pointermove", x, 30);
     expect(raf).toHaveBeenCalledTimes(1);
     await frame();
-    expect(clone().style.transform).toBe("translate(24px, 0px)");
+    expect(clone().style.translate).toBe("24px 0px");
   });
 
   it.each(["release", "destroy"])("cancels a pending frame on %s", (how) => {

@@ -302,3 +302,23 @@ test("the demo's board in three skins: the same elements, a move kept", async ({
   await page.locator("label[for=skin-pop]").click();
   await expect(card(page, "Linked list")).toHaveCSS("border-top-width", "2px");
 });
+
+test("a tilted Clone (Pop's rotate) stays under the pointer on a long drag", async ({ page }) => {
+  await page.locator("label[for=skin-pop]").click();
+  const from = await card(page, "Design the model").boundingBox();
+  if (!from) throw new Error("not visible");
+  await page.mouse.move(from.x + 20, from.y + 10);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 520, from.y + 260, { steps: 20 });
+  const clone = page.locator("[data-lp-clone]");
+  await expect
+    .poll(async () => {
+      const box = await clone.boundingBox();
+      if (!box) return Number.POSITIVE_INFINITY;
+      const dx = box.x + box.width / 2 - (from.x + from.width / 2 + 500);
+      const dy = box.y + box.height / 2 - (from.y + from.height / 2 + 250);
+      return Math.hypot(dx, dy);
+    })
+    .toBeLessThan(3);
+  await page.mouse.up();
+});

@@ -75,7 +75,9 @@ callback).
 - **Why:** the browser already stacks elements; the 2017 version positioned every card absolutely
   and recomputed `top` and `height` after each change.
 - **Consequences:** the engine reads layout only when it must and moves the Clone with `transform`
-  inside `requestAnimationFrame` (no layout thrashing).
+  inside `requestAnimationFrame` (no layout thrashing). Since 2026-11-24 with the `translate`
+  property, a transform too, applied before a user's `rotate` or `scale` (with `transform`, a tilt
+  turned the offset and the Clone drifted off the pointer).
 
 ## DEC-09 · Vanilla first, then React and Angular — Accepted (owner, 2026-11-22)
 `core` (no DOM) and the drag engine are plain TypeScript with no dependencies. The vanilla adapter
