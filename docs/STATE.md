@@ -105,7 +105,8 @@ Every slice's pull request updates it (SESSION §3).
   or leaving saves, Esc cancels; `updateList`), and on a card opens a dialog that renames it
   (`updateCard`), both through `onActivate`; no browser prompt; Doing takes at most 3 cards
   (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
-  board narrower than its lists (52rem) show auto-scroll both ways. Styles live in the demo only.
+  board narrower than its lists (52rem) show auto-scroll both ways. Its look is the site's
+  (`site/style.css`, then `playground/demo.css`); the package ships no styles.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
