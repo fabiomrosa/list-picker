@@ -134,7 +134,10 @@ title, size, frozen-files and secret checks.
   where React and Angular show no command until published; the lab's answer from the root README;
   links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
   demo (`playground/`, linking back to the site) in `demo/`. Every `site/*.html` is a page, so a
-  package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it. `.github/workflows/pages.yml`
+  package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it.
+  A package's page has an index of its README's `##` sections beside it (`main.doc`, sticky,
+  hidden below 52rem). The look: monospace headings and navigation, a warm palette in light and
+  dark (the accent passes WCAG AA on both backgrounds), code blocks as a terminal; system fonts only. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 
 ## Contract
@@ -144,12 +147,14 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.14:** from the owner's patch 0002 (merged by hand over L4.13): the site's own
+  look and a section index beside each package's page.
 - **2026-11-24, L4.13:** from the owner's patch 0001: the home lists the four packages with an
   Install chooser (React and Angular: no command yet), every `site/*.html` is a page, the demo
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.14 (the site's look and a section index).
+- **Next:** L4.15 (a live board on the home).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

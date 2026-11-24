@@ -1,4 +1,4 @@
-// The site (L4.12, L4.13): the home page, a page per package built from its README (one source for
+// The site (L4.12–L4.14): the home page, a page per package built from its README (one source for
 // npm and the site), and the demo board (`playground/`, built into `demo/` by `npm run site:build`).
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -44,15 +44,21 @@ function markdown(): Plugin {
         const dir = file.includes("/") ? file.slice(0, file.lastIndexOf("/") + 1) : "";
         const body = marked.parse(text, { async: false, walkTokens: rewrite(dir) });
         // Ids as GitHub gives them, so the READMEs' own `#section` links work here too.
-        return body.replace(/<h([1-6])>(.*?)<\/h\1>/g, (_h, level: string, inner: string) => {
+        const sections: string[] = [];
+        const out = body.replace(/<h([1-6])>(.*?)<\/h\1>/g, (_h, level: string, inner: string) => {
           const id = inner
             .replace(/<[^>]+>|&[#\w]+;/g, "")
             .toLowerCase()
             .replace(/[^\w\s-]/g, "")
             .trim()
             .replace(/\s+/g, "-");
+          if (level === "2") sections.push(`<li><a href="#${id}">${inner}</a></li>`);
           return `<h${level} id="${id}">${inner}</h${level}>`;
         });
+        // A whole README is a package's page: the index of its sections goes beside it.
+        if (from) return out;
+        const toc = `<strong aria-hidden="true">On this page</strong><ul>${sections.join("")}</ul>`;
+        return `<aside class="toc" aria-label="On this page">${toc}</aside><article>${out}</article>`;
       }),
   };
 }
