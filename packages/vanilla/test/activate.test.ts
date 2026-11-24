@@ -81,6 +81,12 @@ describe("createDrag: activating a card or a list", () => {
     pointer(list, "pointerdown", 50, 200);
     click(list);
     expect(activated).toHaveLength(1);
+    // Nor a later click on it, from code, after the press it belonged to.
+    pointer(handle(), "pointerdown", 50, 10);
+    pointer(list, "pointerup", 50, 10);
+    click(list);
+    list.click();
+    expect(activated).toHaveLength(2);
   });
 
   it("lets the click that ends a drag reach neither the card nor the page", () => {

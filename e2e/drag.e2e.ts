@@ -71,6 +71,11 @@ test("renames a list and a card; a picked-up card keeps its pick up when redrawn
   await page.keyboard.press("Enter");
   await expect(page.locator('[data-lp-list="To do"] h2')).toHaveText("Now");
   await expect(page.locator('[data-lp-list="To do"] [data-lp-list-handle]')).toBeFocused();
+  // Esc cancels, and the keyboard stays on the header.
+  await page.locator('[data-lp-list="Done"] h2').click();
+  await page.keyboard.press("Escape");
+  await expect(page.locator('[data-lp-list="Done"] h2')).toHaveText("Done");
+  await expect(page.locator('[data-lp-list="Done"] [data-lp-list-handle]')).toBeFocused();
   // A card's dialog changes its name.
   await card(page, "Write the tests").locator("strong").click();
   await page.locator("#opened input").fill("Tests");

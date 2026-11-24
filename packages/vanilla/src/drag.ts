@@ -468,6 +468,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     // A list pressed by its handle holds the pointer capture, so the click comes to the list.
     const what =
       pressed(event.target) ?? (pressedOn?.item === event.target ? pressedOn : undefined);
+    pressedOn = undefined; // one click per press
     if (what)
       onActivate({ kind: name(what.kind), id: what.item.getAttribute(what.kind.attribute) ?? "" });
   }
@@ -490,6 +491,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     cancel,
     replace(current, next) {
       keyboard.replace(current, next);
+      if (pressedOn?.item === current) pressedOn = { ...pressedOn, item: next };
       // A press not yet a drag (`mount` writes until one starts) goes on from the new element.
       if (press?.item !== current) return;
       press = { ...press, item: next };

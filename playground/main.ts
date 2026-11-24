@@ -253,20 +253,26 @@ opened.addEventListener("close", () => {
 /** A list's name, edited in place: Enter or leaving saves, Esc cancels. */
 function editName(id: string): void {
   const title = boardView.querySelector(`[data-lp-list="${CSS.escape(id)}"] h2`);
-  const list = board.getList(id);
-  if (!title || !list) return;
+  const handle = title?.closest<HTMLElement>("[data-lp-list-handle]");
+  const start = board.getList(id);
+  if (!title || !handle || !start) return;
   const input = Object.assign(document.createElement("input"), {
-    value: list.name ?? id,
+    value: start.name ?? id,
     ariaLabel: `Name of list ${id}`,
   });
   let done = false;
   const finish = (save: boolean) => {
-    if (done) return;
+    // Gone already: the Board redrew or removed the list meanwhile, and that change wins.
+    if (done || !input.isConnected) return;
     done = true;
+    const list = board.getList(id);
     const name = input.value.trim();
-    if (save && name && name !== (list.name ?? id))
+    if (save && list && name && name !== (list.name ?? id)) {
       attempt(() => board.updateList({ ...list, name }));
-    else input.replaceWith(title);
+    } else {
+      input.replaceWith(title);
+      handle.focus(); // where the keyboard was
+    }
   };
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") finish(true);
