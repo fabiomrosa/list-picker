@@ -1,11 +1,27 @@
 import type { Board } from "@list-picker/core";
-import { createAnnouncer, type DragOptions, type Messages } from "./announce.ts";
+import { createAnnouncer, type Messages } from "./announce.ts";
 import { createKeyboard } from "./keyboard.ts";
 import { landed } from "./landed.ts";
 
 /** A running drag engine; `destroy()` removes every listener it added. */
 export interface Drag {
   destroy(): void;
+}
+
+/** What was activated: a card, or a list (by its handle). */
+export interface Activation {
+  readonly kind: "card" | "list";
+  readonly id: string;
+}
+
+/** Options of `createDrag` and `mount`. */
+export interface DragOptions {
+  readonly messages?: Partial<Messages>;
+  /**
+   * Called on a click on a card or a list's handle that started no drag, and on Enter on a
+   * focused one (DEC-17), to open the app's own view of it; not on its controls.
+   */
+  readonly onActivate?: (item: Activation) => void;
 }
 
 /** How far (px) the pointer must move after a press before the press becomes a drag. */
@@ -70,14 +86,15 @@ interface Active {
  * markup: cards are `[data-lp-card]` elements inside `[data-lp-cards]` list containers; lists are
  * `[data-lp-list]` elements, dragged by a `[data-lp-list-handle]` inside them. Pick up, drop
  * and cancel (and each keyboard step) are announced in a live region (DEC-16), in English unless
- * `options.messages` replaces a message.
+ * `options.messages` replaces a message. A click (that started no drag) or Enter on an item calls
+ * `options.onActivate`; the click that ends a drag reaches neither the item nor the page.
  */
 export function createDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
   board: Board<L, C>,
   options: DragOptions = {},
 ): Drag {
-  const { destroy } = startDrag(root, board, () => {}, options.messages);
+  const { destroy } = startDrag(root, board, () => {}, options);
   return { destroy };
 }
 
@@ -96,12 +113,21 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   root: HTMLElement,
   board: Board<L, C>,
   onEnd: () => void,
-  messages?: Partial<Messages>,
+  options: DragOptions = {},
 ): MountedDrag {
   let press: Press | undefined;
   let active: Active | undefined;
-  const announcer = createAnnouncer(root, board, messages);
-  const keyboard = createKeyboard(root, board, () => press !== undefined, announcer.say);
+  /** The latest press became a drag: the click that ends it is swallowed. */
+  let dragged = false;
+  const announcer = createAnnouncer(root, board, options.messages);
+  const { onActivate } = options;
+  const keyboard = createKeyboard(
+    root,
+    board,
+    () => press !== undefined,
+    announcer.say,
+    onActivate && ((kind, id) => onActivate({ kind, id })),
+  );
   const name = (kind: Kind) => (kind === LIST ? "list" : "card");
   /** The latest pointer position; read once per animation frame. */
   let pointerAt = { x: 0, y: 0 };
@@ -149,6 +175,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
         return;
       }
       active = start(press.kind, press.item);
+      dragged = true;
       // Only during a drag (AGENTS: no document listener outside one).
       document.addEventListener("keydown", onKeyDown);
       // Last: a user's message that throws leaves a drag that Esc still cancels.
@@ -371,13 +398,43 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     }
   }
 
+  /**
+   * Every press in `root`, even one a control stops from bubbling: a click after it is its own,
+   * not the one ending the last drag (no browser tested fires that one at all).
+   */
+  function onPressCapture(): void {
+    dragged = false;
+  }
+
+  /** First of every click in `root` (capture): the one ending a drag goes no further. */
+  function onClickCapture(event: MouseEvent): void {
+    // A keyboard's click (`detail` 0, Enter on a control) never ends a drag.
+    if (!dragged || event.detail === 0) return;
+    dragged = false;
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  function onClick(event: MouseEvent): void {
+    if (!onActivate || !(event.target instanceof Element)) return;
+    const what = pressed(event.target);
+    if (what)
+      onActivate({ kind: name(what.kind), id: what.item.getAttribute(what.kind.attribute) ?? "" });
+  }
+
+  root.addEventListener("pointerdown", onPressCapture, true);
   root.addEventListener("pointerdown", onPointerDown);
+  root.addEventListener("click", onClickCapture, true);
+  root.addEventListener("click", onClick);
   return {
     destroy() {
       end();
       keyboard.destroy();
       announcer.destroy();
+      root.removeEventListener("pointerdown", onPressCapture, true);
       root.removeEventListener("pointerdown", onPointerDown);
+      root.removeEventListener("click", onClickCapture, true);
+      root.removeEventListener("click", onClick);
     },
     dragged: () => active?.item,
     cancel,

@@ -83,6 +83,32 @@ test("renames a list and a card; a picked-up card keeps its pick up when redrawn
   expect(await lists(page)).toMatchObject({ "To do": ["Write the tests", "Design the model"] });
 });
 
+test("a click or Enter opens a card; the click ending a drag opens nothing", async ({ page }) => {
+  const dialog = page.locator("#opened");
+  await card(page, "Design the model").locator("strong").click();
+  await expect(dialog).toContainText("Opened card Design the model");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await card(page, "Linked list").focus();
+  await page.keyboard.press("Enter");
+  await expect(dialog).toContainText("Opened card Linked list");
+  await page.keyboard.press("Escape");
+  // A drag that ends back in place, released on the card (Chrome fires no click after a drag; the
+  // engine swallows one for browsers that do, tested in happy-dom).
+  const box = await card(page, "Write the tests").locator("strong").boundingBox();
+  if (!box) throw new Error("no card");
+  await page.mouse.move(box.x + 10, box.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 60, box.y + 5, { steps: 6 });
+  await page.mouse.move(box.x + 10, box.y + 5, { steps: 6 });
+  await page.mouse.up();
+  await page.waitForTimeout(100);
+  await expect(dialog).toBeHidden();
+  await drag(page, card(page, "Write the tests"), card(page, "Linked list"), 0.1);
+  await expect.poll(() => lists(page)).toMatchObject({ Doing: ["Write the tests", "Linked list"] });
+  await expect(dialog).toBeHidden();
+});
+
 test("drags a card to another list, before its card", async ({ page }) => {
   await drag(page, card(page, "Write the tests"), card(page, "Linked list"), 0.1);
   await expect

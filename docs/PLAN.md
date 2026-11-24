@@ -706,7 +706,7 @@ shows it in the demo.
 - **References:** DEC-17, DEC-14.
 
 ### L4.10 · Activate a card or a list
-- **Status:** waiting (L4.9)
+- **Status:** done (2026-11-23)
 - **Goal:** clicking a card (or pressing Enter on it) opens the app's modal, and a drag never does.
 - **Depends on:** L4.9, DEC-17, DEC-15 (amended).
 - **In scope:** an `onActivate({ kind, id })` option of `createDrag` and `mount`, called on a click
@@ -725,6 +725,9 @@ shows it in the demo.
      only presses the button.
 - **Files:** ~10: `drag.ts`, `keyboard.ts`, `announce.ts` (options), `mount.ts`, tests, e2e, demo,
   both READMEs or vanilla's, PLAN, STATE.
+- **Note:** Chrome fires no click after a drag at all (the card is hidden), so the browser test
+  checks only that nothing opens; the swallowing of a following click is tested in happy-dom.
+  `DragOptions` moved from `announce.ts` to `drag.ts` (same export).
 - **References:** DEC-17, DEC-15.
 
 ### L4.11 · Rules for where items may move

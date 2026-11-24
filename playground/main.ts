@@ -250,7 +250,14 @@ board.addCard("Doing", { id: "Linked list" }, null);
 // A tall, scrolling list to try auto-scroll on.
 board.addList({ id: "Backlog" }, null);
 for (let i = 1; i <= 14; i++) board.addCard("Backlog", { id: `Idea ${i}` }, null);
-mount(boardView, board, { renderList, renderCard });
+const opened = byId<HTMLDialogElement>("opened");
+/** What an app does on `onActivate`: open its own view of the card or list. */
+function open({ kind, id }: { kind: "card" | "list"; id: string }): void {
+  const value = kind === "list" ? board.getList(id) : board.getCard(id);
+  (opened.querySelector("p") as HTMLElement).textContent = `Opened ${kind} ${value?.name ?? id}`;
+  opened.showModal();
+}
+mount(boardView, board, { renderList, renderCard }, { onActivate: open });
 // For the browser tests and the console: changes made from code, as a server push would.
 Object.assign(window, { board });
 refresh();

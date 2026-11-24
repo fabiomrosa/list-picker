@@ -75,6 +75,10 @@ Returns `{ destroy() }`, which removes what it added and every listener.
 - `renderers.renderCard(card)` returns the card, a new `HTMLElement`.
 - A Renderer runs again for a list or card whose value is a different object than the one it drew
   (`board.updateCard({ ...card, text })`); changing the same object draws nothing.
+- `options.onActivate({ kind, id })`: called on a click on a card or a list header that started
+  no drag, and on Enter on a focused one; open your modal from it. A click that would follow a drag
+  never reaches the card. Clicks and Enter on controls inside an item keep their own
+  behaviour.
 - `options.messages`: see [Announcements](#announcements).
 
 A Renderer's error is thrown from the Board operation that needed it. A list or card removed from
@@ -96,7 +100,8 @@ The drag engine alone, for markup you draw yourself (keep it in line with the Bo
 ```
 
 Cards are direct children of their `[data-lp-cards]`, and lists direct children of one parent.
-Returns `{ destroy() }`. A drop moves the item on the Board and then its element.
+Returns `{ destroy() }`. A drop moves the item on the Board and then its element. It takes the
+same `options` as `mount`.
 
 ## Markup and styling hooks
 
@@ -121,7 +126,8 @@ Returns `{ destroy() }`. A drop moves the item on the Board and then its element
 
 | Key | |
 |---|---|
-| Space or Enter | Pick up; again to drop. |
+| Space | Pick up; again to drop. |
+| Enter | Activate it (`onActivate`), as a click does. |
 | ↑ ↓ | Move a card one place in its list. |
 | ← → | Move a card to the same position (or the end) in the previous or next list; move a list one place. |
 | Esc | Put it back where it was picked up. |
