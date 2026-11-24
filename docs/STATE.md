@@ -145,7 +145,8 @@ title, size, frozen-files and secret checks.
   links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
   demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
   board in the same three skins as the home, with the same chooser) in `demo/`; and the player
-  (`player.html`, a playlist on `neighbours` and `swapCards`). The skins
+  (`player.html`, a playlist on `neighbours` and `swapCards`, with a pretend play that goes on to
+  the next track by `neighbours`). The skins
   (`site/home.css`) style any board by `[data-skin]` and the `hb-*` classes its Renderers set.
   Every `site/*.html` is a page, so a package's page is one more `<name>.html`, and a README link
   to `packages/<name>` goes to it.
@@ -165,6 +166,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.25 (owner):** the player's pretend play: no sound, ten times faster, play/pause,
+  a progress bar, an equalizer, and the next track at a track's end in the current order (browser
+  test with Playwright's clock); motion reduced on request.
 - **2026-11-24, L4.25:** the player (`site/player.html`): the owner's first sketch, a playlist in
   one list: previous and next by `neighbours`, tick two tracks to swap (`swapCards`), drag and
   keyboard moves, a click or Enter plays; `e2e/player.e2e.ts`. The nav has a "player" link and two

@@ -83,3 +83,34 @@ test("a drag or a keyboard move reorders it; a click or Enter plays a track", as
   await page.keyboard.press("Enter");
   await expect(now(page)).toHaveText("Parachutes");
 });
+
+test("play runs the clock, and at a track's end goes on to the next in the current order", async ({
+  page,
+}) => {
+  // A controlled clock: the pretend play runs ten times faster; runFor skips real waiting.
+  await page.clock.install();
+  await page.goto(PLAYER);
+  await page.locator("#toggle").click();
+  await expect(page.locator("#toggle")).toHaveAccessibleName("Pause");
+  await page.clock.runFor(5_000);
+  await expect(page.locator("#now-time")).toHaveText("0:50 / 2:17");
+  // Swap Shiver away: after Don't Panic comes Trouble now.
+  await track(page, "Shiver").locator("input").click();
+  await track(page, "Trouble").locator("input").click();
+  await page.clock.runFor(9_000);
+  await expect(now(page)).toHaveText("Trouble");
+  // Pause stops the clock.
+  await page.locator("#toggle").click();
+  const time = await page.locator("#now-time").textContent();
+  await page.clock.runFor(5_000);
+  await expect(page.locator("#now-time")).toHaveText(time ?? "");
+});
+
+test("with reduced motion the equalizer stands still while playing", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.locator("#toggle").click();
+  await expect(track(page, "Don't Panic").locator(".eq i").first()).toHaveCSS(
+    "animation-name",
+    "none",
+  );
+});

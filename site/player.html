@@ -25,18 +25,30 @@
       <p class="lede">
         One list instead of a board: a playlist. Previous and next step through it in O(1)
         (<code>board.neighbours</code>); tick a track, then another, to swap them
-        (<code>board.swapCards</code>); or drag a track, or move it with the keyboard.
+        (<code>board.swapCards</code>); or drag a track, or move it with the keyboard. Play is a
+        pretend one, ten times faster, with no sound: at a track's end it goes on to the next in
+        the playlist's current order.
       </p>
       <section class="player" aria-label="Music player">
         <header class="now">
           <div class="cover" aria-hidden="true"></div>
           <div class="now-text">
             <p class="artist">Coldplay</p>
-            <p class="title"><span id="now-title"></span> · <span id="now-time"></span></p>
+            <p class="title" id="now-title"></p>
+            <div class="progress">
+              <div class="progress-bar" id="progress" role="progressbar" aria-label="Played" aria-valuemin="0">
+                <span id="progress-fill"></span>
+              </div>
+              <span id="now-time"></span>
+            </div>
           </div>
           <div class="controls">
             <button type="button" id="prev" aria-label="Previous track">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 17 5 12l6-5M19 17l-6-5 6-5" /></svg>
+            </button>
+            <button type="button" id="toggle" aria-label="Play">
+              <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14" /></svg>
             </button>
             <button type="button" id="next" aria-label="Next track">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m13 17 6-5-6-5M5 17l6-5-6-5" /></svg>
