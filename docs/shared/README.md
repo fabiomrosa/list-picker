@@ -1,7 +1,7 @@
 # list-picker
 
-A headless library for kanban-style boards: a doubly linked list of lists, each a doubly linked list
-of cards, with a drag engine that uses a clone and a placeholder and lets the browser do the layout.
+A headless library for lists people reorder (a kanban board, a playlist): a doubly linked list of
+lists, each a doubly linked list of cards, with a drag engine that uses a clone and a placeholder and lets the browser do the layout.
 An open-source lab rewriting `list-picker-js` (2017); no business model.
 
 These docs are shared by the whole project. It is a single repository (`list-picker`, the hub), so

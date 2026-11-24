@@ -1,9 +1,9 @@
 # @list-picker/core
 
-The model of lists people reorder (a kanban board's lists of cards, a playlist's tracks): ordered
-lists of ordered items, kept as doubly linked lists with an index, so finding, adding, removing and
-moving an item or a list is O(1) (removing a list is O(its items)). No DOM, no framework, no runtime
-dependencies. To draw a Board and drag its items, add
+The model of lists people reorder (a kanban board's tasks, a playlist's tracks): ordered lists of
+ordered cards (a card is any item: a task, a track), kept as doubly linked lists with an index, so
+finding, adding, removing and moving a card or a list is O(1) (removing a list is O(its cards)). No
+DOM, no framework, no runtime dependencies. To draw a Board and drag its cards, add
 [`@list-picker/vanilla`](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla).
 
 ## Install

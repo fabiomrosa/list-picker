@@ -5,14 +5,14 @@ The top of the precedence list (SESSION §8). Only the owner changes it, through
 ## What it is
 A headless, framework-agnostic library for lists people reorder: a kanban board's lists of cards, a
 playlist's tracks. Items can be added, removed, reordered and dragged between lists, and lists can
-themselves be reordered. It ships
-the data model, the drag behaviour and the containers; the look of every card and list belongs to
-the user. A lab: it rewrites `list-picker-js` (2017) to test one idea, that doubly linked lists make
+themselves be reordered. It ships the data model, the drag behaviour and the containers; the look
+of every card and list belongs to the user. A lab: it rewrites `list-picker-js` (2017) to test one idea, that doubly linked lists make
 the board's operations simpler and cheaper than recomputing positions in JavaScript.
 
 ## Who it serves
 Front-end developers building a UI where people reorder items (a Trello-like board, a playlist, a
-ranked list) who want the behaviour without a visual style or a framework imposed on them. No one pays: it is an open-source lab.
+ranked list) who want the behaviour without a visual style or a framework imposed on them. No one
+pays: it is an open-source lab.
 
 ## Business model
 None. Success is learning: the theory tested, measured and written down.
