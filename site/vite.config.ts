@@ -53,7 +53,10 @@ function markdown(): Plugin {
             .trim()
             .replace(/\s+/g, "-");
           if (level === "2") sections.push(`<li><a href="#${id}">${inner}</a></li>`);
-          return `<h${level} id="${id}">${inner}</h${level}>`;
+          // A package's name wraps after its scope ("@list-picker/" then "vanilla"), not at a hyphen.
+          const text =
+            level === "1" ? inner.replace(/^(@[\w-]+\/)/, '<span class="scope">$1</span>') : inner;
+          return `<h${level} id="${id}">${text}</h${level}>`;
         });
         // A whole README is a package's page: the index of its sections goes beside it.
         if (from) return out;

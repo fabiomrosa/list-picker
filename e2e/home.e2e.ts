@@ -142,3 +142,12 @@ test("Pop: a list drag keeps the other lists' colours; the skin label is only te
   await page.keyboard.press("Escape");
   await release();
 });
+
+test("no page scrolls sideways on a 320px phone", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  for (const path of ["", "core.html", "vanilla.html", "player.html"]) {
+    await page.goto(`http://localhost:5181/list-picker/${path}`);
+    const width = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(width, path || "home").toBeLessThanOrEqual(320);
+  }
+});
