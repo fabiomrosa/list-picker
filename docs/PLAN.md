@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.18). The publish, the tag and criterion 1 against the registry moved to
-  L4.19; the version stays `1.0.0`.
+  a site first (L4.8–L4.19). The publish, the tag and criterion 1 against the registry moved to
+  L4.20; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -901,10 +901,27 @@ shows it in the demo.
   `playground/main.ts`, `playground/demo.css`, `e2e/drag.e2e.ts`, PLAN, STATE.
 - **References:** L4.16, L4.17, DEC-07.
 
-### L4.19 · First npm publish
+### L4.19 · Styling a board
 - **Status:** waiting (L4.18)
+- **Goal:** someone styling their board avoids the traps the site's skins fell into.
+- **Depends on:** L4.18.
+- **In scope:** a "Styling a board" section in the vanilla README (so on the site's vanilla page
+  too): a minimal CSS example, and the rules learnt in L4.15–L4.18: what is dragged needs
+  `touch-action: none`; a list's Clone has no `data-lp-list` (match it by what it holds); the
+  Placeholder and the hidden item are siblings during a drag (`:nth-child(… of …)`); a keyboard
+  pick up of a list marks the whole list; an outline outside a card is clipped by a scrolling list.
+- **Out of scope:** a default theme (PRODUCT: out of v1); code changes.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Each rule in the section is true of the engine (checked against the source) and shows the
+     selector to use; the example's CSS, pasted into the README's example page, drags by touch.
+- **Files:** ~3: `packages/vanilla/README.md`, PLAN, STATE.
+- **References:** L4.15–L4.18, GOTCHAS, DEC-07.
+
+### L4.20 · First npm publish
+- **Status:** waiting (L4.19)
 - **Goal:** v1 is on npm.
-- **Depends on:** L4.18, P2.
+- **Depends on:** L4.19, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
   first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
 - **Out of scope:** a release workflow in CI.
