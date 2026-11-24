@@ -29,7 +29,8 @@ export interface BoardEvents extends Record<string, unknown> {
 /** A List on the Board: the user's list value and its linked list of cards. */
 interface ListEntry<L, C extends Entity> {
   readonly id: string;
-  readonly list: L;
+  /** Replaced by `updateList`; the entry itself stays, so the card index keeps pointing at it. */
+  list: L;
   readonly cards: LinkedList<C>;
 }
 
@@ -68,6 +69,25 @@ export class Board<L extends Entity, C extends Entity> {
     entry.cards.insertBefore(card, beforeCardId);
     this.#listOfCard.set(card.id, entry);
     this.#changed();
+  }
+
+  /** Replaces the List with `list.id` (same place, same cards), and returns the value it replaces. */
+  updateList(list: L): L {
+    const entry = this.#lists.get(list.id)?.value;
+    if (!entry) throw new Error(`list-picker: unknown id "${list.id}"`);
+    const old = entry.list;
+    entry.list = list;
+    this.#changed();
+    return old;
+  }
+
+  /** Replaces the card with `card.id` (same List, same place), and returns the value it replaces. */
+  updateCard(card: C): C {
+    const entry = this.#listOfCard.get(card.id);
+    if (!entry) throw new Error(`list-picker: unknown id "${card.id}"`);
+    const old = entry.cards.replace(card);
+    this.#changed();
+    return old;
   }
 
   /** Removes the card with `id` from its List and the Board, and returns it. */

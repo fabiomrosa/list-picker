@@ -5,14 +5,16 @@ Every slice's pull request updates it (SESSION §3).
 
 ## Capabilities
 - `LinkedList`: `insertBefore(value, beforeId | null)` (unknown `beforeId` throws), `remove(id)`,
+  `replace(value)` (the node with that id; unknown throws),
   `get`, `has`, `size`, `first`, `last`, ordered iteration; duplicate ids throw. A property test
   checks every PRODUCT invariant of the list against an array model over 1000 random operation
   sequences.
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
   `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
   everything before unlinking), `moveList(id, beforeListId | null)` (same rules), `removeCard`,
-  `removeList` (with its cards), `getList`, `getCard`, `listOf(cardId)`, `lists()`,
-  `cards(listId)`. Card ids are unique across the Board, list ids
+  `removeList` (with its cards), `updateList(list)` and `updateCard(card)` (replace the value with
+  that id in place, return the old one; `change` only), `getList`, `getCard`, `listOf(cardId)`,
+  `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
   across the Lists; bad input throws and changes nothing. A property test runs random sequences of
   every Board operation from a populated Board against a nested-array model.
 - Board events: `on("move" | "change", listener)` returns an unsubscribe function. `move` carries
@@ -117,11 +119,14 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.8:** `Board.updateList(list)` and `updateCard(card)` replace a value in place
+  (`change`, no `move`), over `LinkedList.replace`; the property test covers both (two planted
+  bugs caught). `mount` does not redraw them yet (L4.9).
+- **Next:** L4.9 (mount draws a changed value).
 - **2026-11-23, L4.7:** both packages at `1.0.0`, ready for npm (`npm publish --dry-run` clean;
   tarballs installed into an empty folder run both README examples). Not yet on npm: after the
   merge the owner creates the `list-picker` npm org and publishes from `main`, then the agent tags
   `v1.0.0` and checks criterion 1 against the registry.
-- **Next:** L4.8 (change a list's or a card's value), once the owner oks the extended M4 plan.
 - **2026-11-23, L4.6:** the root README answers the lab's question with decisions 0001 and 0002
   (faster for the model, irrelevant next to layout; simpler for positions and events, not for
   drawing), lists the packages and how to repeat both measurements (rerun: same ranges).

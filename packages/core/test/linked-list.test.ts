@@ -159,3 +159,22 @@ describe("LinkedList.remove", () => {
     expect(links(list)).toEqual(["-<b>a", "b<a>c", "a<c>-"]);
   });
 });
+
+describe("LinkedList.replace", () => {
+  it("swaps the value of the node with the same id, keeping its place", () => {
+    const list = new LinkedList<Item & { v?: number }>();
+    for (const id of ["a", "b", "c"]) list.insertBefore({ id }, null);
+    const next = { id: "b", v: 2 };
+    expect(list.replace(next)).toEqual({ id: "b" });
+    expect(list.get("b")?.value).toBe(next);
+    expect(list.get("a")?.next?.value).toBe(next);
+    expect(ids(list)).toEqual(["a", "b", "c"]);
+  });
+
+  it("throws on an unknown id and stays unchanged", () => {
+    const list = new LinkedList<Item>();
+    list.insertBefore({ id: "a" }, null);
+    expect(() => list.replace({ id: "x" })).toThrow('list-picker: unknown id "x"');
+    expect(ids(list)).toEqual(["a"]);
+  });
+});

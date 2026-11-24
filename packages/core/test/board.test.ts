@@ -422,3 +422,48 @@ describe("Board.snapshot", () => {
     expect(seen).toEqual(["b"]);
   });
 });
+
+describe("Board updates", () => {
+  const board = () => {
+    const b = new Board<List, Card>();
+    b.addList({ id: "todo", title: "To do" }, null);
+    b.addList({ id: "done", title: "Done" }, null);
+    b.addCard("todo", { id: "c1", text: "one" }, null);
+    b.addCard("todo", { id: "c2", text: "two" }, null);
+    return b;
+  };
+
+  it("replaces a card's or a list's value in place, with one change and no move", () => {
+    const b = board();
+    const events: string[] = [];
+    b.on("move", () => events.push("move"));
+    b.on("change", () => events.push("change"));
+    const before = b.snapshot();
+    const card = { id: "c1", text: "edited" };
+    expect(b.updateCard(card)).toEqual({ id: "c1", text: "one" });
+    expect(b.getCard("c1")).toBe(card);
+    expect([...b.cards("todo")]).toEqual([card, { id: "c2", text: "two" }]);
+    expect(b.snapshot()).not.toBe(before);
+    expect(b.snapshot().lists[0]?.cards[0]).toBe(card);
+    const list = { id: "todo", title: "Doing now" };
+    expect(b.updateList(list)).toEqual({ id: "todo", title: "To do" });
+    expect(b.getList("todo")).toBe(list);
+    expect(b.listOf("c2")).toBe(list);
+    expect(listIds(b)).toEqual(["todo", "done"]);
+    expect(b.snapshot().lists[0]?.list).toBe(list);
+    expect(events).toEqual(["change", "change"]);
+  });
+
+  it("throws on an unknown id and changes nothing", () => {
+    const b = board();
+    const events: string[] = [];
+    b.on("change", () => events.push("change"));
+    const before = b.snapshot();
+    expect(() => b.updateCard({ id: "nope" })).toThrow('list-picker: unknown id "nope"');
+    expect(() => b.updateList({ id: "nope" })).toThrow('list-picker: unknown id "nope"');
+    expect(() => b.updateCard({ id: "todo" })).toThrow('list-picker: unknown id "todo"');
+    expect(() => b.updateList({ id: "c1" })).toThrow('list-picker: unknown id "c1"');
+    expect(b.snapshot()).toBe(before);
+    expect(events).toEqual([]);
+  });
+});

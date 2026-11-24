@@ -36,7 +36,9 @@ board.moveCard("a", "done", null);
 ## API
 
 Lists and cards are your own values; each needs a string `id`, unique among the lists or among all
-the cards. Positions are given by the item to go before (`null` for the end), never by an index.
+the cards, that never changes. Use your backend's id, or `crypto.randomUUID()` when you create the
+item; not its text (a list's display name is a field of your own, changed with `updateList`).
+Positions are given by the item to go before (`null` for the end), never by an index.
 
 ### `new Board<L, C>()`
 
@@ -46,6 +48,8 @@ the cards. Positions are given by the item to go before (`null` for the end), ne
 | `addCard(listId, card, beforeCardId)` | Adds a card to a list. |
 | `removeList(id)` | Removes a list and its cards; returns the list. |
 | `removeCard(id)` | Removes a card; returns it. |
+| `updateList(list)` | Replaces the list with `list.id` (same place, its cards); returns the old one. |
+| `updateCard(card)` | Replaces the card with `card.id` (same place); returns the old one. |
 | `moveList(id, beforeListId)` | Moves a list (with its cards); returns whether the order changed. |
 | `moveCard(id, toListId, beforeCardId)` | Moves a card, in its list or to another; returns whether the order changed. |
 | `getList(id)`, `getCard(id)` | The list or card with that id, or `undefined`. |
@@ -53,6 +57,9 @@ the cards. Positions are given by the item to go before (`null` for the end), ne
 | `lists()`, `cards(listId)` | The lists, or a list's cards, in order. |
 | `snapshot()` | The Board as one frozen value, `{ lists: [{ list, cards }] }`; the same object until the Board changes. |
 | `on(event, listener)` | Subscribes to an event; returns the function that unsubscribes. |
+
+Pass a new object to `updateList` and `updateCard` (`{ ...card, text }`), not the same one changed:
+a renderer redraws an item when its value is a different object.
 
 An unknown id, a duplicate id or a `before` that is not in the target list throws an `Error`, and
 the Board is left unchanged.
@@ -62,7 +69,7 @@ the Board is left unchanged.
 - `move`: after a move that changed the order. It names the new neighbours rather than indexes:
   `{ kind: "card" | "list", id, fromListId, toListId, prevId, nextId }` (`fromListId` and
   `toListId` are `null` for a list; `prevId` and `nextId` are `null` at an end).
-- `change`: after every change (add, remove or move), with no payload; redraw from it.
+- `change`: after every change (add, remove, update or move), with no payload; redraw from it.
 
 Listeners run synchronously, once the Board is consistent; a listener must not change the Board.
 Every listener runs even if one throws; the first error is then rethrown from the operation (the
@@ -71,8 +78,8 @@ change itself has happened).
 ### `LinkedList<T>`
 
 The list the Board is made of, exported for direct use: `insertBefore(value, beforeId)`,
-`remove(id)`, `get(id)` (a `Node` with `value`, `prev` and `next`), `has(id)`, `first`, `last`,
-`size`, and iteration over the values in order.
+`remove(id)`, `replace(value)`, `get(id)` (a `Node` with `value`, `prev` and `next`), `has(id)`,
+`first`, `last`, `size`, and iteration over the values in order.
 
 ## License
 

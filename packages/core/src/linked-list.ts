@@ -52,6 +52,14 @@ export class LinkedList<T extends { id: string }> {
     this.#index.set(value.id, node);
   }
 
+  /** Puts `value` in the place of the node with the same id, and returns the value it replaces. */
+  replace(value: T): T {
+    const node = this.#node(value.id);
+    const old = node.value;
+    node.value = value;
+    return old;
+  }
+
   /** Removes the node with `id` and returns its value. */
   remove(id: string): T {
     const node = this.#node(id);
