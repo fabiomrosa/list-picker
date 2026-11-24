@@ -144,7 +144,8 @@ title, size, frozen-files and secret checks.
   where React and Angular show no command until published; the lab's answer from the root README;
   links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
   demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
-  board in the same three skins as the home, with the same chooser) in `demo/`. The skins
+  board in the same three skins as the home, with the same chooser) in `demo/`; and the player
+  (`player.html`, a playlist on `neighbours` and `swapCards`). The skins
   (`site/home.css`) style any board by `[data-skin]` and the `hb-*` classes its Renderers set.
   Every `site/*.html` is a page, so a package's page is one more `<name>.html`, and a README link
   to `packages/<name>` goes to it.
@@ -164,6 +165,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.25:** the player (`site/player.html`): the owner's first sketch, a playlist in
+  one list: previous and next by `neighbours`, tick two tracks to swap (`swapCards`), drag and
+  keyboard moves, a click or Enter plays; `e2e/player.e2e.ts`. The nav has a "player" link and two
+  rows on phones.
 - **2026-11-24, L4.24:** `Board.swapCards(a, b)`: two cards exchange places in O(1) (side by side,
   one moves; apart, each takes the other's place); the property test swaps at random and replays
   the emitted moves on a copy (a planted bug was caught).
@@ -214,8 +219,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.25 (the music player, merged with L4.22's waiting wording), then L4.26 (first npm
-  publish).
+- **Next:** L4.26 (first npm publish; the owner publishes from their account).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the
