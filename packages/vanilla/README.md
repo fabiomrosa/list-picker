@@ -1,9 +1,10 @@
 # @list-picker/vanilla
 
 Draws a [`@list-picker/core`](https://github.com/fabiomrosa/list-picker/tree/main/packages/core)
-Board in the page and lets people reorder its cards and lists, by pointer (mouse, touch, pen) or
-keyboard, with screen reader announcements. It is headless: you render each card and each list
-header; it owns the containers, the dragging and the order, and ships no styles. No framework, no runtime dependencies besides the core.
+Board in the page and lets people reorder its items and lists (a kanban board's cards, a
+playlist's tracks) by pointer (mouse, touch, pen) or keyboard, with screen reader announcements.
+It is headless: you render each item and each list header; it owns the containers, the dragging
+and the order, and ships no styles. No framework, no runtime dependencies besides the core.
 
 ## Install
 

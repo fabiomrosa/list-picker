@@ -164,6 +164,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.22:** the project presents itself as lists people reorder (a kanban board, a
+  playlist), not only kanban: the home, both READMEs, the packages' description and keywords, the
+  root README and PRODUCT. Wording only; nothing removed.
 - **2026-11-24, L4.24:** `Board.swapCards(a, b)`: two cards exchange places in O(1) (side by side,
   one moves; apart, each takes the other's place); the property test swaps at random and replays
   the emitted moves on a copy (a planted bug was caught).
@@ -214,8 +217,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.25 (the music player, merged with L4.22's waiting wording), then L4.26 (first npm
-  publish).
+- **Next:** L4.25 (the music player), then L4.26 (first npm publish).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

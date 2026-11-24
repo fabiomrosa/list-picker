@@ -1,7 +1,7 @@
 {
   "name": "@list-picker/vanilla",
   "version": "1.0.0",
-  "description": "Drag-and-drop and keyboard reordering for a kanban-style board, headless, no framework.",
+  "description": "Drag-and-drop and keyboard reordering of lists (kanban boards, playlists), headless, no framework.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,7 +15,9 @@
     "sortable",
     "keyboard",
     "accessibility",
-    "headless"
+    "headless",
+    "playlist",
+    "sortable-list"
   ],
   "type": "module",
   "sideEffects": false,
