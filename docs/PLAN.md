@@ -947,7 +947,7 @@ shows it in the demo.
 - **References:** L4.17, L4.18.
 
 ### L4.21 · The demo's layout
-- **Status:** waiting (L4.20)
+- **Status:** done (2026-11-24)
 - **Goal:** the demo reads in sections: the board first, then what edits it and what it reports.
 - **Depends on:** L4.20.
 - **In scope:** chosen by the owner: the title and the skin chooser, then the board at full width,
@@ -956,6 +956,9 @@ shows it in the demo.
   Room between sections instead of the compact header: the auto-scroll browser tests bring the
   board into view first (as the home's tests do), so the page no longer has to fit 720px.
 - **Out of scope:** new demo behaviour; the selectors the tests use.
+- **Note:** with the forms below it, the board starts higher (the Backlog ends at 576px), so the
+  auto-scroll tests needed no change. The board fills the width (no 52rem cap): it scrolls sideways
+  when the window is narrower than its lists. On a phone a form's name goes above its fields.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Screenshots at 1280 and 375, light and dark, show the three sections apart; no page scrolls
