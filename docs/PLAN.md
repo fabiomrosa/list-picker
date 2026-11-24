@@ -776,7 +776,7 @@ shows it in the demo.
 - **References:** DEC-12, DEC-07.
 
 ### L4.13 · The site for every package
-- **Status:** waiting (L4.12)
+- **Status:** done (2026-11-24)
 - **Goal:** the home presents the four packages and how to install each; a later package needs
   only its page.
 - **Depends on:** L4.12.

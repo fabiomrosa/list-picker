@@ -17,17 +17,54 @@
     <main>
       <h1>list-picker</h1>
       <p>
-        A headless TypeScript library for kanban-style boards: lists of cards that people reorder by
-        pointer or keyboard, with screen reader announcements. You render every card and list header;
-        it owns the containers, the dragging and the order, and ships no styles.
+        A headless TypeScript library for kanban-style boards: lists of cards that people reorder.
+        You render every card and list header; list-picker owns the containers, the moves and the
+        order, and ships no styles.
       </p>
-      <p><a class="button" href="./demo/">Try the demo board</a></p>
-      <h2>Packages</h2>
       <ul>
-        <li><a href="./core.html"><code>@list-picker/core</code></a>: the Board model, ordered lists of ordered cards, as doubly linked lists. No DOM.</li>
-        <li><a href="./vanilla.html"><code>@list-picker/vanilla</code></a>: draws a Board from your Renderers; pointer and keyboard moves, rules, activation, announcements.</li>
+        <li>The model is a Board of doubly linked lists with an id index: a position is "before this card", never an index.</li>
+        <li>Cards and lists move by pointer (mouse, pen, touch) and by keyboard.</li>
+        <li>Every pick up, move, drop and cancel is announced to screen readers.</li>
       </ul>
+      <p><a class="button" href="./demo/">Try the demo board</a></p>
+
+      <h2 id="packages">Packages</h2>
+      <table>
+        <thead>
+          <tr><th>Package</th><th>What it is</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><a href="./core.html"><code>@list-picker/core</code></a></td><td>The Board model: ordered lists of ordered cards, events, snapshots. No DOM.</td></tr>
+          <tr><td><a href="./vanilla.html"><code>@list-picker/vanilla</code></a></td><td>Draws a Board from your Renderers; pointer and keyboard moves, rules, activation, announcements.</td></tr>
+          <tr><td><code>@list-picker/react</code></td><td>The same board as React components. Page coming soon.</td></tr>
+          <tr><td><code>@list-picker/angular</code></td><td>The same board as Angular components. Page coming soon.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="install">Install</h2>
+      <div class="install" role="radiogroup" aria-label="Framework">
+        <input type="radio" name="install" id="install-vanilla" checked />
+        <label for="install-vanilla">Vanilla</label>
+        <input type="radio" name="install" id="install-react" />
+        <label for="install-react">React</label>
+        <input type="radio" name="install" id="install-angular" />
+        <label for="install-angular">Angular</label>
+        <pre class="install-vanilla"><code>npm install @list-picker/core @list-picker/vanilla</code></pre>
+        <!-- No command until the package is published: copying one would fail. -->
+        <p class="install-react soon">Coming soon: <code>@list-picker/react</code> is on its way.</p>
+        <p class="install-angular soon">
+          Coming soon: <code>@list-picker/angular</code> follows React.
+        </p>
+      </div>
+
       <!-- markdown: README.md "## The lab's question" -->
+
+      <h2 id="links">Links</h2>
+      <ul>
+        <li><a href="./demo/">The demo board</a> (vanilla): drag and keyboard moves, a list renamed in place, a card dialog, a list capped at 3 cards.</li>
+        <li>The React and Angular demos of the same board: coming with their packages.</li>
+        <li><a href="https://github.com/fabiomrosa/list-picker">The source on GitHub</a></li>
+      </ul>
     </main>
   </body>
 </html>

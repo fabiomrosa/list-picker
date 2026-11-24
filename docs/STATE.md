@@ -129,9 +129,12 @@ title, size, frozen-files and secret checks.
   account (core first), from `main`; the tag `v1.0.0` marks the published commit.
 
 ## Site
-- `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, packages, the
-  lab's answer from the root README), `core.html` and `vanilla.html` rendered from the packages'
-  READMEs at build time, and the demo (`playground/`) in `demo/`. `.github/workflows/pages.yml`
+- `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, a table of the
+  four packages, React and Angular "coming soon"; an Install chooser of radios with no script,
+  where React and Angular show no command until published; the lab's answer from the root README;
+  links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
+  demo (`playground/`, linking back to the site) in `demo/`. Every `site/*.html` is a page, so a
+  package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 
 ## Contract
@@ -141,10 +144,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.13:** from the owner's patch 0001: the home lists the four packages with an
+  Install chooser (React and Angular: no command yet), every `site/*.html` is a page, the demo
+  links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.13 (the site for every package; the M4 plan takes the owner's site patches as
-  L4.13–L4.16, and the publish is now L4.17).
+- **Next:** L4.14 (the site's look and a section index).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the
