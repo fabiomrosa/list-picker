@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.19). The publish, the tag and criterion 1 against the registry moved to
-  L4.20; the version stays `1.0.0`.
+  a site first (L4.8–L4.20). The publish, the tag and criterion 1 against the registry moved to
+  L4.21; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -922,10 +922,30 @@ shows it in the demo.
 - **Files:** ~3: `packages/vanilla/README.md`, PLAN, STATE.
 - **References:** L4.15–L4.18, GOTCHAS, DEC-07.
 
-### L4.20 · First npm publish
+### L4.20 · The demo's controls
 - **Status:** waiting (L4.19)
+- **Goal:** the demo's forms and its list and card buttons look like the site, in every skin and
+  theme, and say what they do to a screen reader.
+- **Depends on:** L4.19.
+- **In scope:** the forms' fields, selects and buttons at one height, the site's corners and
+  colours in light and dark, a select arrow of their own, labels in the headings' font, a visible
+  focus; the ↑ ↓ ← → × buttons of lists and cards drawn as SVG icons in `currentColor` (so each
+  skin colours them), one size, readable hover, focus and disabled states, and an `aria-label`
+  ("move Design the model up") instead of a bare glyph.
+- **Out of scope:** new demo behaviour; the selectors the tests use (`data-role`); the compact
+  header the auto-scroll tests need.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Every browser test passes unchanged; screenshots in each skin and theme show the controls
+     aligned.
+  2. The buttons, disabled ones included, pass WCAG AA contrast (3:1 for icons) in each skin.
+- **Files:** ~5: `playground/main.ts`, `playground/demo.css`, `playground/index.html`, PLAN, STATE.
+- **References:** L4.17, L4.18.
+
+### L4.21 · First npm publish
+- **Status:** waiting (L4.20)
 - **Goal:** v1 is on npm.
-- **Depends on:** L4.19, P2.
+- **Depends on:** L4.20, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
   first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
 - **Out of scope:** a release workflow in CI.
