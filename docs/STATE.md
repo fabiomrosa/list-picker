@@ -12,9 +12,9 @@ Every slice's pull request updates it (SESSION §3).
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
   `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
   everything before unlinking), `moveList(id, beforeListId | null)` (same rules), `removeCard`,
-  `removeList` (with its cards), `neighbours(cardId)` (`{ prev, next }` in its List, O(1)),
-  `updateList(list)` and `updateCard(card)` (replace the value with
-  that id in place, return the old one; `change` only), `getList`, `getCard`, `listOf(cardId)`,
+  `removeList` (with its cards), `updateList(list)` and `updateCard(card)` (replace the value with
+  that id in place, return the old one; `change` only), `getList`, `getCard`, `listOf(cardId)`, `neighbours(cardId)` (`{ prev, next }` in its List,
+  O(1)),
   `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
   across the Lists; bad input throws and changes nothing. A property test runs random sequences of
   every Board operation from a populated Board against a nested-array model.

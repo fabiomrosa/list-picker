@@ -195,6 +195,9 @@ function expectInvariants(board: Board<Entity, Entity>, model: Model): void {
       const { prev, next } = board.neighbours(id);
       expect(prev?.id ?? null).toBe(owner[1][at - 1] ?? null);
       expect(next?.id ?? null).toBe(owner[1][at + 1] ?? null);
+      // The stored values, not stale ones (updates included).
+      if (prev) expect(prev).toBe(board.getCard(prev.id));
+      if (next) expect(next).toBe(board.getCard(next.id));
       expect(latest(board.getCard(id))).toBe(true);
       expect(board.listOf(id)).toBe(board.getList(owner[0]));
     }
