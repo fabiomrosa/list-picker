@@ -105,3 +105,12 @@ test("play runs the clock, and at a track's end goes on to the next in the curre
   await page.clock.runFor(5_000);
   await expect(page.locator("#now-time")).toHaveText(time ?? "");
 });
+
+test("with reduced motion the equalizer stands still while playing", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.locator("#toggle").click();
+  await expect(track(page, "Don't Panic").locator(".eq i").first()).toHaveCSS(
+    "animation-name",
+    "none",
+  );
+});

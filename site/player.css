@@ -52,10 +52,11 @@ main.player-page {
 }
 #progress-fill {
   display: block;
-  width: 0;
   height: 100%;
   background: var(--accent);
-  transition: width 0.25s linear;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s linear;
 }
 #now-time {
   font-family: var(--mono);
@@ -74,15 +75,6 @@ main.player-page {
 #toggle .icon-play {
   fill: currentColor;
   stroke: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .player[data-running] .eq i {
-    animation: none;
-    transform: scaleY(0.8);
-  }
-  #progress-fill {
-    transition: none;
-  }
 }
 /* On a small phone the controls take their own row under the album. */
 @media (max-width: 30rem) {
@@ -238,4 +230,14 @@ main.player-page {
   margin: 0.9rem 0 0;
   font-size: 0.9rem;
   color: var(--muted);
+}
+/* Last, so it wins over the animation above. */
+@media (prefers-reduced-motion: reduce) {
+  .player[data-running] .eq i {
+    animation: none;
+    transform: scaleY(0.8);
+  }
+  #progress-fill {
+    transition: none;
+  }
 }

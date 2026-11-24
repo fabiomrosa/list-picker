@@ -79,10 +79,16 @@ function showProgress(): void {
   const track = board.getCard(playing);
   if (!track) return;
   const total = seconds(track.time);
-  fill.style.width = `${(Math.min(elapsed, total) / total) * 100}%`;
+  // Back to the start at once (a new track), sliding only while it plays.
+  fill.style.transition = elapsed === 0 ? "none" : "";
+  fill.style.transform = `scaleX(${Math.min(elapsed, total) / total})`;
   progress.setAttribute("aria-valuemax", String(total));
-  progress.setAttribute("aria-valuenow", String(Math.floor(elapsed)));
-  progress.setAttribute("aria-valuetext", `${clock(elapsed)} of ${track.time}`);
+  // Once per shown second, not every tick: some screen readers sound each change.
+  const now = String(Math.floor(elapsed));
+  if (progress.getAttribute("aria-valuenow") !== now) {
+    progress.setAttribute("aria-valuenow", now);
+    progress.setAttribute("aria-valuetext", `${clock(elapsed)} of ${track.time}`);
+  }
   nowTime.textContent = `${clock(elapsed)} / ${track.time}`;
 }
 
