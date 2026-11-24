@@ -52,6 +52,11 @@ Every slice's pull request updates it (SESSION §3).
   focused one when nothing is picked up and no press is pending. A capture-phase `click` listener
   on `root` swallows a click after a drag, until the next press (a capture-phase `pointerdown`
   clears it); Chrome and WebKit fire no such click.
+  Rules (DEC-17): `options.canMove({ kind, id, toListId, beforeId })` (type `ProposedMove`;
+  `toListId` `null` for a list) is asked each frame before the Placeholder goes to a place, again
+  at the drop with the ids it applies (refused: the drop cancels), and before each keyboard step;
+  where the item was picked up is always allowed while shown. The keyboard skips to the next allowed place in
+  that direction (within a container, or the next list across), or does nothing.
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
   `aria-live="assertive"` region in the document's body, not in `root` (removed by `destroy()`) says pick up, drop and cancel
   of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
@@ -95,7 +100,8 @@ Every slice's pull request updates it (SESSION §3).
   after every change. Forms add lists and cards at the end or before a chosen one and move cards
   (showing "same place" when nothing changed); the page logs every `move` event, the `change`
   count and the Snapshot version. ✎ renames a list or a card (`updateList`, `updateCard`); a click
-  or Enter on a card or header opens a dialog (`onActivate`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
+  or Enter on a card or header opens a dialog (`onActivate`); Doing takes at most 3 cards
+  (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
   board narrower than its lists (52rem) show auto-scroll both ways. Styles live in the demo only.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
@@ -128,11 +134,14 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.11:** `canMove` (`createDrag` and `mount` options): the Placeholder never
+  enters a refused place, the keyboard skips refused places; the demo caps Doing at 3 cards
+  (browser test).
+- **Next:** L4.12 (the site; needs GitHub Pages turned on, P4).
 - **2026-11-23, L4.10:** `onActivate({ kind, id })` (`createDrag` and `mount` options): a click on
   a card or a list's handle that started no drag, or Enter on a focused one; Enter no longer picks
   up (DEC-15 amended). The click after a drag is swallowed (capture listener on `root`; Chrome
   fires none). The demo opens a dialog.
-- **Next:** L4.11 (rules for where items may move).
 - **2026-11-23, L4.9:** `mount` runs a Renderer again for an item whose value is another object
   and swaps the new element in at the next write, keeping the focus and a keyboard pick up
   (`keyboard.replace`, under the `moving` guard: Chrome's `focusout`, seen red in the browser

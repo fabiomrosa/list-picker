@@ -14,6 +14,16 @@ export interface Activation {
   readonly id: string;
 }
 
+/** A move the engine is about to show or apply, for `canMove` to allow or refuse. */
+export interface ProposedMove {
+  readonly kind: "card" | "list";
+  readonly id: string;
+  /** The list a card would go into; `null` for a list. */
+  readonly toListId: string | null;
+  /** The card (or list) it would go before; `null` for the end. */
+  readonly beforeId: string | null;
+}
+
 /** Options of `createDrag` and `mount`. */
 export interface DragOptions {
   readonly messages?: Partial<Messages>;
@@ -22,6 +32,13 @@ export interface DragOptions {
    * focused one (DEC-17), to open the app's own view of it; not on its controls.
    */
   readonly onActivate?: (item: Activation) => void;
+  /**
+   * Whether an item may go to a place (DEC-17), asked in each frame of a pointer drag before the
+   * Placeholder goes there, again at the drop (a refused drop cancels), and before a keyboard
+   * step: a refused place is never shown or applied. Where the item was picked up is always
+   * allowed while it is shown. Synchronous and cheap.
+   */
+  readonly canMove?: (move: ProposedMove) => boolean;
 }
 
 /** How far (px) the pointer must move after a press before the press becomes a drag. */
@@ -79,6 +96,8 @@ interface Active {
   readonly placeholder: HTMLElement;
   /** The item's own inline `display`, restored when it is shown again. */
   readonly display: string;
+  /** Where it was picked up: always an allowed place. */
+  readonly origin: Target;
 }
 
 /**
@@ -120,13 +139,14 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   /** The latest press became a drag: the click that ends it is swallowed. */
   let dragged = false;
   const announcer = createAnnouncer(root, board, options.messages);
-  const { onActivate } = options;
+  const { onActivate, canMove } = options;
   const keyboard = createKeyboard(
     root,
     board,
     () => press !== undefined,
     announcer.say,
     onActivate && ((kind, id) => onActivate({ kind, id })),
+    canMove,
   );
   const name = (kind: Kind) => (kind === LIST ? "list" : "card");
   /** The latest pointer position; read once per animation frame. */
@@ -192,8 +212,10 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     const under = document.elementFromPoint(pointerAt.x, pointerAt.y);
     const target = dropTarget(active, under);
     const steps = scrollSteps(under);
+    // Asked before any write, so a rule that reads layout forces none.
+    const ok = target !== undefined && allowed(active, target);
     active.clone.style.transform = `translate(${pointerAt.x - press.x}px, ${pointerAt.y - press.y}px)`;
-    if (target) place(active, target);
+    if (target && ok) place(active, target);
     for (const { element, left, top } of steps) {
       if (left !== undefined) element.scrollLeft = left;
       if (top !== undefined) element.scrollTop = top;
@@ -265,6 +287,17 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     return { container, before: null };
   }
 
+  /** Whether `canMove` lets the dragged item go to `target` (its origin always may). */
+  function allowed({ kind, item, origin }: Active, { container, before }: Target): boolean {
+    if (!canMove || (container === origin.container && before === origin.before)) return true;
+    return canMove({
+      kind: name(kind),
+      id: item.getAttribute(kind.attribute) ?? "",
+      toListId: kind === LIST ? null : container.getAttribute("data-lp-cards"),
+      beforeId: before?.getAttribute(kind.attribute) ?? null,
+    });
+  }
+
   /** Moves the Placeholder to `target`, writing the DOM only when its place changes. */
   function place({ placeholder, item, clone }: Active, { container, before }: Target): void {
     // The hidden dragged item and the Clone may sit next to it in the DOM: look through them.
@@ -310,6 +343,12 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       next = next.nextElementSibling;
     }
     const beforeId = next?.getAttribute(kind.attribute) ?? null;
+    // Asked again with what is applied: the Board or the rule may have changed since it was shown.
+    const toListId = kind === LIST ? null : listId;
+    if (canMove && !canMove({ kind: name(kind), id, toListId, beforeId })) {
+      cancel();
+      return;
+    }
     try {
       if (kind === LIST) board.moveList(id, beforeId);
       else board.moveCard(id, listId, beforeId);
@@ -369,13 +408,19 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     });
 
     const display = item.style.display;
+    let after = item.nextElementSibling;
+    while (after && !after.hasAttribute(kind.attribute)) after = after.nextElementSibling;
+    const origin = {
+      container: item.parentElement as HTMLElement,
+      before: after as HTMLElement | null,
+    };
     item.before(placeholder);
     // Inline, so it wins over the author's `display` rules; restored afterwards.
     item.style.display = "none";
     item.setAttribute("data-lp-dragging", "");
     // Inside `root`, so the user's descendant selectors still style it.
     root.append(clone);
-    return { kind, item, clone, placeholder, display };
+    return { kind, item, clone, placeholder, display, origin };
   }
 
   /** Ends the press or drag: removes the Clone and the Placeholder and shows the item. */
