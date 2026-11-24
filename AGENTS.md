@@ -1,8 +1,8 @@
 # list-picker
 
-A headless TypeScript library for kanban-style boards: `core` (the doubly linked list model, no
-DOM), the drag engine and the adapters (vanilla first, then React and Angular), as packages of one
-npm workspace. It owns behaviour and containers; it never ships a card's look (DEC-07).
+A headless TypeScript library for lists people reorder (a kanban board, a playlist): `core` (the
+doubly linked list model, no DOM), the drag engine and the adapters (vanilla first, then React and
+Angular), as packages of one npm workspace. It owns behaviour and containers; it never ships a card's look (DEC-07).
 The shared docs live in `docs/shared` (start with its `README.md`); `docs/shared/SESSION.md` applies
 to every session here. Slice ids in this repository start with `L`.
 
