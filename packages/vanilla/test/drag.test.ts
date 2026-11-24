@@ -257,6 +257,34 @@ describe("createDrag: the Placeholder follows the drop target", () => {
     expect(order("done")).toEqual(["_"]);
   });
 
+  it("picks the list above the pointer when lists are stacked, and the hovered list's own", async () => {
+    // Stacked: todo at y 0–100, done at y 200–300, same x.
+    list("todo").getBoundingClientRect = () => new DOMRect(0, 0, 220, 100);
+    list("done").getBoundingClientRect = () => new DOMRect(0, 200, 220, 100);
+    under = ctx.root;
+    pointer(ctx.card("a"), "pointermove", 100, 400);
+    await frame();
+    expect(order("done")).toEqual(["_"]);
+    // Over done's list element (outside its cards container): done, whatever the x ranges.
+    list("done").parentElement?.setAttribute("data-lp-list", "done");
+    under = list("done").parentElement;
+    list("todo").getBoundingClientRect = () => new DOMRect(0, 0, 900, 100);
+    pointer(ctx.card("a"), "pointermove", 100, 150);
+    await frame();
+    expect(order("done")).toEqual(["_"]);
+  });
+
+  it("goes to the end when the pointer is below a list that scrolls, not before a cut-off card", async () => {
+    // todo ends at y 100, but card b (scrolled, cut off) reaches past it.
+    list("todo").getBoundingClientRect = () => new DOMRect(0, 0, 220, 100);
+    list("done").getBoundingClientRect = () => new DOMRect(240, 0, 220, 100);
+    ctx.card("b").getBoundingClientRect = () => new DOMRect(10, 80, 200, 200);
+    under = ctx.root;
+    pointer(ctx.card("a"), "pointermove", 100, 150);
+    await frame();
+    expect(order("todo")).toEqual(["b", "_"]);
+  });
+
   it("follows the nearest card's middle across the gaps between cards", async () => {
     // The pointer is over the list itself (a gap), above card b's middle (120).
     await moveTo(list("todo"), 95);

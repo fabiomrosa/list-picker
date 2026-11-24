@@ -272,14 +272,16 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
    */
   function dropTarget(drag: Active, under: Element | null): Target | undefined {
     if (!under || !root.contains(under)) return undefined;
-    const container =
-      drag.kind === LIST
-        ? drag.placeholder.parentElement
-        : (under.closest<HTMLElement>("[data-lp-cards]") ?? column());
+    const over = under.closest<HTMLElement>("[data-lp-cards]");
+    const container = drag.kind === LIST ? drag.placeholder.parentElement : (over ?? column(under));
     if (!container || !root.contains(container)) return undefined;
     // A list the Board no longer holds, still shown while `mount` waits for the drag to end.
     if (drag.kind === CARD && !board.getList(container.getAttribute("data-lp-cards") ?? "")) {
       return undefined;
+    }
+    // Below a list (not over its cards): its end, even past a card its scrolling cuts off.
+    if (drag.kind === CARD && !over && pointerAt.y > container.getBoundingClientRect().bottom) {
+      return { container, before: null };
     }
     const { attribute, horizontal } = drag.kind;
     for (const item of container.querySelectorAll<HTMLElement>(`:scope > [${attribute}]`)) {
@@ -303,19 +305,23 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   }
 
   /**
-   * The list container whose column holds the pointer: over a list's header, or below a short
-   * list on the board's background, a card still drops into that list. Read in the frame's read
-   * phase, like the items' rects.
+   * For a card off every list container: the list under the pointer (over its header), else the
+   * nearest list above the pointer in its column (below a short list, on the board's background),
+   * so stacked or wrapped lists pick the right one. Read in the frame's read phase.
    */
-  function column(): HTMLElement | null {
+  function column(under: Element): HTMLElement | null {
+    const own = under.closest("[data-lp-list]")?.querySelector<HTMLElement>("[data-lp-cards]");
+    if (own && root.contains(own) && !own.closest("[data-lp-clone]")) return own;
+    let nearest: { container: HTMLElement; top: number } | undefined;
     for (const container of root.querySelectorAll<HTMLElement>("[data-lp-cards]")) {
       if (container.closest("[data-lp-clone]")) continue;
-      const { left, right } = (
+      const { left, right, top } = (
         container.closest("[data-lp-list]") ?? container
       ).getBoundingClientRect();
-      if (pointerAt.x >= left && pointerAt.x <= right) return container;
+      const inColumn = pointerAt.x >= left && pointerAt.x <= right && top <= pointerAt.y;
+      if (inColumn && (!nearest || top > nearest.top)) nearest = { container, top };
     }
-    return null;
+    return nearest?.container ?? null;
   }
 
   /** Moves the Placeholder to `target`, writing the DOM only when its place changes. */

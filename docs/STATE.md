@@ -40,8 +40,9 @@ Every slice's pull request updates it (SESSION §3).
   list still drags the card. The Clone follows the pointer: moves only
   store it, one `requestAnimationFrame` per frame writes `translate` (applied before a skin's
   `rotate` or `scale`, so a tilted Clone stays under the pointer). Each frame the Placeholder
-  goes, in the list container under the pointer (or, over a header or below a short list, the one
-  whose column holds the pointer), before the first visible card whose vertical
+  goes, in the list container under the pointer (off every container: the list hovered, else the
+  nearest list above the pointer in its column, and below a list to its end), before the first
+  visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
   Keyboard (DEC-15, a `keydown` listener on `root`): Space on a focused card picks it up
@@ -162,7 +163,8 @@ None.
 
 ## Last session
 - **2026-11-24, fix (owner report):** a card dropped below a short list (the board's background
-  in its column) went back; the engine now falls back to the list whose column holds the pointer.
+  in its column) went back; off every list container the engine now takes the hovered list, else
+  the nearest list above the pointer in its column (stacked lists too), and its end below it.
 - **2026-11-24, fix (owner go):** the Pages workflow builds and uploads in one job and deploys in
   another: deploying in the uploading job kept finding no artifact (three attempts of one run
   failed).
