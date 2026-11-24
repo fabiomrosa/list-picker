@@ -78,8 +78,18 @@ nav a:first-child::before {
   content: "▤ " / "";
   color: var(--accent);
 }
+/* Read by screen readers, not shown. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 /* GitHub: apart from the pages, an Octocat (Octicons' mark-github, MIT) in a round button. */
 nav a.nav-github {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;

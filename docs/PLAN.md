@@ -935,7 +935,7 @@ shows it in the demo.
 - **Out of scope:** new demo behaviour; the selectors the tests use (`data-role`); the compact
   header the auto-scroll tests need.
 - **Note:** asked by the owner during the slice: the navigation's GitHub link became a round button
-  apart from the pages, with the Octocat (Octicons' `mark-github`, MIT) and `aria-label="GitHub"`,
+  apart from the pages, with the Octocat (Octicons' `mark-github`, MIT) and a visually hidden "GitHub",
   on every page; the nav now fits one line at 375px. Icon contrast: enabled 14–19:1, disabled
   3.0–4.5:1 across the skins.
 - **Contract:** none. **Public API:** none.
