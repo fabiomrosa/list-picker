@@ -57,8 +57,8 @@ function markdown(): Plugin {
         });
         // A whole README is a package's page: the index of its sections goes beside it.
         if (from) return out;
-        const toc = `<strong>On this page</strong><ul>${sections.join("")}</ul>`;
-        return `<aside class="toc">${toc}</aside><article>${out}</article>`;
+        const toc = `<strong aria-hidden="true">On this page</strong><ul>${sections.join("")}</ul>`;
+        return `<aside class="toc" aria-label="On this page">${toc}</aside><article>${out}</article>`;
       }),
   };
 }

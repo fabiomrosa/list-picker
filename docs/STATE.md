@@ -137,7 +137,7 @@ title, size, frozen-files and secret checks.
   package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it.
   A package's page has an index of its README's `##` sections beside it (`main.doc`, sticky,
   hidden below 52rem). The look: monospace headings and navigation, a warm palette in light and
-  dark (links 5.1:1 light, 6.9:1 dark), code blocks as a terminal; system fonts only. `.github/workflows/pages.yml`
+  dark (the accent passes WCAG AA on both backgrounds), code blocks as a terminal; system fonts only. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 
 ## Contract

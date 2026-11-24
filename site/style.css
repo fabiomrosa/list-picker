@@ -5,7 +5,8 @@
   --bg: #f6f4ef;
   --line: #e2ddd2;
   --code: #ebe7de;
-  --accent: #d9480f;
+  /* 5.2:1 on --bg, 4.6:1 on --code (WCAG AA). */
+  --accent: #b83c0c;
   --term: #1b1a17;
   --term-text: #ece8df;
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
@@ -45,8 +46,12 @@ h2 {
   font-size: 1.35rem;
 }
 h2::before {
-  content: "## ";
+  content: "## " / ""; /* decorative: not read aloud */
   color: var(--accent);
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 0.2em;
 }
 nav {
   display: flex;
@@ -69,17 +74,13 @@ nav a:first-child {
   margin-right: auto;
 }
 nav a:first-child::before {
-  content: "▤ ";
+  content: "▤ " / "";
   color: var(--accent);
 }
 main {
   max-width: 46rem;
   margin: 0 auto;
   padding: 1rem 1.5rem 4rem;
-}
-a {
-  color: var(--accent);
-  text-underline-offset: 0.2em;
 }
 code {
   font-family: var(--mono);
