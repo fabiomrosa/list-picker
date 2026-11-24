@@ -902,7 +902,7 @@ shows it in the demo.
 - **References:** L4.16, L4.17, DEC-07.
 
 ### L4.19 · Styling a board
-- **Status:** waiting (L4.18)
+- **Status:** done (2026-11-24)
 - **Goal:** someone styling their board avoids the traps the site's skins fell into.
 - **Depends on:** L4.18.
 - **In scope:** a "Styling a board" section in the vanilla README (so on the site's vanilla page
@@ -911,6 +911,10 @@ shows it in the demo.
   Placeholder and the hidden item are siblings during a drag (`:nth-child(… of …)`); a keyboard
   pick up of a list marks the whole list; an outline outside a card is clipped by a scrolling list.
 - **Out of scope:** a default theme (PRODUCT: out of v1); code changes.
+- **Note:** seven rules in the end. Checking rule 3 against the source found that a `rotate` on
+  the Clone pulled it off the pointer (fixed in #69: the engine writes `translate`); the review
+  added a transformed ancestor (rule 7), the Clone among `:nth-child` siblings and the pick-up
+  style; `cursor` on the Clone never shows (`pointer-events: none`).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Each rule in the section is true of the engine (checked against the source) and shows the
