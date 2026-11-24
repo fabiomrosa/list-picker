@@ -60,10 +60,11 @@ Every slice's pull request updates it (SESSION §3).
   (each marked `data-lp-card`, and `tabindex="0"` unless it has one), then starts `createDrag`. Every Renderer runs and is checked first: a
   missing `root`, or a Renderer result that is not a new, detached `HTMLElement` (not in the
   document, not returned twice), throws and changes nothing; `destroy()` stops the drag and removes what it
-  added. It follows the Board by id: on each `change` it renders the new lists and cards at once
+  added. It follows the Board by id: on each `change` it renders the new lists and cards at once,
+  and again any whose value is another object than the one it drew (`updateList`, `updateCard`)
   (a Renderer error throws from the Board operation and writes nothing); then, in a microtask (so a
   drop's own DOM write comes first; several changes write once) and only when no drag is active (else
-  when it ends), it removes
+  when it ends), it swaps each redrawn element in (focus and keyboard pick up follow), removes
   the gone ones, and moves into Board order only the elements outside the longest run already in
   order, leaving the user's other
   children of `root`, the Clone and the Placeholder where they are. After a drop it writes nothing.
@@ -119,10 +120,14 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.9:** `mount` runs a Renderer again for an item whose value is another object
+  and swaps the new element in at the next write, keeping the focus and a keyboard pick up
+  (`keyboard.replace`, under the `moving` guard: Chrome's `focusout`, seen red in the browser
+  test). The demo renames lists and cards (✎) and exposes `window.board`.
+- **Next:** L4.10 (activate a card or a list).
 - **2026-11-23, L4.8:** `Board.updateList(list)` and `updateCard(card)` replace a value in place
   (`change`, no `move`), over `LinkedList.replace`; the property test covers both (two planted
   bugs caught). `mount` does not redraw them yet (L4.9).
-- **Next:** L4.9 (mount draws a changed value).
 - **2026-11-23, L4.7:** both packages at `1.0.0`, ready for npm (`npm publish --dry-run` clean;
   tarballs installed into an empty folder run both README examples). Not yet on npm: after the
   merge the owner creates the `list-picker` npm org and publishes from `main`, then the agent tags

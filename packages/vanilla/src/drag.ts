@@ -87,6 +87,8 @@ export interface MountedDrag extends Drag {
   dragged(): HTMLElement | undefined;
   /** Abandons the active drag, as Esc does. */
   cancel(): void;
+  /** Puts `next` in the place of `current`; the focus, a keyboard pick up and a press follow. */
+  replace(current: HTMLElement, next: HTMLElement): void;
 }
 
 /** `createDrag`, plus `onEnd`, called each time a drag ends (dropped or abandoned). */
@@ -379,5 +381,16 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     },
     dragged: () => active?.item,
     cancel,
+    replace(current, next) {
+      keyboard.replace(current, next);
+      // A press not yet a drag (`mount` writes until one starts) goes on from the new element.
+      if (press?.item !== current) return;
+      press = { ...press, item: next };
+      try {
+        next.setPointerCapture(press.pointerId);
+      } catch {
+        // An inactive pointer (synthetic events), as in `onPointerDown`.
+      }
+    },
   };
 }

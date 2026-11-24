@@ -36,7 +36,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - On a drop the engine calls `board.moveCard` (which emits `change` synchronously) before it moves
   the card into the Placeholder's place; a `change` listener that writes the DOM at once races the
   engine, so `mount` writes in a microtask (its Renderers run in the listener itself).
-- Chrome fires `focusout` on a focused element moved in the DOM (`before`, `append`), and it loses
+- Chrome fires `focusout` on a focused element moved or replaced in the DOM (`before`, `append`,
+  `replaceWith`), and it loses
   the focus; happy-dom does neither, so only the browser test catches a missing guard or refocus.
 - During an active drag `mount` writes nothing: the DOM can show cards and lists the Board has
   moved or removed until the drag ends. Code that reads the mounted DOM after a `change` (the
@@ -47,5 +48,6 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - A `MutationObserver` with a callback hands its records to the callback in a microtask, so
   `takeRecords()` after an `await` returns nothing even when the DOM changed (it misled L3.2).
 - `mount` keys elements by id: a card removed and added again with the same id before `mount`
-  writes (the same tick, or during a drag) keeps its old element (its Renderer is not called again).
+  writes (the same tick, or during a drag) keeps its old element if the value is the same object;
+  another object is drawn again, like an update.
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.

@@ -3,7 +3,8 @@
 import { Board, type Snapshot } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
 
-type Entity = { id: string };
+/** `name` is what the page shows; the id never changes (renaming sets the name). */
+type Entity = { id: string; name?: string };
 
 const board = new Board<Entity, Entity>();
 const byId = <E extends HTMLElement>(id: string) => document.getElementById(id) as E;
@@ -80,12 +81,22 @@ function cardAt(id: string) {
   return { listId, up: ids[i - 1], down: ids[i + 1], afterDown: ids[i + 2] ?? null, ...lists };
 }
 
+/** Asks for a new name and updates the value on the Board: `mount` draws it again. */
+function rename(kind: "list" | "card", id: string): void {
+  const value = kind === "list" ? board.getList(id) : board.getCard(id);
+  const name = prompt(`New name of ${kind} ${id}`, value?.name ?? id)?.trim();
+  if (!value || !name) return;
+  if (kind === "list") board.updateList({ ...value, name });
+  else board.updateCard({ ...value, name });
+}
+
 function renderList(list: Entity): HTMLElement {
   const head = el("header", "list-head", "");
   // The name announced to screen readers (DEC-16), instead of the header's whole text.
-  head.setAttribute("aria-label", list.id);
+  head.setAttribute("aria-label", list.name ?? list.id);
   const tools = el("div", "list-tools", "");
   tools.append(
+    action("✎", `rename list ${list.id}`, "rename", () => rename("list", list.id)),
     action("←", `move list ${list.id} left`, "left", () => {
       const { left } = listAt(list.id);
       if (left) moveList(list.id, left);
@@ -96,7 +107,7 @@ function renderList(list: Entity): HTMLElement {
     action("×", `remove list ${list.id}`, "remove", () => board.removeList(list.id)),
   );
   head.append(
-    Object.assign(el("h2", "", list.id), { title: `drag to move ${list.id}` }),
+    Object.assign(el("h2", "", list.name ?? list.id), { title: `drag to move ${list.id}` }),
     Object.assign(el("small", "", ""), { className: "count" }),
     tools,
   );
@@ -105,9 +116,10 @@ function renderList(list: Entity): HTMLElement {
 
 function renderCard(card: Entity): HTMLElement {
   const box = el("div", "card", "");
-  box.setAttribute("aria-label", card.id);
+  box.setAttribute("aria-label", card.name ?? card.id);
   const tools = el("div", "tools", "");
   tools.append(
+    action("✎", `rename ${card.id}`, "rename", () => rename("card", card.id)),
     action("↑", `move ${card.id} up`, "up", () => {
       const { listId, up } = cardAt(card.id);
       if (up) move(card.id, listId, up);
@@ -126,7 +138,7 @@ function renderCard(card: Entity): HTMLElement {
     }),
     action("×", `remove card ${card.id}`, "remove", () => board.removeCard(card.id)),
   );
-  box.append(el("strong", "", card.id), el("small", "neighbours", ""), tools);
+  box.append(el("strong", "", card.name ?? card.id), el("small", "neighbours", ""), tools);
   return box;
 }
 
@@ -239,6 +251,8 @@ board.addCard("Doing", { id: "Linked list" }, null);
 board.addList({ id: "Backlog" }, null);
 for (let i = 1; i <= 14; i++) board.addCard("Backlog", { id: `Idea ${i}` }, null);
 mount(boardView, board, { renderList, renderCard });
+// For the browser tests and the console: changes made from code, as a server push would.
+Object.assign(window, { board });
 refresh();
 // After every change (a drop too), once `mount` has reconciled (its microtask runs first).
 let queued = false;

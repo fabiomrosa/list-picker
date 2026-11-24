@@ -684,7 +684,7 @@ shows it in the demo.
 - **References:** DEC-17, DEC-06.
 
 ### L4.9 · Mount draws a changed value
-- **Status:** waiting (L4.8)
+- **Status:** done (2026-11-23)
 - **Goal:** a renamed list or an edited card shows in the page at once.
 - **Depends on:** L4.8.
 - **In scope:** on `change`, `mount` runs the Renderer again for each list or card whose value is
@@ -701,6 +701,8 @@ shows it in the demo.
      element; the announcements use the new label.
   3. A Renderer error on update throws from `updateCard`, and the old element stays.
 - **Files:** ~7: `vanilla/src/mount.ts`, `keyboard.ts`, tests, demo, vanilla README, PLAN, STATE.
+- **Note:** the demo exposes its Board as `window.board`, so the browser test can update a
+  picked-up card from code (as a server push would) without moving the focus.
 - **References:** DEC-17, DEC-14.
 
 ### L4.10 · Activate a card or a list

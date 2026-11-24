@@ -7,6 +7,8 @@ export interface Keyboard {
   destroy(): void;
   /** Drops the picked-up item, if any, where it is (a pointer press takes over). */
   drop(): void;
+  /** Puts `next` in the place of `current`; the focus and a pick up of `current` move to `next`. */
+  replace(current: HTMLElement, next: HTMLElement): void;
 }
 
 /**
@@ -200,6 +202,23 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     follow();
   }
 
+  function replace(current: HTMLElement, next: HTMLElement): void {
+    const focused = current.contains(document.activeElement);
+    moving = true;
+    try {
+      current.replaceWith(next);
+    } finally {
+      moving = false;
+    }
+    if (grab) {
+      const swap = (element: HTMLElement) => (element === current ? next : element);
+      const { item, focus, before } = grab;
+      grab = { ...grab, item: swap(item), focus: swap(focus), before: before && swap(before) };
+      if (item === current) next.setAttribute("data-lp-grabbed", "");
+    }
+    if (focused) next.focus();
+  }
+
   root.addEventListener("keydown", onKeyDown);
   return {
     destroy() {
@@ -207,5 +226,6 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       root.removeEventListener("keydown", onKeyDown);
     },
     drop: release,
+    replace,
   };
 }

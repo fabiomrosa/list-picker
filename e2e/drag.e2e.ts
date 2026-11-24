@@ -62,6 +62,27 @@ test("moves a card with the keyboard: down, to the next list, back with Esc", as
   expect(await lists(page)).toMatchObject({ "To do": ["Design the model", "Write the tests"] });
 });
 
+test("renames a list and a card; a picked-up card keeps its pick up when redrawn", async ({
+  page,
+}) => {
+  page.on("dialog", (dialog) => dialog.accept("Now"));
+  await page.locator('[data-lp-list="To do"] [data-lp-list-handle] [data-role="rename"]').click();
+  await expect(page.locator('[data-lp-list="To do"] h2')).toHaveText("Now");
+  const design = card(page, "Design the model");
+  await design.focus();
+  await page.keyboard.press("Space");
+  await page.evaluate(() => {
+    const { board } = window as unknown as { board: { updateCard(card: object): void } };
+    board.updateCard({ id: "Design the model", name: "Model" });
+  });
+  await expect(design.locator("strong")).toHaveText("Model");
+  await expect(design).toBeFocused();
+  await expect(design).toHaveAttribute("data-lp-grabbed", "");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Space");
+  expect(await lists(page)).toMatchObject({ "To do": ["Write the tests", "Design the model"] });
+});
+
 test("drags a card to another list, before its card", async ({ page }) => {
   await drag(page, card(page, "Write the tests"), card(page, "Linked list"), 0.1);
   await expect

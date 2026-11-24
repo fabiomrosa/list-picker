@@ -52,7 +52,9 @@ window.addEventListener("pagehide", () => view.destroy());
 ```
 
 Every Board change (yours, or a drag's drop) shows in the page; a Renderer runs once per list or
-card, and its elements are moved, never redrawn. The styles are yours; for touch dragging, the cards
+card, and its elements are moved, never redrawn, until `updateList` or `updateCard` gives that item
+a new value: then its Renderer runs again and the new element takes the old one's place, keeping
+the focus and a keyboard pick up. The styles are yours; for touch dragging, the cards
 and headers need `touch-action: none` (otherwise a touch scrolls the page instead):
 
 ```css
@@ -71,6 +73,8 @@ Returns `{ destroy() }`, which removes what it added and every listener.
 - `renderers.renderList(list)` returns the list's header, a new `HTMLElement`; people drag the
   list by it.
 - `renderers.renderCard(card)` returns the card, a new `HTMLElement`.
+- A Renderer runs again for a list or card whose value is a different object than the one it drew
+  (`board.updateCard({ ...card, text })`); changing the same object draws nothing.
 - `options.messages`: see [Announcements](#announcements).
 
 A Renderer's error is thrown from the Board operation that needed it. A list or card removed from
