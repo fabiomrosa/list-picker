@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.12). The publish, the tag and criterion 1 against the registry moved to
-  L4.13; the version stays `1.0.0`.
+  a site first (L4.8–L4.16). The publish, the tag and criterion 1 against the registry moved to
+  L4.17; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
