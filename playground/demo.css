@@ -1,0 +1,189 @@
+/* The demo (L4.17): the site's look (`site/style.css`, imported first) for the demo's own parts.
+   Kept for the browser tests and the trace: lists 13rem wide, the Backlog scrolling past 22rem,
+   the board narrower (52rem) than its lists, real scrollbars. */
+/* Compact above the board: the tests drag to the Backlog's bottom inside a 720px window. */
+main.demo {
+  max-width: 64rem;
+  padding-top: 0.25rem;
+}
+main.demo h1 {
+  margin: 0.5rem 0;
+  font-size: 1.25rem;
+}
+main.demo h1 small {
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: var(--muted);
+}
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin: 0.3rem 0;
+}
+form strong {
+  width: 6rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+input,
+select,
+button {
+  font: inherit;
+  padding: 0.3rem 0.5rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+input {
+  width: 7rem;
+}
+form button[type="submit"] {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+  font-family: var(--mono);
+  font-weight: 700;
+  cursor: pointer;
+}
+.status,
+.error {
+  min-height: 1.4em;
+  margin: 0;
+}
+.status {
+  color: var(--muted);
+}
+.error {
+  color: var(--accent);
+}
+
+/* The board, in the home's Cards look (light, on either theme). */
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  overflow-x: auto;
+  max-width: 52rem;
+  padding: 0.6rem;
+  border-radius: 14px;
+  background: #dfe6ee;
+  color: #172b4d;
+}
+.board [data-lp-list],
+.board [data-lp-clone]:has(> .list-head) {
+  position: relative;
+  width: 13rem;
+  flex: none;
+  padding: 0.6rem;
+  border-radius: 12px;
+  background: #f1f4f7;
+}
+.list-head h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+.list-head h2::before {
+  content: none;
+}
+.list-head small {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #5e6c84;
+}
+[data-lp-cards] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 2rem;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+.card {
+  position: relative;
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(9 30 66 / 0.25);
+}
+.card strong {
+  display: block;
+}
+.card small {
+  display: block;
+  color: #5e6c84;
+  font-size: 0.8rem;
+}
+.board :focus-visible,
+.board [data-lp-grabbed] {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
+.list-tools {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.35rem;
+  display: flex;
+  gap: 0.1rem;
+}
+.tools {
+  display: flex;
+  gap: 0.15rem;
+  margin-top: 0.3rem;
+}
+.board .action {
+  padding: 0 0.35rem;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  background: #f4f5f7;
+  color: #44546f;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.list-tools .action {
+  border: 0;
+  background: none;
+}
+.board .action:hover:enabled {
+  background: #e9f2ff;
+  color: #172b4d;
+}
+.board .action:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+[data-lp-list-handle],
+[data-lp-card] {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+[data-lp-placeholder] {
+  border-radius: 8px;
+  background: #d4dbe3;
+}
+[data-lp-clone] {
+  cursor: grabbing;
+  box-shadow: 0 10px 24px rgb(9 30 66 / 0.3);
+  rotate: 2deg;
+}
+
+.log-title small {
+  color: var(--muted);
+  font-weight: normal;
+}
+.log {
+  max-height: 12rem;
+  margin: 0;
+  overflow-y: auto;
+  font: 0.8rem / 1.5 var(--mono);
+  color: var(--muted);
+}
+dialog {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  background: var(--bg);
+}
