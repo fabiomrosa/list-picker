@@ -262,8 +262,15 @@ dialog :is(input, button):focus-visible {
   color: var(--muted);
   font-weight: normal;
 }
+.log:empty {
+  padding-left: 0;
+}
 .log:empty::before {
   content: "No moves yet: drag a card, or move one with the keyboard.";
+}
+/* Each move is one long JSON line: wrap it in the narrower panel. */
+.log li {
+  overflow-wrap: anywhere;
 }
 .log {
   max-height: 12rem;

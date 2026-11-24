@@ -38,7 +38,8 @@ async function drag(page: Page, from: string, to: string, at = 0.5, restMs = 0):
 }
 
 async function record(browser: Browser): Promise<TraceEvent[]> {
-  const page = await browser.newPage({ viewport: { width: 1100, height: 900 } });
+  // Narrower than the board's lists, so it scrolls sideways (L4.21 let the board fill the page).
+  const page = await browser.newPage({ viewport: { width: 900, height: 900 } });
   await page.goto(`http://localhost:${PORT}/`);
   await page.waitForSelector("[data-lp-card]");
   await browser.startTracing(page, { categories: ["devtools.timeline"] });

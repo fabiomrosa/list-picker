@@ -165,8 +165,10 @@ test("a click without moving changes nothing", async ({ page }) => {
 });
 
 test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
+  // A window narrower than the lists: the board scrolls sideways, and the drop is hit-tested in it.
+  await page.setViewportSize({ width: 900, height: 720 });
   const backlog = cardsOf(page, "Backlog");
-  // The board is narrower than its lists: bring Backlog into view first, as a user would.
+  // Bring Backlog into view first, as a user would.
   await page.locator("#board").evaluate((board) => {
     board.scrollLeft = board.scrollWidth;
   });
@@ -186,6 +188,7 @@ test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
 });
 
 test("auto-scrolls a tall list upward, steadily, to drop a card at its top", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 720 });
   const backlog = cardsOf(page, "Backlog");
   await page.locator("#board").evaluate((board) => {
     board.scrollLeft = board.scrollWidth;

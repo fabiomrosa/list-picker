@@ -106,7 +106,8 @@ Every slice's pull request updates it (SESSION §3).
   or leaving saves, Esc cancels; `updateList`), and on a card opens a dialog that renames it
   (`updateCard`), both through `onActivate`; no browser prompt; Doing takes at most 3 cards
   (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
-  board that scrolls sideways when the window is narrower than its lists show auto-scroll both ways. Its look is the site's
+  board that scrolls sideways when the window is narrower than its lists (under ~1040px; the
+  auto-scroll tests and the trace use 900px) show auto-scroll both ways. Its look is the site's
   (`site/style.css`, then `playground/demo.css`); the package ships no styles. Its nav links are
   relative to the site (`../`), so under `npm run dev` they stay on the demo.
 
