@@ -240,6 +240,23 @@ describe("createDrag: the Placeholder follows the drop target", () => {
     expect(order("todo")).toEqual(["b", "_"]);
   });
 
+  it("goes to the end of the list whose column holds the pointer, below a short list", async () => {
+    // Lists side by side: todo at x 0–220, done at x 240–460, both ending at y 100.
+    list("todo").getBoundingClientRect = () => new DOMRect(0, 0, 220, 100);
+    list("done").getBoundingClientRect = () => new DOMRect(240, 0, 220, 100);
+    under = ctx.root; // the board's own background, below the lists
+    pointer(ctx.card("a"), "pointermove", 300, 400);
+    await frame();
+    expect(order("done")).toEqual(["_"]);
+    // Between the columns, or outside them: the Placeholder stays where it was.
+    pointer(ctx.card("a"), "pointermove", 230, 400);
+    await frame();
+    expect(order("done")).toEqual(["_"]);
+    pointer(ctx.card("a"), "pointermove", 600, 400);
+    await frame();
+    expect(order("done")).toEqual(["_"]);
+  });
+
   it("follows the nearest card's middle across the gaps between cards", async () => {
     // The pointer is over the list itself (a gap), above card b's middle (120).
     await moveTo(list("todo"), 95);

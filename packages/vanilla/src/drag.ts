@@ -275,7 +275,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     const container =
       drag.kind === LIST
         ? drag.placeholder.parentElement
-        : under.closest<HTMLElement>("[data-lp-cards]");
+        : (under.closest<HTMLElement>("[data-lp-cards]") ?? column());
     if (!container || !root.contains(container)) return undefined;
     // A list the Board no longer holds, still shown while `mount` waits for the drag to end.
     if (drag.kind === CARD && !board.getList(container.getAttribute("data-lp-cards") ?? "")) {
@@ -300,6 +300,22 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       toListId: kind === LIST ? null : container.getAttribute("data-lp-cards"),
       beforeId: before?.getAttribute(kind.attribute) ?? null,
     });
+  }
+
+  /**
+   * The list container whose column holds the pointer: over a list's header, or below a short
+   * list on the board's background, a card still drops into that list. Read in the frame's read
+   * phase, like the items' rects.
+   */
+  function column(): HTMLElement | null {
+    for (const container of root.querySelectorAll<HTMLElement>("[data-lp-cards]")) {
+      if (container.closest("[data-lp-clone]")) continue;
+      const { left, right } = (
+        container.closest("[data-lp-list]") ?? container
+      ).getBoundingClientRect();
+      if (pointerAt.x >= left && pointerAt.x <= right) return container;
+    }
+    return null;
   }
 
   /** Moves the Placeholder to `target`, writing the DOM only when its place changes. */

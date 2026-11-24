@@ -40,7 +40,8 @@ Every slice's pull request updates it (SESSION §3).
   list still drags the card. The Clone follows the pointer: moves only
   store it, one `requestAnimationFrame` per frame writes `translate` (applied before a skin's
   `rotate` or `scale`, so a tilted Clone stays under the pointer). Each frame the Placeholder
-  goes, in the list container under the pointer, before the first visible card whose vertical
+  goes, in the list container under the pointer (or, over a header or below a short list, the one
+  whose column holds the pointer), before the first visible card whose vertical
   middle is below the pointer, or to the end; gaps between cards follow the same rule, and the DOM
   is written only when its place changes.
   Keyboard (DEC-15, a `keydown` listener on `root`): Space on a focused card picks it up
@@ -160,6 +161,8 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner report):** a card dropped below a short list (the board's background
+  in its column) went back; the engine now falls back to the list whose column holds the pointer.
 - **2026-11-24, fix (owner go):** the Pages workflow builds and uploads in one job and deploys in
   another: deploying in the uploading job kept finding no artifact (three attempts of one run
   failed).
@@ -190,8 +193,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** the hotfix the owner approved (a drop below a short list lands nowhere), then L4.22
-  (first npm publish).
+- **Next:** L4.22 (first npm publish; the owner publishes from their account).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the
