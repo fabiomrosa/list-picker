@@ -962,7 +962,7 @@ shows it in the demo.
   to keep a drop hit-tested inside a sideways-scrolled board. Reworked after the owner saw it
   (#77): the title as on the site's other pages, the skin chooser right above the board, then
   "Edit the board" and "Events" stacked at full width (side by side squeezed both); the forms read
-  as sentences (the prepositions styled like the verbs); empty status and error take no room; each
+  as sentences (verbs and prepositions alike, muted like the event cards' labels); empty status and error take no room; each
   event is two cards of one height: its kind and name, then from / to and after / before in
   fixed places; beside it the JSON `board.on("move")` receives. On a phone a form's name goes above its fields.
 - **Contract:** none. **Public API:** none.
