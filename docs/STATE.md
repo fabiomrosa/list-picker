@@ -166,6 +166,8 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner):** the player's equalizer bars alternate (three rhythms); the nav names
+  both demos, "kanban" and "player" (addresses unchanged), and the home says "The kanban demo".
 - **2026-11-24, L4.25 (owner):** the player's pretend play: no sound, ten times faster, play/pause,
   a progress bar, an equalizer, and the next track at a track's end in the current order (browser
   test with Playwright's clock); motion reduced on request.
