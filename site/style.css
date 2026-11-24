@@ -1,0 +1,81 @@
+:root {
+  color-scheme: light dark;
+  --text: #1f2933;
+  --muted: #616e7c;
+  --bg: #fbfcfd;
+  --code: #eef1f4;
+  --accent: #2a6fdb;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #e4e7eb;
+    --muted: #9aa5b1;
+    --bg: #14171a;
+    --code: #22272c;
+    --accent: #7aa7f0;
+  }
+}
+body {
+  margin: 0;
+  font:
+    16px / 1.6 system-ui,
+    sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--code);
+}
+nav a:first-child {
+  font-weight: 600;
+  margin-right: auto;
+}
+main {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 4rem;
+}
+a {
+  color: var(--accent);
+}
+code {
+  background: var(--code);
+  padding: 0.1em 0.3em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+pre {
+  background: var(--code);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+}
+pre code {
+  padding: 0;
+  background: none;
+}
+table {
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+}
+th,
+td {
+  border: 1px solid var(--code);
+  padding: 0.35rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+.button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--bg);
+  text-decoration: none;
+  font-weight: 600;
+}

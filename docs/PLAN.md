@@ -754,7 +754,7 @@ shows it in the demo.
 - **References:** DEC-17.
 
 ### L4.12 · The site
-- **Status:** waiting (L4.11)
+- **Status:** done (2026-11-23)
 - **Goal:** one site introduces the project and documents each package, with the live demo.
 - **Depends on:** L4.11; the owner turns on GitHub Pages (source: GitHub Actions).
 - **In scope:** a Vite multi-page site in `site/`: home (what it is, the lab's answer, links), a
@@ -763,6 +763,10 @@ shows it in the demo.
   (`fabiomrosa.github.io/list-picker`); `homepage` in both `package.json`. Later adapters add one
   page each.
 - **Out of scope:** a docs framework, versioned docs, search.
+- **Note:** two Vite builds (`npm run site:build`): `site/` (pages from the READMEs with `marked`,
+  a dev dependency) and `playground/` into `dist-site/demo/`. Links leaving the site go to GitHub;
+  a package's GitHub link goes to its page. Each package's `homepage` is its page. Criterion 1 is
+  checked after the merge, on the deployed site.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. After the merge the site is live, and every page and the demo work there.

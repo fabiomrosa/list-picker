@@ -22,7 +22,8 @@ A lab rewriting [list-picker-js](https://github.com/fabiomrosa/list-picker-js) (
 | [`@list-picker/core`](packages/core) | The Board model: ordered lists of ordered cards, events. No DOM. |
 | [`@list-picker/vanilla`](packages/vanilla) | Draws a Board from your Renderers; pointer and keyboard moves, announcements. |
 
-The demo board: `npm run dev` (see [Running locally](#running-locally)).
+The site, with the docs and the demo board: <https://fabiomrosa.github.io/list-picker/> (locally,
+`npm run dev` for the demo; see [Running locally](#running-locally)).
 
 Agents: start with `AGENTS.md`.
 
@@ -88,6 +89,7 @@ npm test            # the tests once
 npm run dev         # the playground at http://localhost:5173
 npm run bench       # linked lists against arrays (docs/decisions/0001)
 npm run trace       # forced layouts during real drags (docs/decisions/0002)
+npm run site        # the site's pages (the demo link works in the built site: npm run site:build)
 npm run e2e         # real drags in Chrome (needs Google Chrome installed)
 npm run format      # format and apply safe lint fixes
 ```

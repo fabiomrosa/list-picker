@@ -128,6 +128,12 @@ title, size, frozen-files and secret checks.
   vanilla depending on core `^1.0.0`; `prepublishOnly` builds. The owner publishes from their npm
   account (core first), from `main`; the tag `v1.0.0` marks the published commit.
 
+## Site
+- `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, packages, the
+  lab's answer from the root README), `core.html` and `vanilla.html` rendered from the packages'
+  READMEs at build time, and the demo (`playground/`) in `demo/`. `.github/workflows/pages.yml`
+  deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+
 ## Contract
 None yet.
 
@@ -135,6 +141,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
+  deployed by a Pages workflow on every merge; `homepage` points each package at its page.
+- **Next:** L4.13 (first npm publish).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the
@@ -142,7 +151,6 @@ None.
 - **2026-11-23, L4.11:** `canMove` (`createDrag` and `mount` options): the Placeholder never
   enters a refused place, the keyboard skips refused places; the demo caps Doing at 3 cards
   (browser test).
-- **Next:** L4.12 (the site; needs GitHub Pages turned on, P4).
 - **2026-11-23, L4.10:** `onActivate({ kind, id })` (`createDrag` and `mount` options): a click on
   a card or a list's handle that started no drag, or Enter on a focused one; Enter no longer picks
   up (DEC-15 amended). The click after a drag is swallowed (capture listener on `root`; Chrome
