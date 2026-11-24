@@ -37,5 +37,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "homepage": "https://fabiomrosa.github.io/list-picker/vanilla.html"
 }

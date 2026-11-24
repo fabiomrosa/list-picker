@@ -10,7 +10,9 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "paths": { "@list-picker/core": ["./packages/core/src/index.ts"] }
+    "paths": {
+      "@list-picker/core": ["./packages/core/src/index.ts"]
+    }
   },
   "include": [
     "packages/*/src",
@@ -18,6 +20,7 @@
     "playground",
     "bench",
     "e2e",
-    "playwright.config.ts"
+    "playwright.config.ts",
+    "site"
   ]
 }
