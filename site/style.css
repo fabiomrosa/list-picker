@@ -397,11 +397,8 @@ nav .nav-theme,
 .toc a,
 main a:not(.button),
 .button,
-.install label,
-.skins label,
 .controls button,
-:is(main.demo form, dialog) button[type="submit"],
-.board .action {
+:is(main.demo form, dialog) button[type="submit"] {
   transition:
     color 0.15s ease,
     background-color 0.15s ease,
@@ -410,22 +407,29 @@ main a:not(.button),
     translate 0.15s ease,
     box-shadow 0.15s ease;
 }
-main a:not(.button):hover {
-  text-decoration-thickness: 2px;
+/* Only where a pointer hovers: after a tap on a phone, :hover would stick. */
+@media (hover: hover) {
+  main a:not(.button):hover {
+    text-decoration-thickness: 2px;
+  }
+  nav .nav-theme:hover,
+  nav a.nav-github:hover {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+  .button:hover,
+  :is(main.demo form, dialog) button[type="submit"]:hover {
+    translate: 0 -1px;
+    box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .button:active,
+  :is(main.demo form, dialog) button[type="submit"]:active {
+    translate: none;
+    box-shadow: none;
+  }
 }
-nav .nav-theme:hover,
-nav a.nav-github:hover {
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
-}
-.button:hover,
-:is(main.demo form, dialog) button[type="submit"]:hover {
-  translate: 0 -1px;
-  box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 30%, transparent);
-}
-.button:active,
-:is(main.demo form, dialog) button[type="submit"]:active {
-  translate: none;
-  box-shadow: none;
+/* A theme switch snaps the whole page at once, not some of it in 0.15s (site/theme.ts). */
+:root[data-theme-switching] * {
+  transition: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
   nav a,
@@ -433,11 +437,8 @@ nav a.nav-github:hover {
   .toc a,
   main a:not(.button),
   .button,
-  .install label,
-  .skins label,
   .controls button,
-  :is(main.demo form, dialog) button[type="submit"],
-  .board .action {
+  :is(main.demo form, dialog) button[type="submit"] {
     transition: none;
   }
   .button:hover,

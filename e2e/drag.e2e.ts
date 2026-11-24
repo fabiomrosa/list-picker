@@ -354,3 +354,31 @@ test("a tilted Clone (Pop's rotate) stays under the pointer on a long drag", asy
     .toBeLessThan(3);
   await page.mouse.up();
 });
+
+test("the Clone has no transition or animation: it follows the pointer frame by frame", async ({
+  page,
+}) => {
+  const from = await card(page, "Design the model").locator("strong").boundingBox();
+  if (!from) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 60, from.y + 80, { steps: 6 });
+  const clone = page.locator("[data-lp-clone]");
+  await expect(clone).toHaveCount(1);
+  const moving = await clone.evaluate((el) => {
+    const all = [el, ...el.querySelectorAll("*")];
+    return all
+      .filter(
+        (e) =>
+          getComputedStyle(e)
+            .transitionDuration.split(",")
+            .some((d) => Number.parseFloat(d) > 0) || e.getAnimations().length > 0,
+      )
+      .map(
+        (e) =>
+          `${e.tagName}.${e.className} ${getComputedStyle(e).transitionProperty} ${getComputedStyle(e).transitionDuration}`,
+      );
+  });
+  await page.mouse.up();
+  expect(moving).toEqual([]);
+});
