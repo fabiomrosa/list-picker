@@ -92,27 +92,66 @@ export function mount<L extends { id: string }, C extends { id: string }>(
     seen.add(element);
     return element;
   };
-  /** The Renderers' elements by id, kept as soon as rendered so none renders twice. */
+  /** The Renderers' latest elements by id, kept as soon as rendered so none renders twice. */
   const headers = new Map<string, HTMLElement>();
   const cards = new Map<string, HTMLElement>();
   const lists = new Map<string, ListElements>();
+  /** The value each element was rendered from: a different value renders it again. */
+  const drawn = new WeakMap<HTMLElement, unknown>();
+  /** A newer element for an id (key) and the one the DOM may still hold for it, until a write. */
+  const replaced = new Map<HTMLElement, HTMLElement>();
+
+  /** The element of `value` in `elements`: the existing one, or the Renderer's new one. */
+  function draw<T extends { id: string }>(
+    elements: Map<string, HTMLElement>,
+    value: T,
+    renderer: (value: T) => HTMLElement,
+  ): void {
+    const current = elements.get(value.id);
+    if (current && drawn.get(current) === value) return;
+    const element = checked(renderer(value), value.id);
+    drawn.set(element, value);
+    elements.set(value.id, element);
+    if (current) {
+      replaced.set(element, replaced.get(current) ?? current);
+      replaced.delete(current);
+    }
+  }
 
   /**
-   * Runs the Renderers for every list and card of the Board not rendered yet, checking each
-   * result, before any DOM write: a Renderer error throws here and writes nothing.
+   * Runs the Renderers for every list and card of the Board not rendered yet, or rendered from
+   * another value, checking each result, before any DOM write: a Renderer error throws here and
+   * writes nothing.
    */
   function render(): void {
     for (const { list, cards: listCards } of board.snapshot().lists) {
-      if (!headers.has(list.id)) headers.set(list.id, checked(renderers.renderList(list), list.id));
-      for (const card of listCards) {
-        if (!cards.has(card.id)) cards.set(card.id, checked(renderers.renderCard(card), card.id));
-      }
+      draw(headers, list, renderers.renderList);
+      for (const card of listCards) draw(cards, card, renderers.renderCard);
     }
   }
 
   /** Brings the DOM in line with the Board's Snapshot, every element rendered, writing only what differs. */
   function write(): void {
     const snapshot = board.snapshot().lists;
+    for (const { list, cards: listCards } of snapshot) {
+      const header = headers.get(list.id) as HTMLElement;
+      if (!header.hasAttribute("data-lp-list-handle")) {
+        header.setAttribute("data-lp-list-handle", "");
+        if (!header.hasAttribute("tabindex")) header.tabIndex = 0;
+      }
+      for (const card of listCards) {
+        const element = cards.get(card.id) as HTMLElement;
+        if (!element.hasAttribute("data-lp-card")) {
+          element.setAttribute("data-lp-card", card.id);
+          // Focusable, for moving with the keyboard (DEC-15).
+          if (!element.hasAttribute("tabindex")) element.tabIndex = 0;
+        }
+      }
+    }
+    // A changed value's new element takes the old one's place (an item the DOM never held, added
+    // since the last write, has none).
+    for (const [next, current] of replaced) if (current.isConnected) drag.replace(current, next);
+    replaced.clear();
     const listIds = new Set(snapshot.map(({ list }) => list.id));
     const cardIds = new Set(snapshot.flatMap((entry) => entry.cards.map((card) => card.id)));
     for (const id of headers.keys()) {
@@ -134,20 +173,10 @@ export function mount<L extends { id: string }, C extends { id: string }>(
         const header = headers.get(list.id) as HTMLElement;
         const container = document.createElement("div");
         container.setAttribute("data-lp-list", list.id);
-        header.setAttribute("data-lp-list-handle", "");
-        if (!header.hasAttribute("tabindex")) header.tabIndex = 0;
         const cardsContainer = document.createElement("div");
         cardsContainer.setAttribute("data-lp-cards", list.id);
         container.append(header, cardsContainer);
         lists.set(list.id, { container, cards: cardsContainer });
-      }
-      for (const card of listCards) {
-        const element = cards.get(card.id) as HTMLElement;
-        if (!element.hasAttribute("data-lp-card")) {
-          element.setAttribute("data-lp-card", card.id);
-          // Focusable, for moving with the keyboard (DEC-15).
-          if (!element.hasAttribute("tabindex")) element.tabIndex = 0;
-        }
       }
     }
 
