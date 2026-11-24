@@ -31,11 +31,26 @@ const byId = <E extends HTMLElement>(id: string) => document.getElementById(id) 
 const nowTitle = byId("now-title");
 const nowTime = byId("now-time");
 const prev = byId<HTMLButtonElement>("prev");
+const toggle = byId<HTMLButtonElement>("toggle");
+const progress = byId("progress");
+const fill = byId("progress-fill");
+const player = document.querySelector(".player") as HTMLElement;
 const next = byId<HTMLButtonElement>("next");
 const status = byId("player-status");
 const root = byId("playlist");
 
 let playing = "t1";
+
+/** A pretend play: no sound, the clock ten times faster than real time. */
+const SPEED = 10;
+const STEP = 0.25; // seconds of real time between clock ticks
+let elapsed = 0;
+let timer: ReturnType<typeof setInterval> | undefined;
+const seconds = (time: string) => {
+  const [m, s] = time.split(":").map(Number);
+  return (m ?? 0) * 60 + (s ?? 0);
+};
+const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 /** The track ticked first, waiting for a second tick to swap with. */
 let picked: string | undefined;
 
@@ -44,7 +59,7 @@ function show(): void {
   const track = board.getCard(playing);
   if (!track) return;
   nowTitle.textContent = track.title;
-  nowTime.textContent = track.time;
+  showProgress();
   const { prev: before, next: after } = board.neighbours(playing);
   prev.disabled = !before;
   next.disabled = !after;
@@ -59,11 +74,58 @@ function show(): void {
   });
 }
 
+/** The bar and the time played, for the playing track. */
+function showProgress(): void {
+  const track = board.getCard(playing);
+  if (!track) return;
+  const total = seconds(track.time);
+  fill.style.width = `${(Math.min(elapsed, total) / total) * 100}%`;
+  progress.setAttribute("aria-valuemax", String(total));
+  progress.setAttribute("aria-valuenow", String(Math.floor(elapsed)));
+  progress.setAttribute("aria-valuetext", `${clock(elapsed)} of ${track.time}`);
+  nowTime.textContent = `${clock(elapsed)} / ${track.time}`;
+}
+
+/** Starts or pauses the pretend play. */
+function run(on: boolean): void {
+  clearInterval(timer);
+  timer = on ? setInterval(advance, STEP * 1000) : undefined;
+  player.toggleAttribute("data-running", on);
+  toggle.setAttribute("aria-label", on ? "Pause" : "Play");
+}
+
+/** One clock tick; at the track's end, the next one in the playlist's order, or a stop. */
+function advance(): void {
+  const track = board.getCard(playing);
+  if (!track) return;
+  elapsed += STEP * SPEED;
+  if (elapsed < seconds(track.time)) {
+    showProgress();
+    return;
+  }
+  const { next: after } = board.neighbours(playing);
+  if (after) {
+    play(after.id);
+  } else {
+    elapsed = seconds(track.time);
+    showProgress();
+    run(false);
+  }
+}
+
 function play(id: string): void {
   playing = id;
+  elapsed = 0;
   status.textContent = `Playing ${board.getCard(id)?.title}`;
   show();
 }
+
+toggle.addEventListener("click", () => {
+  // At the end of the last track, play starts it over.
+  const track = board.getCard(playing);
+  if (timer === undefined && track && elapsed >= seconds(track.time)) elapsed = 0;
+  run(timer === undefined);
+});
 
 prev.addEventListener("click", () => {
   const { prev: before } = board.neighbours(playing);
@@ -124,13 +186,24 @@ mount(
       const time = document.createElement("span");
       time.className = "track-time";
       time.textContent = track.time;
-      row.append(box, number, title, time);
+      // The playing track's equalizer (animated while playing; decorative).
+      const eq = document.createElement("span");
+      eq.className = "eq";
+      eq.setAttribute("aria-hidden", "true");
+      eq.append(
+        document.createElement("i"),
+        document.createElement("i"),
+        document.createElement("i"),
+      );
+      row.append(box, number, title, eq, time);
       return row;
     },
   },
   {
     onActivate: ({ kind, id }) => {
-      if (kind === "card") play(id);
+      if (kind !== "card") return;
+      play(id);
+      run(true);
     },
   },
 );

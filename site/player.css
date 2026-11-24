@@ -36,8 +36,53 @@ main.player-page {
 .title {
   color: var(--muted);
 }
+/* The time played: a bar and "1:12 / 4:29". */
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+.progress-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+#progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.25s linear;
+}
 #now-time {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
   white-space: nowrap;
+}
+/* Play shows ▶ when paused, ❚❚ while playing. */
+#toggle .icon-pause,
+.player[data-running] #toggle .icon-play {
+  display: none;
+}
+.player[data-running] #toggle .icon-pause {
+  display: block;
+}
+#toggle .icon-play {
+  fill: currentColor;
+  stroke: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .player[data-running] .eq i {
+    animation: none;
+    transform: scaleY(0.8);
+  }
+  #progress-fill {
+    transition: none;
+  }
 }
 /* On a small phone the controls take their own row under the album. */
 @media (max-width: 30rem) {
@@ -98,7 +143,7 @@ main.player-page {
 }
 .track {
   display: grid;
-  grid-template-columns: auto 2rem minmax(0, 1fr) auto;
+  grid-template-columns: auto 2rem minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.8rem;
@@ -114,9 +159,43 @@ main.player-page {
 .track[data-playing] .track-title {
   font-weight: 700;
 }
-.track[data-playing] .track-title::after {
-  content: " ♪" / "";
-  color: var(--accent);
+/* The equalizer: three bars, shown on the playing track, moving while it plays. */
+.eq {
+  display: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.9rem;
+}
+.track[data-playing] .eq {
+  display: inline-flex;
+}
+.eq i {
+  width: 3px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--accent);
+  transform-origin: bottom;
+  transform: scaleY(0.35);
+}
+.player[data-running] .eq i {
+  animation: eq 0.9s ease-in-out infinite alternate;
+}
+.eq i:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.eq i:nth-child(3) {
+  animation-delay: -0.6s;
+}
+@keyframes eq {
+  to {
+    transform: scaleY(1);
+  }
+}
+/* High contrast keeps the bars visible. */
+@media (forced-colors: active) {
+  .eq i {
+    background: CanvasText;
+  }
 }
 .track input {
   width: 1rem;
