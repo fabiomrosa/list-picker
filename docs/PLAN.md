@@ -994,13 +994,15 @@ shows it in the demo.
 - **References:** DEC-07; the owner's sketch (a playlist).
 
 ### L4.23 · A card's neighbours
-- **Status:** waiting (L4.22)
+- **Status:** done (2026-11-24)
 - **Goal:** an app steps to the previous or next item (a playlist's previous and next track) in
   O(1), the doubly linked list's own strength.
 - **Depends on:** L4.22.
 - **In scope:** `board.neighbours(cardId)` returning `{ prev, next }` (the cards' values, `null` at
   an end); an unknown id throws. Unit and property tests; core README.
 - **Out of scope:** neighbours of a list; wrapping around at the ends (the app's choice).
+- **Note:** built before L4.22 merged: L4.22's wording waits on its branch to go out with the
+  music player (L4.25), so the site never names a playlist it does not show.
 - **Contract:** none. **Public API:** `Board.neighbours` (additive).
 - **Acceptance criteria:**
   1. After any sequence of operations, `neighbours` matches the cards' order (property test).

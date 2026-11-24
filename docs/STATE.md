@@ -12,7 +12,8 @@ Every slice's pull request updates it (SESSION §3).
 - `Board<L, C>`: `addList(list, beforeListId | null)`, `addCard(listId, card, beforeCardId | null)`,
   `moveCard(id, toListId, beforeCardId | null)` (returns whether the order changed; validates
   everything before unlinking), `moveList(id, beforeListId | null)` (same rules), `removeCard`,
-  `removeList` (with its cards), `updateList(list)` and `updateCard(card)` (replace the value with
+  `removeList` (with its cards), `neighbours(cardId)` (`{ prev, next }` in its List, O(1)),
+  `updateList(list)` and `updateCard(card)` (replace the value with
   that id in place, return the old one; `change` only), `getList`, `getCard`, `listOf(cardId)`,
   `lists()`, `cards(listId)`. Card ids are unique across the Board, list ids
   across the Lists; bad input throws and changes nothing. A property test runs random sequences of
@@ -162,6 +163,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.23:** `Board.neighbours(cardId)`: the cards before and after a card in O(1)
+  (the playlist's previous and next); the property test checks it for every card after every
+  operation (a planted swap of prev and next was caught).
 - **2026-11-24, fix (owner):** the brand's mark 20% larger and centred on the letters (tallest
   to baseline, measured to 0 px), not on the line the "p" pulls down; the phone nav's gap 0.75rem
   keeps it on one line at 375px.
@@ -206,8 +210,8 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.22 (ordered lists, not only kanban), then L4.23–L4.25 (neighbours, swapCards, the
-  music player), then L4.26 (first npm publish).
+- **Next:** L4.24 (swap two cards), then L4.25 (the music player, merged with L4.22's waiting
+  wording), then L4.26 (first npm publish).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

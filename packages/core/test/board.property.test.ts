@@ -190,6 +190,11 @@ function expectInvariants(board: Board<Entity, Entity>, model: Model): void {
     expect(board.listOf(id)?.id).toBe(owner?.[0]);
     expect(board.getCard(id)?.id).toBe(owner ? id : undefined);
     if (owner) {
+      // Its neighbours are the cards beside it in the model's order.
+      const at = owner[1].indexOf(id);
+      const { prev, next } = board.neighbours(id);
+      expect(prev?.id ?? null).toBe(owner[1][at - 1] ?? null);
+      expect(next?.id ?? null).toBe(owner[1][at + 1] ?? null);
       expect(latest(board.getCard(id))).toBe(true);
       expect(board.listOf(id)).toBe(board.getList(owner[0]));
     }
