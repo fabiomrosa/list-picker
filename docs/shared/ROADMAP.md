@@ -57,8 +57,8 @@ becomes the demo board; a recorded trace shows no forced layout per pointer move
 ## M4 · v1 release · done (2026-11-24)
 Keyboard moving for cards and lists (DEC-15), live announcements with overridable English defaults
 (DEC-16), the two M3 known issues fixed, a README per package, the lab write-up in the root README,
-the rest of the v1 API (DEC-17, plus a card's neighbours and swapping two cards, for the owner's
-playlist): changing values, activating, move rules), the site with docs, the
+the rest of the v1 API (DEC-17: changing values, activating, move rules; plus a card's neighbours and
+swapping two cards, for the owner's playlist), the site with docs, the
 demo and a live board on the home, and the first npm publish.
 
 | Repository | Slices |
