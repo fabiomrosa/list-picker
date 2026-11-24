@@ -162,6 +162,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner review of L4.21):** the demo reads top to bottom: title, skin chooser,
+  board, "Edit the board" (sentence-like rows, labels muted), "Events" (per move two cards: a
+  readable one and the JSON `on("move")` receives); status and error are live regions that take
+  no room when empty; the brand's mark is drawn; the browser tests scroll the board into view.
 - **2026-11-24, fix (owner report):** a card dropped below a short list (the board's background
   in its column) went back; off every list container the engine now takes the hovered list, else
   the nearest list above the pointer in its column (stacked lists too), and its end below it.

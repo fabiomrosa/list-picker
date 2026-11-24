@@ -32,6 +32,8 @@ const cardsOf = (page: Page, id: string) => page.locator(`[data-lp-cards="${id}"
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
+  // The board sits below the title and "Edit the board": bring it into view, as a user would.
+  await page.locator("#board").scrollIntoViewIfNeeded();
   expect(await lists(page)).toMatchObject({
     "To do": ["Design the model", "Write the tests"],
     Doing: ["Linked list"],
@@ -162,7 +164,20 @@ test("drops a card below a short list, in its column, at its end", async ({ page
 test("drags a card into an empty list", async ({ page }) => {
   await drag(page, card(page, "Linked list"), cardsOf(page, "Done"));
   await expect.poll(() => lists(page)).toMatchObject({ Doing: [], Done: ["Linked list"] });
-  await expect(page.locator("#log li").first()).toContainText('"toListId":"Done"');
+  // The event log reads each move: what moved, from where to where.
+  const event = page.locator("#log li").first();
+  await expect(event.locator(".event-id")).toHaveText("Linked list");
+  await expect(event.locator(".event-fields")).toContainText("Doing");
+  // Beside it, the event as emitted: valid JSON, equal to what `board.on("move")` received.
+  const json = JSON.parse((await event.locator(".event-json").textContent()) ?? "");
+  expect(json).toEqual({
+    kind: "card",
+    id: "Linked list",
+    fromListId: "Doing",
+    toListId: "Done",
+    prevId: null,
+    nextId: null,
+  });
 });
 
 test("a click without moving changes nothing", async ({ page }) => {
@@ -179,6 +194,7 @@ test("a click without moving changes nothing", async ({ page }) => {
 test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
   // A window narrower than the lists: the board scrolls sideways, and the drop is hit-tested in it.
   await page.setViewportSize({ width: 900, height: 720 });
+  await page.locator("#board").scrollIntoViewIfNeeded();
   const backlog = cardsOf(page, "Backlog");
   // Bring Backlog into view first, as a user would.
   await page.locator("#board").evaluate((board) => {
@@ -201,6 +217,7 @@ test("auto-scrolls a tall list to drop a card at its end", async ({ page }) => {
 
 test("auto-scrolls a tall list upward, steadily, to drop a card at its top", async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 720 });
+  await page.locator("#board").scrollIntoViewIfNeeded();
   const backlog = cardsOf(page, "Backlog");
   await page.locator("#board").evaluate((board) => {
     board.scrollLeft = board.scrollWidth;

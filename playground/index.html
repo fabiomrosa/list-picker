@@ -20,54 +20,52 @@
     <main class="demo">
     <header class="demo-head">
       <h1>Board <small id="snapshot"></small></h1>
-      <div class="skins" role="radiogroup" aria-labelledby="skins-label">
-        <span id="skins-label">Same board, your look:</span>
-        <input type="radio" name="skin" id="skin-cards" value="cards" checked />
-        <label for="skin-cards">Cards</label>
-        <input type="radio" name="skin" id="skin-terminal" value="terminal" />
-        <label for="skin-terminal">Terminal</label>
-        <input type="radio" name="skin" id="skin-pop" value="pop" />
-        <label for="skin-pop">Pop</label>
-      </div>
     </header>
-    <div class="board" id="board" data-skin="cards"></div>
-    <div class="panels">
-      <section class="panel" aria-labelledby="edit-title">
-        <h2 id="edit-title">Edit the board</h2>
-        <form id="add-list">
-          <strong>Add list</strong>
-          <div class="fields">
-            <input name="id" placeholder="list id" autocomplete="off" required />
-            <label>before <select name="before"></select></label>
-            <button type="submit">Add</button>
-          </div>
-        </form>
-        <form id="add-card">
-          <strong>Add card</strong>
-          <div class="fields">
-            <input name="id" placeholder="card id" autocomplete="off" required />
-            <label>to <select name="list"></select></label>
-            <label>before <select name="before"></select></label>
-            <button type="submit">Add</button>
-          </div>
-        </form>
-        <form id="move-card">
-          <strong>Move card</strong>
-          <div class="fields">
-            <select name="card" aria-label="card"></select>
-            <label>to <select name="list"></select></label>
-            <label>before <select name="before"></select></label>
-            <button type="submit">Move</button>
-          </div>
-        </form>
-        <p class="status" id="status"></p>
-        <p class="error" id="error"></p>
-      </section>
-      <section class="panel" aria-labelledby="events-title">
-        <h2 class="log-title"><span id="events-title">Events</span> <small id="changes"></small></h2>
-        <ol class="log" id="log" reversed></ol>
-      </section>
+    <div class="skins" role="radiogroup" aria-labelledby="skins-label">
+      <span id="skins-label">Same board, your look:</span>
+      <input type="radio" name="skin" id="skin-cards" value="cards" checked />
+      <label for="skin-cards">Cards</label>
+      <input type="radio" name="skin" id="skin-terminal" value="terminal" />
+      <label for="skin-terminal">Terminal</label>
+      <input type="radio" name="skin" id="skin-pop" value="pop" />
+      <label for="skin-pop">Pop</label>
     </div>
+    <div class="board" id="board" data-skin="cards"></div>
+    <section class="panel" aria-labelledby="edit-title">
+      <h2 id="edit-title">Edit the board</h2>
+      <form id="add-list">
+        <strong>Add list</strong>
+        <div class="fields">
+          <input name="id" placeholder="list id" autocomplete="off" required />
+          <label>before <select name="before"></select></label>
+          <button type="submit">Add</button>
+        </div>
+      </form>
+      <form id="add-card">
+        <strong>Add card</strong>
+        <div class="fields">
+          <input name="id" placeholder="card id" autocomplete="off" required />
+          <label>to <select name="list"></select></label>
+          <label>before <select name="before"></select></label>
+          <button type="submit">Add</button>
+        </div>
+      </form>
+      <form id="move-card">
+        <strong>Move card</strong>
+        <div class="fields">
+          <select name="card" aria-label="card"></select>
+          <label>to <select name="list"></select></label>
+          <label>before <select name="before"></select></label>
+          <button type="submit">Move</button>
+        </div>
+      </form>
+      <p class="status" id="status" role="status"></p>
+      <p class="error" id="error" role="alert"></p>
+    </section>
+    <section class="panel" aria-labelledby="events-title">
+      <h2 class="log-title"><span id="events-title">Events</span> <small id="changes"></small></h2>
+      <ol class="log" id="log" reversed></ol>
+    </section>
     </main>
     <script type="module" src="./main.ts"></script>
     <dialog id="opened">

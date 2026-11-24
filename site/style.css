@@ -74,9 +74,28 @@ nav a:first-child {
   font-weight: 700;
   margin-right: auto;
 }
+/* The brand's mark: a drawn list (a box, three lines), centred on the name's line; a font glyph
+   sits on the baseline instead. Decorative: no text for screen readers. */
+nav a:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
 nav a:first-child::before {
-  content: "▤ " / "";
-  color: var(--accent);
+  content: "";
+  flex: none;
+  width: 1em;
+  height: 1em;
+  background: var(--accent);
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Crect x='1.5' y='1.5' width='13' height='13' rx='2'/%3E%3Cpath d='M4.5 5.5h7M4.5 8h7M4.5 10.5h7'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+/* High contrast forces backgrounds to the page's colour: draw the mark in the text's instead. */
+@media (forced-colors: active) {
+  nav a:first-child::before {
+    background: CanvasText;
+  }
 }
 /* Read by screen readers, not shown. */
 .sr-only {

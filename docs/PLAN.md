@@ -959,7 +959,12 @@ shows it in the demo.
 - **Note:** with the forms below it, the board starts higher (the Backlog ends at 576px), so the
   auto-scroll tests needed no move. The board fills the width (no 52rem cap): it scrolls sideways
   when the window is narrower than its lists, so those two tests and the trace use a 900px window
-  to keep a drop hit-tested inside a sideways-scrolled board. On a phone a form's name goes above its fields.
+  to keep a drop hit-tested inside a sideways-scrolled board. Reworked after the owner saw it
+  (#77): the title as on the site's other pages, the skin chooser right above the board, then
+  "Edit the board" and "Events" stacked at full width (side by side squeezed both); the forms read
+  as sentences (verbs and prepositions alike, muted like the event cards' labels); empty status and error take no room; each
+  event is two cards of one height: its kind and name, then from / to and after / before in
+  fixed places; beside it the JSON `board.on("move")` receives. On a phone a form's name goes above its fields.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Screenshots at 1280 and 375, light and dark, show the three sections apart; no page scrolls

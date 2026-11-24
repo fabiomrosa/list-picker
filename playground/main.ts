@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 // The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
 // not covered.
-import { Board, type Snapshot } from "../packages/core/src/index.ts";
+import { Board, type MoveEvent, type Snapshot } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
 // The site's look, the skins (L4.18), then the demo's own parts (L4.17).
 import "../site/style.css";
@@ -37,8 +37,13 @@ function attempt(act: () => void): boolean {
     error.textContent = "";
     return true;
   } catch (e) {
-    error.textContent = (e as Error).message;
+    // Cleared, then set a frame later: the same error twice is still announced (`role="alert"`).
+    error.textContent = "";
     status.textContent = "";
+    const message = (e as Error).message;
+    requestAnimationFrame(() => {
+      error.textContent = message;
+    });
     return false;
   }
 }
@@ -256,8 +261,43 @@ board.on("change", () => {
   changes++;
   changesView.textContent = `· ${changes} change events`;
 });
+/**
+ * One event as a card: on the left its kind, what moved and, in fixed places, from where to where
+ * and its new neighbours; on the right the event itself, as `board.on("move")` receives it.
+ */
+function eventRow(event: MoveEvent): HTMLElement {
+  const item = el("li", "event", "");
+  const text = el("div", "event-text", "");
+  const head = el("div", "event-head", "");
+  head.append(el("span", "event-kind", event.kind), el("strong", "event-id", event.id));
+  const fields = el("dl", "event-fields", "");
+  const field = (name: string, value: string | null) =>
+    fields.append(el("dt", "", name), el("dd", "", value ?? "—"));
+  // A list moves among the lists: it has no list of its own.
+  field("from", event.kind === "card" ? event.fromListId : "lists");
+  field("to", event.kind === "card" ? event.toListId : "lists");
+  // No neighbour: the start or the end, as the forms say "(end)".
+  field("after", event.prevId ?? "(start)");
+  field("before", event.nextId ?? "(end)");
+  text.append(head, fields);
+  // The event's JSON, one piece per field, so a line breaks between fields first.
+  const json = el("code", "event-json", "{");
+  const entries = Object.entries(event);
+  entries.forEach(([key, value], i) => {
+    const last = i === entries.length - 1;
+    json.append(
+      el("span", "", `${JSON.stringify(key)}:${JSON.stringify(value)}${last ? "" : ","}`),
+    );
+    if (!last) json.append(" ");
+  });
+  json.append("}");
+  const raw = el("div", "event-raw", "");
+  raw.append(el("span", "event-caption", 'on("move")'), json);
+  item.append(text, raw);
+  return item;
+}
 board.on("move", (event) => {
-  log.prepend(el("li", "", `move ${JSON.stringify(event)}`));
+  log.prepend(eventRow(event));
 });
 
 for (const id of ["To do", "Doing", "Done"]) board.addList({ id }, null);
