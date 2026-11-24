@@ -50,6 +50,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - `mount` keys elements by id: a card removed and added again with the same id before `mount`
   writes (the same tick, or during a drag) keeps its old element if the value is the same object;
   another object is drawn again, like an update.
+- An outline outside a card (`outline-offset` > 0) is clipped by a list container that scrolls
+  (`overflow-y: auto` clips sideways too); draw a focus or pick-up outline inside the card.
 - Styling a skin around the engine: a list's Clone has no `data-lp-list` (match it with
   `[data-lp-clone]:has(> [data-lp-cards])`); during a drag the Placeholder and the hidden item are
   siblings of the items, so `:nth-child(…)` shifts (use `:nth-child(… of [data-lp-list])`); and a

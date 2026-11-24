@@ -15,21 +15,21 @@ main.demo h1 small {
   font-weight: normal;
   color: var(--muted);
 }
-form {
+main.demo form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
   margin: 0.3rem 0;
 }
-form strong {
+main.demo form strong {
   width: 6rem;
   font-family: var(--mono);
   font-size: 0.9rem;
 }
-input,
-select,
-button {
+main.demo :is(input, select),
+main.demo form button,
+dialog :is(input, button) {
   font: inherit;
   padding: 0.3rem 0.5rem;
   color: var(--text);
@@ -37,10 +37,10 @@ button {
   border: 1px solid var(--line);
   border-radius: 6px;
 }
-input {
+main.demo form input {
   width: 7rem;
 }
-form button[type="submit"] {
+:is(main.demo form, dialog) button[type="submit"] {
   background: var(--text);
   border-color: var(--text);
   color: var(--bg);
@@ -121,6 +121,13 @@ form button[type="submit"] {
   outline: 2px solid #0c66e4;
   outline-offset: 2px;
 }
+/* A card sits in a scrolling list, which clips an outline outside it: draw it inside. */
+.board .card:is(:focus-visible, [data-lp-grabbed]) {
+  outline-offset: -2px;
+}
+.board .card[data-lp-grabbed] {
+  box-shadow: 0 4px 12px rgb(9 30 66 / 0.3);
+}
 .list-tools {
   position: absolute;
   top: 0.3rem;
@@ -182,8 +189,15 @@ form button[type="submit"] {
   color: var(--muted);
 }
 dialog {
+  max-width: min(24rem, 90vw);
   border: 1px solid var(--line);
   border-radius: 10px;
   color: var(--text);
   background: var(--bg);
+}
+/* The rename field sits on the light board, whatever the theme. */
+main.demo .board input {
+  border-color: #c1c7d0;
+  background: #fff;
+  color: #172b4d;
 }
