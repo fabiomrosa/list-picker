@@ -537,6 +537,20 @@ describe("Board.swapCards", () => {
     }
   });
 
+  it("names each moved card's lists and final neighbours in its move event", () => {
+    const apart = setup();
+    apart.b.swapCards("b", "x");
+    expect(apart.events).toEqual([
+      { kind: "card", id: "b", fromListId: "todo", toListId: "done", prevId: null, nextId: null },
+      { kind: "card", id: "x", fromListId: "done", toListId: "todo", prevId: "a", nextId: "c" },
+    ]);
+    const adjacent = setup();
+    adjacent.b.swapCards("a", "b");
+    expect(adjacent.events).toEqual([
+      { kind: "card", id: "b", fromListId: "todo", toListId: "todo", prevId: null, nextId: "a" },
+    ]);
+  });
+
   it("does nothing for the same card; unknown ids throw and change nothing", () => {
     const { b, events, changes } = setup();
     const snapshot = b.snapshot();

@@ -163,7 +163,6 @@ function applyToBoard(board: Board<Entity, Entity>, o: Op): [Result, string?] {
       case "addCard":
         board.addCard(o.list, { id: o.id, v: 0 }, o.before);
         return ["changed"];
-      // The id of the replaced value only if it is the value read just before.
       case "swapCards": {
         // A consumer replaying the move events on a copy must reach the same order.
         const copy = new Board<Entity, Entity>();
@@ -181,10 +180,12 @@ function applyToBoard(board: Board<Entity, Entity>, o: Op): [Result, string?] {
         }
         for (const e of events) copy.moveCard(e.id, e.toListId as string, e.nextId);
         const order = (b: Board<Entity, Entity>) =>
-          [...b.lists()].map((l) => [...b.cards(l.id)].map((c) => c.id));
-        expect(order(copy)).toEqual(order(board));
-        return [changed ? "changed" : "same"];
+          JSON.stringify([...b.lists()].map((l) => [...b.cards(l.id)].map((c) => c.id)));
+        // A replay that differs comes back in place of the id, so the property names it.
+        const replayed = order(copy) === order(board) ? o.id : `replay differs: ${order(copy)}`;
+        return [changed ? "changed" : "same", replayed];
       }
+      // The id of the replaced value only if it is the value read just before.
       case "updateCard": {
         const old = board.getCard(o.id);
         const replaced = board.updateCard({ id: o.id, v: (old?.v ?? -1) + 1 });

@@ -51,8 +51,8 @@ Positions are given by the item to go before (`null` for the end), never by an i
 | `updateList(list)` | Replaces the list with `list.id` (same place, its cards); returns the old one. |
 | `updateCard(card)` | Replaces the card with `card.id` (same place); returns the old one. |
 | `moveList(id, beforeListId)` | Moves a list (with its cards); returns whether the order changed. |
-| `swapCards(a, b)` | Exchanges two cards' places, in one list or across lists, in O(1); returns whether the order changed. |
 | `moveCard(id, toListId, beforeCardId)` | Moves a card, in its list or to another; returns whether the order changed. |
+| `swapCards(a, b)` | Exchanges two cards' places, in one list or across lists, in O(1); returns whether the order changed. |
 | `getList(id)`, `getCard(id)` | The list or card with that id, or `undefined`. |
 | `listOf(cardId)` | The list holding a card, or `undefined`. |
 | `neighbours(cardId)` | The cards before and after it in its list, `{ prev, next }` (`null` at an end), in O(1): a playlist's previous and next track. |
