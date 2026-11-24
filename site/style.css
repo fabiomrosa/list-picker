@@ -263,7 +263,7 @@ main.doc {
 /* On a phone, two rows: the brand and GitHub, then the pages (they no longer fit one line). */
 @media (max-width: 30rem) {
   nav {
-    gap: 0.6rem 1rem;
+    gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem;
   }
   nav a.nav-github {

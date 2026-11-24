@@ -53,6 +53,9 @@ function show(): void {
     if (!row) return;
     (row.querySelector(".track-number") as HTMLElement).textContent = `${i + 1}.`;
     row.toggleAttribute("data-playing", t.id === playing);
+    // The playing track, for screen readers too, not only by its look.
+    if (t.id === playing) row.setAttribute("aria-current", "true");
+    else row.removeAttribute("aria-current");
   });
 }
 
@@ -106,6 +109,8 @@ mount(
     renderCard(track) {
       const row = document.createElement("div");
       row.className = "track";
+      // A named group (its checkbox inside): read as "Shiver, group" when focused.
+      row.setAttribute("role", "group");
       row.setAttribute("aria-label", track.title);
       const box = document.createElement("input");
       box.type = "checkbox";
@@ -130,7 +135,8 @@ mount(
   },
 );
 
-// After every change (a swap, a drop), once `mount` has drawn it (its microtask runs first).
+// After every change (a swap, a drop): numbers and previous / next follow the Board (rows are found
+// by id, so it does not matter whether `mount` has moved them yet).
 let queued = false;
 board.on("change", () => {
   if (queued) return;
@@ -141,5 +147,3 @@ board.on("change", () => {
   });
 });
 show();
-// For the browser tests and the console.
-Object.assign(window, { board });

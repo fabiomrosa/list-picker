@@ -36,6 +36,18 @@ main.player-page {
 .title {
   color: var(--muted);
 }
+#now-time {
+  white-space: nowrap;
+}
+/* On a small phone the controls take their own row under the album. */
+@media (max-width: 30rem) {
+  .now {
+    flex-wrap: wrap;
+  }
+  .controls {
+    flex-basis: 100%;
+  }
+}
 .controls {
   display: flex;
   gap: 0.5rem;
@@ -98,6 +110,14 @@ main.player-page {
   border-color: var(--accent);
   box-shadow: inset 3px 0 0 var(--accent);
 }
+/* Not by colour alone: the playing title is bold, and marked in high contrast too. */
+.track[data-playing] .track-title {
+  font-weight: 700;
+}
+.track[data-playing] .track-title::after {
+  content: " ♪" / "";
+  color: var(--accent);
+}
 .track input {
   width: 1rem;
   height: 1rem;
@@ -113,8 +133,8 @@ main.player-page {
 .track-title {
   overflow-wrap: anywhere;
 }
-[data-lp-card],
-[data-lp-list-handle] {
+/* What is dragged: the tracks (the playlist's own header has nowhere to go). */
+[data-lp-card] {
   touch-action: none;
   user-select: none;
   cursor: grab;

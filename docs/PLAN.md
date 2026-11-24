@@ -1036,7 +1036,7 @@ shows it in the demo.
 - **Out of scope:** playing audio, Spotify (the sketch's extras).
 - **Note:** `site/player.html` (Coldplay's "Parachutes", as in the sketch); a click or Enter plays
   a track (`onActivate`). With a fifth link the nav no longer fits a phone's width: below 30rem it
-  takes two rows (the brand and GitHub, then the pages). L4.22's wording merges with this slice.
+  takes two rows (the brand and GitHub, then the pages). L4.22's wording merges right before it.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Previous and next step through the playlist in its current order; picking two tracks swaps
