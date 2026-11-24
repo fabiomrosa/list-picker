@@ -6,6 +6,16 @@ main.demo {
   max-width: 64rem;
   padding-top: 0.25rem;
 }
+/* The title and the skin chooser share a row. */
+.demo-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 1.5rem;
+}
+.demo-head .skins {
+  margin: 0;
+}
 main.demo h1 {
   margin: 0.5rem 0;
   font-size: 1.25rem;
@@ -60,7 +70,7 @@ main.demo form input {
   color: var(--accent);
 }
 
-/* The board, in the home's Cards look (light, on either theme). */
+/* The board: its layout here; its look is the chosen skin (`site/home.css`, `data-skin`). */
 .board {
   display: flex;
   align-items: flex-start;
@@ -69,8 +79,6 @@ main.demo form input {
   max-width: 52rem;
   padding: 0.6rem;
   border-radius: 14px;
-  background: #dfe6ee;
-  color: #172b4d;
 }
 .board [data-lp-list],
 .board [data-lp-clone]:has(> .list-head) {
@@ -78,8 +86,6 @@ main.demo form input {
   width: 13rem;
   flex: none;
   padding: 0.6rem;
-  border-radius: 12px;
-  background: #f1f4f7;
 }
 .list-head h2 {
   margin: 0 0 0.25rem;
@@ -87,11 +93,18 @@ main.demo form input {
 }
 .list-head h2::before {
   content: none;
+  color: inherit; /* a skin's own marks (Terminal's "[ "), not the site's accent */
+}
+.list-head small,
+.card small {
+  display: block;
+  opacity: 0.8;
 }
 .list-head small {
-  display: block;
   margin-bottom: 0.5rem;
-  color: #5e6c84;
+}
+.card small {
+  font-size: 0.8rem;
 }
 [data-lp-cards] {
   display: flex;
@@ -103,30 +116,13 @@ main.demo form input {
 }
 .card {
   position: relative;
-  padding: 0.45rem 0.6rem;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 1px 2px rgb(9 30 66 / 0.25);
 }
 .card strong {
   display: block;
 }
-.card small {
-  display: block;
-  color: #5e6c84;
-  font-size: 0.8rem;
-}
-.board :focus-visible,
-.board [data-lp-grabbed] {
-  outline: 2px solid #0c66e4;
-  outline-offset: 2px;
-}
 /* A card sits in a scrolling list, which clips an outline outside it: draw it inside. */
 .board .card:is(:focus-visible, [data-lp-grabbed]) {
   outline-offset: -2px;
-}
-.board .card[data-lp-grabbed] {
-  box-shadow: 0 4px 12px rgb(9 30 66 / 0.3);
 }
 .list-tools {
   position: absolute;
@@ -140,41 +136,25 @@ main.demo form input {
   gap: 0.15rem;
   margin-top: 0.3rem;
 }
+/* The demo's own buttons take the skin's colours. */
 .board .action {
   padding: 0 0.35rem;
-  border: 1px solid #dfe1e6;
+  border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
   border-radius: 4px;
-  background: #f4f5f7;
-  color: #44546f;
+  background: transparent;
+  color: inherit;
   font-size: 0.8rem;
   cursor: pointer;
 }
 .list-tools .action {
   border: 0;
-  background: none;
 }
 .board .action:hover:enabled {
-  background: #e9f2ff;
-  color: #172b4d;
+  background: color-mix(in srgb, currentColor 12%, transparent);
 }
 .board .action:disabled {
   opacity: 0.35;
   cursor: default;
-}
-[data-lp-list-handle],
-[data-lp-card] {
-  cursor: grab;
-  user-select: none;
-  touch-action: none;
-}
-[data-lp-placeholder] {
-  border-radius: 8px;
-  background: #d4dbe3;
-}
-[data-lp-clone] {
-  cursor: grabbing;
-  box-shadow: 0 10px 24px rgb(9 30 66 / 0.3);
-  rotate: 2deg;
 }
 
 .log-title small {
@@ -195,9 +175,9 @@ dialog {
   color: var(--text);
   background: var(--bg);
 }
-/* The rename field sits on the light board, whatever the theme. */
+/* The rename field takes the skin's colours, whatever the page's theme. */
 main.demo .board input {
-  border-color: #c1c7d0;
-  background: #fff;
-  color: #172b4d;
+  border-color: currentColor;
+  background: transparent;
+  color: inherit;
 }
