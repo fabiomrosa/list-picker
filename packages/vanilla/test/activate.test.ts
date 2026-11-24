@@ -70,6 +70,25 @@ describe("createDrag: activating a card or a list", () => {
     ]);
   });
 
+  it("activates a list pressed by its handle when the click goes to the list (pointer capture)", () => {
+    const list = root.querySelector("[data-lp-list]") as HTMLElement;
+    pointer(handle(), "pointerdown", 50, 10);
+    pointer(list, "pointerup", 50, 10);
+    // Chrome sends the click to the element holding the capture: the list, not its handle.
+    click(list);
+    expect(activated).toEqual([{ kind: "list", id: "todo" }]);
+    // A click on the list's body, with no press on its handle, activates nothing.
+    pointer(list, "pointerdown", 50, 200);
+    click(list);
+    expect(activated).toHaveLength(1);
+    // Nor a later click on it, from code, after the press it belonged to.
+    pointer(handle(), "pointerdown", 50, 10);
+    pointer(list, "pointerup", 50, 10);
+    click(list);
+    list.click();
+    expect(activated).toHaveLength(2);
+  });
+
   it("lets the click that ends a drag reach neither the card nor the page", () => {
     const own: string[] = [];
     card("a").addEventListener("click", () => own.push("card"));

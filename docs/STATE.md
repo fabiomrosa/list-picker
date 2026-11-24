@@ -99,8 +99,9 @@ Every slice's pull request updates it (SESSION §3).
   and ← → ×; positions are read at click time and the neighbours, counts and button states refresh
   after every change. Forms add lists and cards at the end or before a chosen one and move cards
   (showing "same place" when nothing changed); the page logs every `move` event, the `change`
-  count and the Snapshot version. ✎ renames a list or a card (`updateList`, `updateCard`); a click
-  or Enter on a card or header opens a dialog (`onActivate`); Doing takes at most 3 cards
+  count and the Snapshot version. A click or Enter on a list's header edits its name in place (Enter
+  or leaving saves, Esc cancels; `updateList`), and on a card opens a dialog that renames it
+  (`updateCard`), both through `onActivate`; no browser prompt; Doing takes at most 3 cards
   (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
   board narrower than its lists (52rem) show auto-scroll both ways. Styles live in the demo only.
 
@@ -134,6 +135,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
+  place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
+  list's handle never activated in Chrome (the pointer capture sends the click to the list); the
+  engine now remembers what the press was on.
 - **2026-11-23, L4.11:** `canMove` (`createDrag` and `mount` options): the Placeholder never
   enters a refused place, the keyboard skips refused places; the demo caps Doing at 3 cards
   (browser test).

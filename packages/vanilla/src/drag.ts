@@ -138,6 +138,8 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   let active: Active | undefined;
   /** The latest press became a drag: the click that ends it is swallowed. */
   let dragged = false;
+  /** What the latest press in `root` was on, if a card or a list's handle. */
+  let pressedOn: { kind: Kind; item: HTMLElement } | undefined;
   const announcer = createAnnouncer(root, board, options.messages);
   const { onActivate, canMove } = options;
   const keyboard = createKeyboard(
@@ -447,8 +449,9 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
    * Every press in `root`, even one a control stops from bubbling: a click after it is its own,
    * not the one ending the last drag (no browser tested fires that one at all).
    */
-  function onPressCapture(): void {
+  function onPressCapture(event: PointerEvent): void {
     dragged = false;
+    pressedOn = event.target instanceof Element ? pressed(event.target) : undefined;
   }
 
   /** First of every click in `root` (capture): the one ending a drag goes no further. */
@@ -462,7 +465,10 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
 
   function onClick(event: MouseEvent): void {
     if (!onActivate || !(event.target instanceof Element)) return;
-    const what = pressed(event.target);
+    // A list pressed by its handle holds the pointer capture, so the click comes to the list.
+    const what =
+      pressed(event.target) ?? (pressedOn?.item === event.target ? pressedOn : undefined);
+    pressedOn = undefined; // one click per press
     if (what)
       onActivate({ kind: name(what.kind), id: what.item.getAttribute(what.kind.attribute) ?? "" });
   }
@@ -485,6 +491,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     cancel,
     replace(current, next) {
       keyboard.replace(current, next);
+      if (pressedOn?.item === current) pressedOn = { ...pressedOn, item: next };
       // A press not yet a drag (`mount` writes until one starts) goes on from the new element.
       if (press?.item !== current) return;
       press = { ...press, item: next };
