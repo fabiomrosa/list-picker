@@ -84,8 +84,10 @@ nav a:first-child {
 nav a:first-child::before {
   content: "";
   flex: none;
-  width: 1em;
-  height: 1em;
+  width: 1.2em;
+  height: 1.2em;
+  /* Centred on the letters (the i's dot to the baseline), not on the line the "p" pulls down. */
+  translate: 0 -0.025em;
   background: var(--accent);
   mask:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Crect x='1.5' y='1.5' width='13' height='13' rx='2'/%3E%3Cpath d='M4.5 5.5h7M4.5 8h7M4.5 10.5h7'/%3E%3C/svg%3E")
@@ -260,7 +262,7 @@ main.doc {
 }
 @media (max-width: 30rem) {
   nav {
-    gap: 0.9rem;
+    gap: 0.75rem;
     padding: 1rem;
   }
 }

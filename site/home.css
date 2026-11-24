@@ -24,6 +24,13 @@ main.home > :not(.hero, .showcase) {
   font-size: 1.15rem;
   color: var(--muted);
 }
+/* The hero's two buttons: apart, and wrapping to two lines on a narrow screen. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
 .button.ghost {
   background: none;
   color: var(--text);
