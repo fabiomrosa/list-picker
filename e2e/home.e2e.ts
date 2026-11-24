@@ -24,12 +24,17 @@ const cardsOf = (page: Page, id: string) => page.locator(`#hero-board [data-lp-c
 
 /** Presses `from`, moves to the bottom of `to` and holds there; returns the release. */
 async function dragTo(page: Page, from: Locator, to: Locator) {
+  // Below the hero, the board may start under the fold (CI's fonts are larger): bring it into
+  // view, since the engine finds the drop target at the pointer.
+  await page.locator("#hero-board").scrollIntoViewIfNeeded();
   const a = await from.boundingBox();
   const b = await to.boundingBox();
   if (!a || !b) throw new Error("not on screen");
   await page.mouse.move(a.x + 20, a.y + 10);
   await page.mouse.down();
   await page.mouse.move(b.x + b.width / 2, b.y + b.height - 6, { steps: 12 });
+  // One frame for the Placeholder to reach the last place before the release.
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
   return () => page.mouse.up();
 }
 
