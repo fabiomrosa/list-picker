@@ -166,6 +166,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner):** gentle hovers on the site and both demos: colours ease in (0.15s),
+  text links thicken their underline, solid buttons lift a pixel and press back, the round buttons
+  and the player's controls fill lightly; none with reduced motion; never on a card or a list.
 - **2026-11-24, fix (owner):** the nav's brand a step larger (1.05rem; two rows below 41rem);
   page titles shrink on phones and a package's name wraps after its scope, so no page scrolls
   sideways at 320px (`e2e/home.e2e.ts`).

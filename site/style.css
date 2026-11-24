@@ -389,3 +389,59 @@ main.doc {
     display: none;
   }
 }
+
+/* Hover, gently: colours ease in, solid buttons lift a pixel and press back on click. Only the
+   site's own links and buttons: never a card or a list, whose Clone moves by `translate`. */
+nav a,
+nav .nav-theme,
+.toc a,
+main a:not(.button),
+.button,
+.install label,
+.skins label,
+.controls button,
+:is(main.demo form, dialog) button[type="submit"],
+.board .action {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    text-decoration-color 0.15s ease,
+    translate 0.15s ease,
+    box-shadow 0.15s ease;
+}
+main a:not(.button):hover {
+  text-decoration-thickness: 2px;
+}
+nav .nav-theme:hover,
+nav a.nav-github:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.button:hover,
+:is(main.demo form, dialog) button[type="submit"]:hover {
+  translate: 0 -1px;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.button:active,
+:is(main.demo form, dialog) button[type="submit"]:active {
+  translate: none;
+  box-shadow: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  nav a,
+  nav .nav-theme,
+  .toc a,
+  main a:not(.button),
+  .button,
+  .install label,
+  .skins label,
+  .controls button,
+  :is(main.demo form, dialog) button[type="submit"],
+  .board .action {
+    transition: none;
+  }
+  .button:hover,
+  :is(main.demo form, dialog) button[type="submit"]:hover {
+    translate: none;
+  }
+}
