@@ -86,7 +86,7 @@ nav a:first-child::before {
   flex: none;
   width: 1.2em;
   height: 1.2em;
-  /* Centred on the letters (tallest to baseline), not on the line, which the "p" pulls down. */
+  /* Centred on the letters (the i's dot to the baseline), not on the line the "p" pulls down. */
   translate: 0 -0.025em;
   background: var(--accent);
   mask:
