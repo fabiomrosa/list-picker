@@ -41,6 +41,7 @@ const renderers = {
   },
   renderCard(card: Card) {
     const element = document.createElement("div");
+    element.className = "card";
     element.textContent = card.text;
     return element;
   },
@@ -54,8 +55,9 @@ window.addEventListener("pagehide", () => view.destroy());
 Every Board change (yours, or a drag's drop) shows in the page; a Renderer runs once per list or
 card, and its elements are moved, never redrawn, until `updateList` or `updateCard` gives that item
 a new value: then its Renderer runs again and the new element takes the old one's place, keeping
-the focus and a keyboard pick up. The styles are yours; for touch dragging, the cards
-and headers need `touch-action: none` (otherwise a touch scrolls the page instead):
+the focus and a keyboard pick up. The styles are yours (see [Styling a board](#styling-a-board));
+for touch dragging, the cards and headers need `touch-action: none` (otherwise a touch scrolls the
+page instead):
 
 ```css
 #board { display: flex; gap: 1rem; }
@@ -135,6 +137,42 @@ same `options` as `mount`.
 
 `mount` writes the first four; with `createDrag` you write them. Presses on a `button`, `input`,
 `select`, `textarea`, link or `contenteditable` inside a card or a list header start no drag.
+
+## Styling a board
+
+The package ships no styles: your Renderers' elements keep your classes, and the engine adds only
+the attributes above. A starting point:
+
+```css
+#board { display: flex; align-items: flex-start; gap: 1rem; }
+[data-lp-list], [data-lp-clone]:has(> [data-lp-cards]) { width: 16rem; padding: 0.75rem; background: #eef1f4; border-radius: 10px; }
+[data-lp-cards] { display: flex; flex-direction: column; gap: 0.5rem; min-height: 3rem; }
+.card { padding: 0.6rem; background: #fff; border-radius: 8px; box-shadow: 0 1px 2px #0003; }
+[data-lp-card], [data-lp-list-handle] { touch-action: none; user-select: none; cursor: grab; }
+[data-lp-placeholder] { border: 2px dashed #9aa5b1; border-radius: 8px; }
+[data-lp-clone] { cursor: grabbing; rotate: 2deg; box-shadow: 0 10px 24px #0004; }
+.card:is(:focus-visible, [data-lp-grabbed]) { outline: 2px solid #0c66e4; outline-offset: -2px; }
+```
+
+The rules that are easy to miss:
+
+1. **What is dragged needs `touch-action: none`** (cards and list headers), or the browser takes a
+   touch for a scroll and cancels the drag.
+2. **The Clone loses its `data-lp-card` or `data-lp-list`.** It is a copy of the item with your
+   classes, plus `data-lp-clone`: style a card's Clone by its class (`.card`), and a list's by what
+   it holds (`[data-lp-clone]:has(> [data-lp-cards])`).
+3. **The engine moves the Clone with an inline `transform`:** a `transform` of yours is replaced.
+   Tilt or scale it with `rotate` and `scale`.
+4. **During a drag the Placeholder and the hidden item are siblings of the other items,** so
+   `:nth-child(…)` counts them and shifts. Count only the items:
+   `[data-lp-list]:nth-child(odd of [data-lp-list])`.
+5. **A keyboard pick up of a list marks the whole list** with `data-lp-grabbed`, not its header:
+   style `[data-lp-list][data-lp-grabbed]` so its cards stay readable.
+6. **A list that scrolls (`overflow: auto`) clips an outline drawn outside a card:** draw focus
+   and pick-up outlines inside (a negative `outline-offset`) or as a border or shadow.
+
+The [site](https://fabiomrosa.github.io/list-picker/) shows one board in three skins (Cards,
+Terminal, Pop) that change only CSS.
 
 ## Keyboard
 

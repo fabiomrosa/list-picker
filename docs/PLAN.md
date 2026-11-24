@@ -902,7 +902,7 @@ shows it in the demo.
 - **References:** L4.16, L4.17, DEC-07.
 
 ### L4.19 · Styling a board
-- **Status:** waiting (L4.18)
+- **Status:** done (2026-11-24)
 - **Goal:** someone styling their board avoids the traps the site's skins fell into.
 - **Depends on:** L4.18.
 - **In scope:** a "Styling a board" section in the vanilla README (so on the site's vanilla page
@@ -911,6 +911,8 @@ shows it in the demo.
   Placeholder and the hidden item are siblings during a drag (`:nth-child(… of …)`); a keyboard
   pick up of a list marks the whole list; an outline outside a card is clipped by a scrolling list.
 - **Out of scope:** a default theme (PRODUCT: out of v1); code changes.
+- **Note:** a sixth rule, found while checking the source: the engine moves the Clone with an
+  inline `transform`, so a user's `transform` is replaced (`rotate` and `scale` are not).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Each rule in the section is true of the engine (checked against the source) and shows the
