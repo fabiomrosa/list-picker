@@ -159,6 +159,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.20:** the demo's forms (one height, the site's colours, a select arrow of their
+  own) and its list and card buttons (SVG icons in `currentColor`, `aria-label`s); the GitHub link
+  is an Octocat button on every page.
 - **2026-11-24, L4.19:** "Styling a board" in the vanilla README (and its site page): a starting
   CSS and seven rules from the skins' bugs, each checked against the engine.
 - **2026-11-24, fix (owner note):** the demo's scrolling lists clipped the skins' card shadows (now
@@ -181,7 +184,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.20 (the demo's controls), then L4.21 (first npm publish).
+- **Next:** L4.21 (first npm publish; the owner publishes from their account).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the

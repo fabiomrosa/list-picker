@@ -56,6 +56,7 @@ a {
 nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 1.25rem;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--line);
@@ -76,6 +77,27 @@ nav a:first-child {
 nav a:first-child::before {
   content: "▤ " / "";
   color: var(--accent);
+}
+/* GitHub: apart from the pages, an Octocat (Octicons' mark-github, MIT) in a round button. */
+nav a.nav-github {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text);
+}
+nav a.nav-github:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+nav a.nav-github svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: currentColor;
 }
 main {
   max-width: 46rem;
