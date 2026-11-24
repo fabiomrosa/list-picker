@@ -37,8 +37,13 @@ function attempt(act: () => void): boolean {
     error.textContent = "";
     return true;
   } catch (e) {
-    error.textContent = (e as Error).message;
+    // Cleared, then set a frame later: the same error twice is still announced (`role="alert"`).
+    error.textContent = "";
     status.textContent = "";
+    const message = (e as Error).message;
+    requestAnimationFrame(() => {
+      error.textContent = message;
+    });
     return false;
   }
 }
@@ -271,8 +276,9 @@ function eventRow(event: MoveEvent): HTMLElement {
   // A list moves among the lists: it has no list of its own.
   field("from", event.kind === "card" ? event.fromListId : "lists");
   field("to", event.kind === "card" ? event.toListId : "lists");
-  field("after", event.prevId);
-  field("before", event.nextId);
+  // No neighbour: the start or the end, as the forms say "(end)".
+  field("after", event.prevId ?? "(start)");
+  field("before", event.nextId ?? "(end)");
   text.append(head, fields);
   // The event's JSON, one piece per field, so a line breaks between fields first.
   const json = el("code", "event-json", "{");
