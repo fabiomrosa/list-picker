@@ -29,6 +29,8 @@ function markdown(): Plugin {
         let text = read(file);
         if (from) {
           const start = text.indexOf(from);
+          // A renamed heading must fail the build, not leave the page without its section.
+          if (start < 0) throw new Error(`${file}: no "${from}"`);
           const end = text.indexOf("\n## ", start + from.length);
           text = text.slice(start, end < 0 ? undefined : end);
         }
@@ -37,7 +39,7 @@ function markdown(): Plugin {
         // Ids as GitHub gives them, so the READMEs' own `#section` links work here too.
         return body.replace(/<h([1-6])>(.*?)<\/h\1>/g, (_h, level: string, inner: string) => {
           const id = inner
-            .replace(/<[^>]+>/g, "")
+            .replace(/<[^>]+>|&[#\w]+;/g, "")
             .toLowerCase()
             .replace(/[^\w\s-]/g, "")
             .trim()
