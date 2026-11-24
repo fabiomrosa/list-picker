@@ -854,7 +854,7 @@ shows it in the demo.
 - **References:** DEC-07.
 
 ### L4.17 · The demo in the site's look
-- **Status:** waiting (L4.16)
+- **Status:** done (2026-11-24)
 - **Goal:** the demo (`/demo/`) looks like the rest of the site instead of a bare playground.
 - **Depends on:** L4.16.
 - **In scope:** the demo takes the site's stylesheet (`site/style.css`: palette in light and dark,
@@ -863,6 +863,10 @@ shows it in the demo.
   tokens. What the browser tests and the trace rely on stays: the Backlog list scrolls past 22rem,
   the board is narrower than its lists (52rem), real scrollbars, the selectors.
 - **Out of scope:** the skin chooser on the demo (the home has it); new demo behaviour.
+- **Note:** the demo's styles moved to `playground/demo.css`, imported after `site/style.css` by
+  `main.ts`. The header is kept compact: the auto-scroll tests drag to the Backlog's bottom inside
+  a 720px window (it ends at 704px). The trace: 0 forced layouts in `pointermove`; 381 frames, 12
+  forced layouts and 38 style recalcs in them (374, 12 and 34 in decision 0002).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. The demo shows the site's navigation and palette, in light and dark, and reads at 375px

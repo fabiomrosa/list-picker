@@ -1,7 +1,11 @@
+/// <reference types="vite/client" />
 // The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
 // not covered.
 import { Board, type Snapshot } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
+// The site's look first, then the demo's own parts (L4.17).
+import "../site/style.css";
+import "./demo.css";
 
 /** `name` is what the page shows; the id never changes (renaming sets the name). */
 type Entity = { id: string; name?: string };

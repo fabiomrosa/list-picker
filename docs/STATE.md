@@ -105,7 +105,9 @@ Every slice's pull request updates it (SESSION §3).
   or leaving saves, Esc cancels; `updateList`), and on a card opens a dialog that renames it
   (`updateCard`), both through `onActivate`; no browser prompt; Doing takes at most 3 cards
   (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
-  board narrower than its lists (52rem) show auto-scroll both ways. Styles live in the demo only.
+  board narrower than its lists (52rem) show auto-scroll both ways. Its look is the site's
+  (`site/style.css`, then `playground/demo.css`); the package ships no styles. Its nav links are
+  relative to the site (`../`), so under `npm run dev` they stay on the demo.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -135,7 +137,8 @@ title, size, frozen-files and secret checks.
   four packages, React and Angular "coming soon"; an Install chooser of radios with no script,
   where React and Angular show no command until published; the lab's answer from the root README;
   links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
-  demo (`playground/`, linking back to the site) in `demo/`. Every `site/*.html` is a page, so a
+  demo (`playground/`, in the site's look: its stylesheet and nav, the board in the home's Cards
+  look; `playground/demo.css`) in `demo/`. Every `site/*.html` is a page, so a
   package's page is one more `<name>.html`, and a README link to `packages/<name>` goes to it.
   A package's page has an index of its README's `##` sections beside it (`main.doc`, sticky,
   hidden below 52rem). The look: monospace headings and navigation, a warm palette in light and
@@ -153,6 +156,8 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, L4.17:** the demo in the site's look (palette, nav, Cards board); every browser
+  test passes unchanged, the trace still finds no forced layout in `pointermove`.
 - **2026-11-24, L4.16:** from the owner's patch 0004: the home's board in three skins (Cards,
   Terminal, Pop); the browser test switches them, checks nothing is redrawn and that a list's Clone
   and the Placeholder take each skin (the patch's list Clones did not: fixed).
@@ -166,7 +171,7 @@ None.
   links back. The site is live (L4.12's criterion 1: every page 200).
 - **2026-11-23, L4.12:** the site: one Vite build of pages from the READMEs plus the demo,
   deployed by a Pages workflow on every merge; `homepage` points each package at its page.
-- **Next:** L4.17 (the demo in the site's look), then L4.18 (first npm publish).
+- **Next:** L4.18 (first npm publish; the owner publishes from their account).
 - **2026-11-23, fix (owner note):** the demo renames a list by clicking its title (an input in
   place) and a card in its dialog, instead of the browser's prompt. Found on the way: a click on a
   list's handle never activated in Chrome (the pointer capture sends the click to the list); the
