@@ -1,0 +1,36 @@
+import { expect, type Page, test } from "@playwright/test";
+
+// The theme button on every page: auto (the system's) → light → dark → auto, saved in the browser.
+const background = (page: Page) =>
+  page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+const LIGHT = "rgb(246, 244, 239)";
+const DARK = "rgb(20, 19, 17)";
+
+for (const [name, url] of [
+  ["the home", "http://localhost:5181/list-picker/"],
+  ["the kanban demo", "http://localhost:5180/"],
+] as const) {
+  test(`${name}: the theme button cycles auto, light, dark, and the choice survives a reload`, async ({
+    page,
+  }) => {
+    // A light system: auto is light, the button's dark wins over it, and survives a reload.
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto(url);
+    const button = () => page.locator(".nav-theme");
+    await expect(button()).toHaveAccessibleName("Theme: automatic (switch to light)");
+    expect(await background(page)).toBe(LIGHT);
+    await button().click();
+    await expect(button()).toHaveAccessibleName("Theme: light (switch to dark)");
+    await button().click();
+    await expect(button()).toHaveAccessibleName("Theme: dark (switch to automatic)");
+    expect(await background(page)).toBe(DARK);
+    await page.reload();
+    expect(await background(page)).toBe(DARK);
+    // A dark system: back to light by the button, then auto follows the system again.
+    await page.emulateMedia({ colorScheme: "dark" });
+    await button().click(); // auto
+    expect(await background(page)).toBe(DARK);
+    await button().click(); // light
+    expect(await background(page)).toBe(LIGHT);
+  });
+}
