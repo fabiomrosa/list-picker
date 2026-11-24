@@ -79,3 +79,32 @@ td {
   text-decoration: none;
   font-weight: 600;
 }
+.install label {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.install input {
+  position: absolute;
+  opacity: 0;
+}
+.install input:checked + label {
+  background: var(--code);
+  font-weight: 600;
+}
+.install input:focus-visible + label {
+  outline: 2px solid var(--accent);
+}
+.install pre,
+.install .soon {
+  display: none;
+}
+#install-vanilla:checked ~ .install-vanilla,
+#install-react:checked ~ .install-react,
+#install-angular:checked ~ .install-angular {
+  display: block;
+}
+td code {
+  white-space: nowrap;
+}
