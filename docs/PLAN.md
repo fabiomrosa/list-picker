@@ -813,7 +813,7 @@ shows it in the demo.
 - **References:** L4.12.
 
 ### L4.15 · A live board on the home
-- **Status:** waiting (L4.14)
+- **Status:** done (2026-11-24)
 - **Goal:** a visitor tries the library on the home page.
 - **Depends on:** L4.14.
 - **In scope:** from patch 0003: a hero (tagline, Install and demo buttons) and a Board drawn by

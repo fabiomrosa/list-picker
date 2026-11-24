@@ -207,6 +207,12 @@ main.doc {
   color: var(--muted);
   text-transform: uppercase;
 }
+@media (max-width: 30rem) {
+  nav {
+    gap: 0.9rem;
+    padding: 1rem;
+  }
+}
 @media (max-width: 52rem) {
   main.doc {
     display: block;

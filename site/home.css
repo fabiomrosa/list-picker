@@ -1,0 +1,135 @@
+/* The home page (L4.16): the hero and its live board in three skins. */
+main.home {
+  max-width: 64rem;
+}
+main.home > :not(.hero, .showcase) {
+  max-width: 46rem;
+}
+.hero {
+  padding: 2.5rem 0 1rem;
+}
+.hero h1 {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+  margin: 0.25rem 0 1rem;
+}
+.eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.lede {
+  max-width: 40rem;
+  font-size: 1.15rem;
+  color: var(--muted);
+}
+.button.ghost {
+  background: none;
+  color: var(--text);
+}
+.button.ghost:hover {
+  color: var(--bg);
+}
+
+.hint {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+kbd {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  padding: 0.05em 0.4em;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+}
+
+/* The board, whatever the skin: what mount draws, and the engine's Clone and Placeholder. */
+#hero-board {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  min-height: 20rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  border-radius: 14px;
+}
+#hero-board [data-lp-list] {
+  flex: 0 0 16rem;
+}
+#hero-board [data-lp-cards] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 3rem;
+}
+#hero-board [data-lp-card],
+#hero-board [data-lp-list-handle] {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+#hero-board [data-lp-clone] {
+  cursor: grabbing;
+  rotate: 2deg;
+}
+.hb-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.6rem;
+}
+.hb-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.hb-card p {
+  margin: 0.25rem 0 0;
+  line-height: 1.35;
+}
+.hb-tag {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+
+/* Cards: soft columns and white cards. */
+[data-skin="cards"] {
+  background: #dfe6ee;
+  color: #172b4d;
+}
+[data-skin="cards"] [data-lp-list] {
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: #f1f4f7;
+}
+[data-skin="cards"] .hb-head h3 {
+  font-family: system-ui, sans-serif;
+  letter-spacing: 0;
+}
+[data-skin="cards"] .hb-count {
+  font-size: 0.8rem;
+  color: #5e6c84;
+}
+[data-skin="cards"] .hb-card {
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(9 30 66 / 0.25);
+}
+[data-skin="cards"] .hb-tag {
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: #e9f2ff;
+  color: #0055cc;
+}
+[data-skin="cards"] [data-lp-clone] {
+  box-shadow: 0 10px 24px rgb(9 30 66 / 0.3);
+}
+[data-skin="cards"] [data-lp-placeholder] {
+  border-radius: 8px;
+  background: #d4dbe3;
+}
+[data-skin="cards"] :focus-visible,
+[data-skin="cards"] [data-lp-grabbed] {
+  outline: 2px solid #0c66e4;
+  outline-offset: 2px;
+}
