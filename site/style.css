@@ -67,14 +67,27 @@ a {
   color: var(--accent);
   text-underline-offset: 0.2em;
 }
+/* The bar spans the window; its contents stop at the pages' widest content (64rem), centred. */
 nav {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 1.25rem;
-  padding: 1rem 1.5rem;
+  padding: 1rem max(1.5rem, (100% - 64rem) / 2);
   border-bottom: 1px solid var(--line);
   font-size: 0.9rem;
+}
+/* The docs, then the demos, apart by a line. */
+.nav-group {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-group + .nav-group {
+  padding-left: 1.25rem;
+  border-left: 1px solid var(--line);
 }
 nav a {
   color: var(--muted);
@@ -83,19 +96,19 @@ nav a {
 nav a:hover {
   color: var(--accent);
 }
-nav a:first-child {
+nav > a:first-child {
   color: var(--text);
   font-weight: 700;
   margin-right: auto;
 }
 /* The brand's mark: a drawn list (a box, three lines), centred on the name's line; a font glyph
    sits on the baseline instead. Decorative: no text for screen readers. */
-nav a:first-child {
+nav > a:first-child {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
 }
-nav a:first-child::before {
+nav > a:first-child::before {
   content: "";
   flex: none;
   width: 1.2em;
@@ -109,7 +122,7 @@ nav a:first-child::before {
 }
 /* High contrast forces backgrounds to the page's colour: draw the mark in the text's instead. */
 @media (forced-colors: active) {
-  nav a:first-child::before {
+  nav > a:first-child::before {
     background: CanvasText;
   }
 }
@@ -316,11 +329,12 @@ main.doc {
   color: var(--muted);
   text-transform: uppercase;
 }
-/* On a phone, two rows: the brand and GitHub, then the pages (they no longer fit one line). */
-@media (max-width: 30rem) {
+/* On a phone, two rows: the brand and the buttons, then the pages (one line no longer fits
+   them below about 36rem). */
+@media (max-width: 37rem) {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
-    padding: 1rem;
+    padding: 1rem 1.5rem; /* the content's edges */
   }
   nav .nav-theme,
   nav a.nav-github {
@@ -334,8 +348,12 @@ main.doc {
     order: 2;
     flex-basis: 100%;
   }
-  nav a:not(:first-child, .nav-github) {
+  nav .nav-group {
     order: 3;
+    gap: 0.9rem;
+  }
+  .nav-group + .nav-group {
+    padding-left: 0.9rem;
   }
 }
 @media (max-width: 52rem) {
