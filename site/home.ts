@@ -66,3 +66,13 @@ mount(
 );
 showCounts();
 board.on("change", showCounts);
+
+// The skin chooser changes only the board's `data-skin`: the Board and its elements stay.
+const skins = document.querySelectorAll<HTMLInputElement>("input[name=skin]");
+// A browser may restore the checked radio on reload: start from it.
+root.dataset.skin = [...skins].find((input) => input.checked)?.value ?? "cards";
+for (const input of skins) {
+  input.addEventListener("change", () => {
+    root.dataset.skin = input.value;
+  });
+}
