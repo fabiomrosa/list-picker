@@ -963,8 +963,8 @@ shows it in the demo.
   (#77): the title as on the site's other pages, the skin chooser right above the board, then
   "Edit the board" and "Events" stacked at full width (side by side squeezed both); the forms read
   as sentences (the prepositions styled like the verbs); empty status and error take no room; each
-  event is a card: its kind and name, then from / to and after / before in fixed places, and
-  beside it the JSON `board.on("move")` receives. On a phone a form's name goes above its fields.
+  event is two cards of one height: its kind and name, then from / to and after / before in
+  fixed places; beside it the JSON `board.on("move")` receives. On a phone a form's name goes above its fields.
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Screenshots at 1280 and 375, light and dark, show the three sections apart; no page scrolls

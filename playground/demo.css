@@ -276,16 +276,24 @@ dialog :is(input, button):focus-visible {
   overflow-y: auto;
   font: 0.85rem / 1.5 var(--mono);
 }
-/* One event per card: to read on the left, the event as emitted on the right. */
+/* Each event, two cards of one height: to read on the left, as emitted (JSON) on the right. */
 .event {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 0.75rem 1.5rem;
-  align-items: start;
-  margin-bottom: 0.6rem;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.event-text,
+.event-raw {
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--code) 55%, transparent);
+}
+.event-text {
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+.event-raw {
+  background: var(--code);
 }
 .event-head {
   display: flex;
@@ -320,13 +328,15 @@ dialog :is(input, button):focus-visible {
 }
 .event-caption {
   display: block;
-  margin-bottom: 0.25rem;
-  font-size: 0.7rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--muted);
 }
 .event-json {
   display: block;
-  padding: 0.4rem 0.6rem;
+  padding: 0;
+  background: none;
   font-size: 0.75rem;
   line-height: 1.45;
   color: var(--muted);
