@@ -51,9 +51,14 @@ nav {
   font-family: var(--mono);
   letter-spacing: -0.02em;
 }
+/* Smaller on phones, where a package's name ("@list-picker/vanilla") would widen the page. */
 h1 {
-  font-size: 2.4rem;
+  font-size: clamp(1.75rem, 9vw, 2.4rem);
   line-height: 1.15;
+  overflow-wrap: break-word;
+}
+h1 .scope {
+  white-space: nowrap;
 }
 h2 {
   margin-top: 2.5rem;
@@ -110,8 +115,10 @@ nav a {
 nav a:hover {
   color: var(--accent);
 }
+/* The brand a step above the links; its mark follows (em). */
 nav > a:first-child {
   color: var(--text);
+  font-size: 1.05rem;
   font-weight: 700;
   margin-right: auto;
 }
@@ -344,8 +351,8 @@ main.doc {
   text-transform: uppercase;
 }
 /* On a phone, two rows: the brand and the buttons, then the pages (one line no longer fits
-   them below about 39.5rem). */
-@media (max-width: 40rem) {
+   them below about 40.7rem). */
+@media (max-width: 41rem) {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem 1.5rem; /* the content's edges */
