@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.20). The publish, the tag and criterion 1 against the registry moved to
-  L4.21; the version stays `1.0.0`.
+  a site first (L4.8–L4.21). The publish, the tag and criterion 1 against the registry moved to
+  L4.22; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -946,10 +946,30 @@ shows it in the demo.
 - **Files:** ~5: `playground/main.ts`, `playground/demo.css`, `playground/index.html`, PLAN, STATE.
 - **References:** L4.17, L4.18.
 
-### L4.21 · First npm publish
+### L4.21 · The demo's layout
 - **Status:** waiting (L4.20)
+- **Goal:** the demo reads in sections: the board first, then what edits it and what it reports.
+- **Depends on:** L4.20.
+- **In scope:** chosen by the owner: the title and the skin chooser, then the board at full width,
+  then two panels side by side (stacked on phones): "Edit the board" (the three forms aligned in a
+  grid, the status and error inside) and "Events" (the log and the change and Snapshot counts).
+  Room between sections instead of the compact header: the auto-scroll browser tests bring the
+  board into view first (as the home's tests do), so the page no longer has to fit 720px.
+- **Out of scope:** new demo behaviour; the selectors the tests use.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Screenshots at 1280 and 375, light and dark, show the three sections apart; no page scrolls
+     sideways.
+  2. Every browser test passes (the auto-scroll ones scroll the board into view first), and
+     `npm run trace` still finds no forced layout in `pointermove`.
+- **Files:** ~6: `playground/index.html`, `playground/demo.css`, `e2e/drag.e2e.ts`,
+  `bench/drag-trace.ts` (if it needs the board in view), PLAN, STATE.
+- **References:** L4.17, L4.20.
+
+### L4.22 · First npm publish
+- **Status:** waiting (L4.21)
 - **Goal:** v1 is on npm.
-- **Depends on:** L4.20, P2.
+- **Depends on:** L4.21, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
   first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
 - **Out of scope:** a release workflow in CI.
