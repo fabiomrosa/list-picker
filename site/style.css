@@ -329,8 +329,9 @@ main.doc {
   color: var(--muted);
   text-transform: uppercase;
 }
-/* On a phone, two rows: the brand and GitHub, then the pages (they no longer fit one line). */
-@media (max-width: 30rem) {
+/* On a phone, two rows: the brand and the buttons, then the pages (one line no longer fits
+   them below about 36rem). */
+@media (max-width: 37rem) {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem 1.5rem; /* the content's edges */
