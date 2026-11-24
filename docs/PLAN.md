@@ -642,8 +642,8 @@ shows it in the demo.
 ### L4.7 · Ready to publish
 - **Status:** done (2026-11-23)
 - **Note:** planned as the first npm publish; the owner then asked for the rest of the v1 API and
-  a site first (L4.8–L4.21). The publish, the tag and criterion 1 against the registry moved to
-  L4.22; the version stays `1.0.0`.
+  a site first (L4.8–L4.25). The publish, the tag and criterion 1 against the registry moved to
+  L4.26; the version stays `1.0.0`.
 - **Goal:** v1 is on npm.
 - **Depends on:** L4.6, P2 (npm account and package names).
 - **In scope:** the package names from P2, version `1.0.0` in both packages (vanilla depending on
@@ -975,10 +975,75 @@ shows it in the demo.
   `bench/drag-trace.ts` (if it needs the board in view), PLAN, STATE.
 - **References:** L4.17, L4.20.
 
-### L4.22 · First npm publish
+### L4.22 · Ordered lists, not only kanban
 - **Status:** waiting (L4.21)
+- **Goal:** the project presents itself as what the owner first imagined: ordered lists that people
+  reorder, a kanban board being one case and a playlist another.
+- **Depends on:** L4.21.
+- **In scope:** wording only, nothing removed: the site's home (tagline, lede), both READMEs' intros,
+  the packages' `description` and `keywords` (adding "playlist", "sortable list"), the root README
+  and PRODUCT's vision; the kanban stays as an example. The owner sees the new texts before the
+  merge.
+- **Out of scope:** renaming the API (Board, List, Card stay); new behaviour.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. No page or README calls the library "kanban" only; the kanban demo, the home's board and
+     every API stay.
+- **Files:** ~8: `site/index.html`, two READMEs, two `package.json`, `README.md`,
+  `docs/shared/PRODUCT.md`, STATE.
+- **References:** DEC-07; the owner's sketch (a playlist).
+
+### L4.23 · A card's neighbours
+- **Status:** waiting (L4.22)
+- **Goal:** an app steps to the previous or next item (a playlist's previous and next track) in
+  O(1), the doubly linked list's own strength.
+- **Depends on:** L4.22.
+- **In scope:** `board.neighbours(cardId)` returning `{ prev, next }` (the cards' values, `null` at
+  an end); an unknown id throws. Unit and property tests; core README.
+- **Out of scope:** neighbours of a list; wrapping around at the ends (the app's choice).
+- **Contract:** none. **Public API:** `Board.neighbours` (additive).
+- **Acceptance criteria:**
+  1. After any sequence of operations, `neighbours` matches the cards' order (property test).
+- **Files:** ~5: `core/src/board.ts`, its tests, core README, PLAN, STATE.
+- **References:** DEC-06.
+
+### L4.24 · Swap two cards
+- **Status:** waiting (L4.23)
+- **Goal:** an app swaps two items' places (pick one, then the other), in O(1).
+- **Depends on:** L4.23.
+- **In scope:** `board.swapCards(a, b)`: the two cards exchange places, in one list or across
+  lists; a no-op for the same card; unknown ids throw and change nothing; it emits `move` events
+  as moves do (persistence unchanged) and one `change`. Unit and property tests; core README.
+- **Out of scope:** swapping lists; a pick-and-swap mode in the engine (the app builds it on
+  `swapCards`; it moves into the library only if adapters repeat it).
+- **Contract:** none. **Public API:** `Board.swapCards` (additive).
+- **Acceptance criteria:**
+  1. After any sequence of operations including swaps, the Board matches the reference model, and
+     replaying the emitted `move` events on a copy gives the same order (property test).
+- **Files:** ~5: `core/src/board.ts`, its tests, core README, PLAN, STATE.
+- **References:** DEC-06, DEC-11.
+
+### L4.25 · The music player example
+- **Status:** waiting (L4.24)
+- **Goal:** the site shows a second use of the library beside the kanban: the owner's playlist.
+- **Depends on:** L4.24.
+- **In scope:** a page in the site (`player.html` or a `player/` demo build, linked from the nav and
+  the home): an album header with the current track, previous and next (`neighbours`), a playlist
+  drawn by `mount` (one list), each track with a checkbox to pick it and pick another to swap
+  (`swapCards`), plus the engine's drag and keyboard moves; a browser test. The kanban demo stays.
+- **Out of scope:** playing audio, Spotify (the sketch's extras).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Previous and next step through the playlist in its current order; picking two tracks swaps
+     them; a drag or a keyboard move reorders it (browser test).
+- **Files:** ~7: the page, its script and styles, the site's build if needed, an e2e test, PLAN,
+  STATE.
+- **References:** L4.23, L4.24, DEC-07.
+
+### L4.26 · First npm publish
+- **Status:** waiting (L4.25)
 - **Goal:** v1 is on npm.
-- **Depends on:** L4.21, P2.
+- **Depends on:** L4.25, P2.
 - **In scope:** a last `npm publish --dry-run` of both; the owner publishes from `main`, core
   first; the agent tags `v1.0.0` on that commit and checks criterion 1 against the registry.
 - **Out of scope:** a release workflow in CI.
