@@ -288,6 +288,7 @@ td code {
 .install label {
   display: inline-block;
   padding: 0.3rem 0.8rem;
+  border: 1px solid transparent;
   border-radius: 6px;
   font-family: var(--mono);
   cursor: pointer;
@@ -297,6 +298,8 @@ td code {
   opacity: 0;
 }
 .install input:checked + label {
+  /* The border shows it in dark too (the terminal is near the page's black) and in forced colours. */
+  border: 1px solid var(--text);
   background: var(--term);
   color: var(--term-text);
 }
@@ -322,15 +325,37 @@ td code {
   color: var(--muted);
 }
 .install .pm input:checked + label {
+  border-color: transparent;
   background: none;
   color: var(--text);
   text-decoration: underline 2px var(--accent);
   text-underline-offset: 0.3em;
 }
 .pm-yarn,
-.pm-pnpm,
+.pm-pnpm {
+  display: none;
+}
+/* Forced colours draw every border: only the chosen tab keeps one. */
+@media (forced-colors: active) {
+  .install label {
+    border-color: Canvas;
+  }
+  .install > input:checked + label {
+    border-color: CanvasText;
+  }
+  .install .pm input:checked + label {
+    border-color: Canvas; /* the underline shows it */
+  }
+}
+/* Its own rule: a browser without :has() drops a whole rule that names it. */
 .install:has(#pm-yarn:checked, #pm-pnpm:checked) .pm-npm {
   display: none;
+}
+/* Without :has() the links could not change the command: npm only, no links. */
+@supports not selector(:has(*)) {
+  .install .pm {
+    display: none !important;
+  }
 }
 .install:has(#pm-yarn:checked) .pm-yarn,
 .install:has(#pm-pnpm:checked) .pm-pnpm {
