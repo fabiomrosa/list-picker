@@ -166,6 +166,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-24, fix (owner):** the nav's demos carry a visible "demos:" label (hidden below
+  22.5rem, where the line alone parts them; two rows below 40rem); the home's outlined button
+  fills with the accent on hover (its label was invisible).
 - **2026-11-24, fix (owner):** the nav's contents stop at the pages' widest content (64rem),
   centred, and line up with it on phones; its links come in two labelled lists, Docs (core,
   vanilla) and Demos (kanban, player), apart by a line.
