@@ -262,7 +262,7 @@ Everything in `packages/vanilla` (`@list-picker/vanilla`), over the user's marku
 tests run in `happy-dom` with synthetic pointer events (CONVENTIONS §5); real drags are checked in
 the browser from L2.6. Every slice extends the playground with what it adds; the owner checks the
 drag after L2.4 and at the end of M2. Styling hooks are attributes (`data-lp-*`), never inline
-styles the user must fight, except the Clone's position and `transform`.
+styles the user must fight, except the Clone's position and `translate`.
 
 ### L2.1 · Vanilla package and drag start
 - **Status:** done (2026-11-22)
