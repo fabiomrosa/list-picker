@@ -936,8 +936,8 @@ shows it in the demo.
   header the auto-scroll tests need.
 - **Note:** asked by the owner during the slice: the navigation's GitHub link became a round button
   apart from the pages, with the Octocat (Octicons' `mark-github`, MIT) and a visually hidden "GitHub",
-  on every page; the nav now fits one line at 375px. Icon contrast: enabled 14–19:1, disabled
-  3.0–4.5:1 across the skins.
+  on every page; the nav now fits one line at 375px. Icon contrast, every button in every
+  skin: enabled 8.8–18.9:1, disabled 3.7–6.0:1 (opacity 0.6).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Every browser test passes unchanged; screenshots in each skin and theme show the controls

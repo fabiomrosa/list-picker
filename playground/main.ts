@@ -112,16 +112,15 @@ function renderList(list: Entity): HTMLElement {
   const head = el("header", "list-head", "");
   // The name announced to screen readers (DEC-16), instead of the header's whole text.
   head.setAttribute("aria-label", list.name ?? list.id);
+  const name = list.name ?? list.id; // a rename redraws the header, so the labels follow
   const tools = el("div", "list-tools", "");
   tools.append(
-    action("left", `move list ${list.id} left`, () => {
+    action("left", `move list ${name} left`, () => {
       const { left } = listAt(list.id);
       if (left) moveList(list.id, left);
     }),
-    action("right", `move list ${list.id} right`, () =>
-      moveList(list.id, listAt(list.id).afterRight),
-    ),
-    action("remove", `remove list ${list.id}`, () => board.removeList(list.id)),
+    action("right", `move list ${name} right`, () => moveList(list.id, listAt(list.id).afterRight)),
+    action("remove", `remove list ${name}`, () => board.removeList(list.id)),
   );
   head.append(
     Object.assign(el("h2", "hb-title", list.name ?? list.id), { title: `drag to move ${list.id}` }),
@@ -133,26 +132,27 @@ function renderList(list: Entity): HTMLElement {
 
 function renderCard(card: Entity): HTMLElement {
   const box = el("div", "card hb-card", "");
-  box.setAttribute("aria-label", card.name ?? card.id);
+  const name = card.name ?? card.id; // a rename redraws the card, so the labels follow
+  box.setAttribute("aria-label", name);
   const tools = el("div", "tools", "");
   tools.append(
-    action("up", `move ${card.id} up`, () => {
+    action("up", `move ${name} up`, () => {
       const { listId, up } = cardAt(card.id);
       if (up) move(card.id, listId, up);
     }),
-    action("down", `move ${card.id} down`, () => {
+    action("down", `move ${name} down`, () => {
       const { listId, afterDown } = cardAt(card.id);
       move(card.id, listId, afterDown);
     }),
-    action("left", `move ${card.id} left`, () => {
+    action("left", `move ${name} left`, () => {
       const { left } = cardAt(card.id);
       if (left) move(card.id, left, null);
     }),
-    action("right", `move ${card.id} right`, () => {
+    action("right", `move ${name} right`, () => {
       const { right } = cardAt(card.id);
       if (right) move(card.id, right, null);
     }),
-    action("remove", `remove card ${card.id}`, () => board.removeCard(card.id)),
+    action("remove", `remove card ${name}`, () => board.removeCard(card.id)),
   );
   box.append(el("strong", "hb-text", card.name ?? card.id), el("small", "neighbours", ""), tools);
   return box;
