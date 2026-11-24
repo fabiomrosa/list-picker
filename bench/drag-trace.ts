@@ -42,6 +42,8 @@ async function record(browser: Browser): Promise<TraceEvent[]> {
   const page = await browser.newPage({ viewport: { width: 900, height: 900 } });
   await page.goto(`http://localhost:${PORT}/`);
   await page.waitForSelector("[data-lp-card]");
+  // Vite's dev server injects the CSS after the first paint: let its colour transitions finish.
+  await page.waitForTimeout(500);
   await browser.startTracing(page, { categories: ["devtools.timeline"] });
   await drag(page, '[data-lp-card="Design the model"]', '[data-lp-card="Write the tests"]', 0.9);
   await drag(page, '[data-lp-card="Write the tests"]', '[data-lp-card="Linked list"]', 0.1);

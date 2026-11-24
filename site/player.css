@@ -101,6 +101,13 @@ main.player-page {
   color: var(--text);
   cursor: pointer;
 }
+@media (hover: hover) {
+  .controls button:hover:enabled {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+    color: var(--accent);
+  }
+}
 .controls button:disabled {
   opacity: 0.4;
   cursor: default;

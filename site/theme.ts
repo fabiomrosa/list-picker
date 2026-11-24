@@ -19,6 +19,10 @@ function saved(): Mode {
 }
 
 function apply(mode: Mode): void {
+  // No hover fades while the colours change: on for this frame, off after the next paint.
+  const root = document.documentElement;
+  root.dataset.themeSwitching = "";
+  requestAnimationFrame(() => requestAnimationFrame(() => delete root.dataset.themeSwitching));
   if (mode === "auto") delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = mode;
   for (const button of document.querySelectorAll<HTMLButtonElement>(".nav-theme")) {
