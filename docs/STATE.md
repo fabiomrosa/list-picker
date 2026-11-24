@@ -161,7 +161,8 @@ None.
 
 ## Last session
 - **2026-11-24, fix (owner go):** the Pages workflow builds and uploads in one job and deploys in
-  another: deploying in the uploading job kept finding no artifact (three reruns failed).
+  another: deploying in the uploading job kept finding no artifact (three attempts of one run
+  failed).
 - **2026-11-24, L4.21:** the demo in sections: the board under the title, then "Edit the board"
   (the forms in a grid) beside "Events"; every browser test unchanged.
 - **2026-11-24, L4.20:** the demo's forms (one height, the site's colours, a select arrow of their

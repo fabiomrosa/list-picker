@@ -54,7 +54,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   that scrolls (`overflow-y: auto` clips sideways too): draw focus outlines inside the card, and
   give shadows room with the container's padding.
 - GitHub Pages: `deploy-pages` in the same job as `upload-pages-artifact` failed again and again
-  with "No artifacts named github-pages"; a separate `deploy` job (`needs: build`) finds it.
+  with "No artifacts named github-pages": the artifact listing lags the upload (~0.3 s later it
+  was still empty). A separate `deploy` job (`needs: build`) starts seconds later.
 - CSS applies `translate`, `rotate`, `scale`, then `transform`: a `rotate` on an element moved by
   `transform: translate(…)` turns the offset too. The engine writes the `translate` property.
 - Styling a skin around the engine: a list's Clone has no `data-lp-list` (match it with
