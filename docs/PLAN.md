@@ -911,8 +911,10 @@ shows it in the demo.
   Placeholder and the hidden item are siblings during a drag (`:nth-child(… of …)`); a keyboard
   pick up of a list marks the whole list; an outline outside a card is clipped by a scrolling list.
 - **Out of scope:** a default theme (PRODUCT: out of v1); code changes.
-- **Note:** a sixth rule, found while checking the source: the engine moves the Clone with an
-  inline `transform`, so a user's `transform` is replaced (`rotate` and `scale` are not).
+- **Note:** seven rules in the end. Checking rule 3 against the source found that a `rotate` on
+  the Clone pulled it off the pointer (fixed in #69: the engine writes `translate`); the review
+  added a transformed ancestor (rule 7), the Clone among `:nth-child` siblings and the pick-up
+  style; `cursor` on the Clone never shows (`pointer-events: none`).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. Each rule in the section is true of the engine (checked against the source) and shows the
