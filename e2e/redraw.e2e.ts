@@ -54,6 +54,8 @@ for (const redraw of ["sync", "microtask"]) {
       await page.keyboard.press("Escape");
       await expect.poll(() => order(page)).toEqual([["a", "b", "c"], ["d"], []]);
       await expect(page.locator("[data-lp-grabbed]")).toHaveCount(0);
+      // The focus stays on the card, back in its place, as in the default mode.
+      await expect.poll(() => focused(page)).toEqual({ id: "a", grabbed: false });
     });
 
     test("the focus really leaving drops the card", async ({ page }) => {

@@ -149,15 +149,22 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     }, 0);
   }
 
+  /** The element the renderer draws for an item, by id, and what takes its focus (a list's handle). */
+  function drawn(
+    kind: Kind,
+    id: string,
+  ): { item: HTMLElement | undefined; focus: HTMLElement | null | undefined } {
+    const item = [...root.querySelectorAll<HTMLElement>(`[${ATTRIBUTE[kind]}]`)].find(
+      (element) => element.getAttribute(ATTRIBUTE[kind]) === id,
+    );
+    return { item, focus: kind === "card" ? item : item?.querySelector("[data-lp-list-handle]") };
+  }
+
   /** `moveElements: false`: the grab's elements, found again by id after a redraw; the focus too. */
   function follow(): void {
     if (!grab) return;
     const { kind, id } = grab;
-    const item = [...root.querySelectorAll<HTMLElement>(`[${ATTRIBUTE[kind]}]`)].find(
-      (element) => element.getAttribute(ATTRIBUTE[kind]) === id,
-    );
-    const focus =
-      kind === "card" ? item : item?.querySelector<HTMLElement>("[data-lp-list-handle]");
+    const { item, focus } = drawn(kind, id);
     if (!item?.parentElement || !focus) return; // not drawn (yet): the next redraw may
     if (item !== grab.item) {
       grab.item.removeAttribute("data-lp-grabbed");
@@ -266,6 +273,13 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
         next !== null &&
         (kind === "card" ? board.listOf(next)?.id === listId : board.getList(next) !== undefined);
       byId(kind, id, item, listId, stays ? next : null, "cancel");
+      // Dropped, so not followed: once the renderer has drawn it back, the focus goes back on it,
+      // unless the user has put the focus somewhere else meanwhile.
+      setTimeout(() => {
+        const active = document.activeElement;
+        if (active !== document.body && active !== focus) return;
+        drawn(kind, id).focus?.focus();
+      }, 0);
       return;
     }
     if (container.isConnected) {

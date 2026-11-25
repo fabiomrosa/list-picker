@@ -84,6 +84,9 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   page only while the automated window is in front (`document.hasFocus()`): otherwise clicks and
   drags silently do nothing, while keys sent to a focused element still work. `osascript -e 'tell
   application "Safari" to activate'` after creating the session brings it in front.
+- Playwright's own Firefox build (Nightly 159) does not start on macOS 27: "Could not find profile
+  folder", even run by hand outside Playwright. The real Firefox (from mozilla.org) is driven
+  through `geckodriver` (WebDriver, no setting to turn on; it uses a temporary profile).
 - WebKit on macOS shows overlay scrollbars, which take no room, whatever Playwright's launch flags:
   a test about a scrollbar's width has nothing to measure there.
 - Playwright's `toHaveText` reads `textContent`, hidden (`display: none`) text included; what a

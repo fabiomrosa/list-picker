@@ -294,7 +294,7 @@ describe.each(["sync", "microtask"] as const)(
       key(ctx.card("a"), "Escape");
       await settle();
       expect(boardOrder()).toEqual([["a", "b", "c"], ["d"], []]);
-      expect(grabbed()).toEqual([]);
+      expect([grabbed(), document.activeElement]).toEqual([[], ctx.card("a")]);
     });
 
     it("a click away (the focus on body) after a step drops it, and leaves the focus there", async () => {
