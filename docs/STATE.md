@@ -135,6 +135,12 @@ title, review-section, size, frozen-files and secret checks.
 - `packages/vanilla`: `createDrag` (`src/drag.ts`, with `src/keyboard.ts` and `src/landed.ts`,
   internal), `mount` (`src/mount.ts`); imports only types
   from `core`.
+- `packages/react` (L5.3): `useBoard` (`src/use-board.ts`: `useSyncExternalStore` over the Board's
+  `change`, its Snapshot as the value, the server's too); `react` `^18.3.0 || ^19.0.0` as a peer,
+  core and vanilla as dependencies; tests with React Testing Library in happy-dom (`cleanup()` by
+  hand: Vitest runs without globals). Root `workspaces` list the packages in build order (core,
+  vanilla, react); `tsconfig.json`'s `paths` and `vitest.config.ts`'s aliases resolve the three
+  names to their source; `"jsx": "react-jsx"`.
 - `bench/`: the array board, seeded move fixtures, their equivalence test, the runner, and the drag
   trace (`drag-trace.ts`).
 
@@ -177,6 +183,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.3:** `packages/react` at 1.0.0 (unpublished) with `useBoard`; the workspace builds
+  in dependency order and passes `npm ci && npm run verify` in a clean clone. Next: L5.4
+  (`useListPicker`: drag and keyboard in React).
 - **2026-11-25, fix (L5.2, found in Firefox):** with `moveElements: false`, Esc put the Board back but
   left the focus on body (the pick-up was dropped before the redraw); the focus now goes back on the
   item once drawn, unless the user moved it. The real Firefox 161 (by `geckodriver`) passes the
