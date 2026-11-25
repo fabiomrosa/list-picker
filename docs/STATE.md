@@ -186,7 +186,10 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
-- The demos switcher (L5.10): above each demo page (`demo/`, `react-demo.html`, `player.html`), the
+- The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
+  `@list-picker/react` in the same markup; the same e2e suite runs on both.
+- The demos switcher (L5.10): above each demo page (`demo/`, `react-demo.html`, `player.html`,
+  `player-react.html` since L5.11), the
   demo (Board, Player) and the framework (Vanilla, React, Angular "soon"), built by the site build's
   `demos()` from its `DEMOS` table; a page's `<!-- nav … -->` or `<!-- demos … -->` marker that is
   not understood fails the build.
@@ -207,6 +210,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.11:** the React Player (`site/player-react.html` and `.tsx`): the vanilla
+  Player written with `@list-picker/react` in the same markup (`player.css` styles both), under
+  `StrictMode`; the playing track, the clock and the tick are React state, the order the Board's.
+  `e2e/player.e2e.ts` runs its whole suite on both pages; the switcher links it. Next: L5.12
+  (saving the order, the vanilla Board).
 - **2026-11-25, L5.10:** the demos switcher: `<!-- demos <root> <demo> <framework> -->` (the site
   build's `demos()`, its table `DEMOS` in `site/vite.config.ts`) above each demo: the demo (Board,
   Player; it keeps the framework when the demo has it) and the framework (Vanilla, React, Angular

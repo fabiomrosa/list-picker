@@ -116,7 +116,7 @@ function filled(
 /** Each demo's page by framework; a framework missing here shows the demo as "soon" in it. */
 const DEMOS: Record<string, Record<string, string>> = {
   Board: { Vanilla: "demo/", React: "react-demo.html" },
-  Player: { Vanilla: "player.html" },
+  Player: { Vanilla: "player.html", React: "player-react.html" },
 };
 const FRAMEWORKS = ["Vanilla", "React", "Angular"];
 

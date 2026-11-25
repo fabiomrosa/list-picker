@@ -1,9 +1,12 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// The site's player (L4.25), the same tests for each page that draws it (a React one comes with
+// The site's player (L4.25), the same tests for each page that draws it (vanilla, and React since
 // L5.11): one list, previous and next by `neighbours`, tick-to-swap by `swapCards`, the engine's
 // drag and keyboard moves, a click to play.
-const PAGES = [["vanilla", "http://localhost:5181/list-picker/player.html"]] as const;
+const PAGES = [
+  ["vanilla", "http://localhost:5181/list-picker/player.html"],
+  ["react", "http://localhost:5181/list-picker/player-react.html"],
+] as const;
 
 const order = (page: Page) =>
   page
@@ -111,6 +114,27 @@ for (const [name, PLAYER] of PAGES) {
       const time = await page.locator("#now-time").textContent();
       await page.clock.runFor(5_000);
       await expect(page.locator("#now-time")).toHaveText(time ?? "");
+    });
+
+    test("stopped at the end of the last track, a reorder leaves it there; play restarts it", async ({
+      page,
+    }) => {
+      await page.clock.install();
+      await page.goto(PLAYER);
+      await track(page, "Everything's Not Lost").focus();
+      await page.keyboard.press("Enter");
+      await page.clock.runFor(45_000); // 7:15 at ten times: 43.5 s
+      await expect(page.locator("#now-time")).toHaveText("7:15 / 7:15");
+      await expect(page.locator("#toggle")).toHaveAccessibleName("Play");
+      await track(page, "Everything's Not Lost").locator("input").click();
+      await track(page, "Shiver").locator("input").click();
+      await expect(now(page)).toHaveText("Everything's Not Lost");
+      await expect(page.locator("#now-time")).toHaveText("7:15 / 7:15");
+      // Play starts the same track over (its clock running from 0, not a stopped 7:15).
+      await page.locator("#toggle").click();
+      await expect(now(page)).toHaveText("Everything's Not Lost");
+      await expect(page.locator("#now-time")).not.toHaveText("7:15 / 7:15");
+      await expect(page.locator("#now-time")).toHaveText(/ \/ 7:15$/);
     });
 
     test("with reduced motion the equalizer stands still while playing", async ({ page }) => {
