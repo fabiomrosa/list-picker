@@ -169,6 +169,11 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, M4 retro, proposal 9:** `e2e/home.e2e.ts` sweeps every page (home, core, vanilla,
+  player, the kanban demo) from 320 to 1400px in 2px steps: no sideways scroll, the nav's buttons on
+  the brand's row, its two groups on one row. With a classic scrollbar (the tests show them) it found
+  three gaps the hidden-scrollbar checks missed (320, 362–368, 658–664px): the nav now takes two rows
+  below 42rem, hides "demos:" below 23.25rem, and draws its links closer below 20.5rem.
 - **2026-11-24, M4 retro, proposal 4:** browser tests remove a card through the demo's × during a
   drag (the page and the Board stay in step, no page error; red without the demo's L4.1 guard).
 - **2026-11-24, M4 retro, proposal 3:** `npm run packed` (in `verify`, after the build;

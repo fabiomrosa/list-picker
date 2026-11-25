@@ -432,6 +432,15 @@ main.doc {
     padding-left: 0.9rem;
   }
 }
+/* After the phone rules: narrower still (320px beside a classic scrollbar), the links draw closer to stay on one row. */
+@media (max-width: 20.5rem) {
+  nav .nav-group {
+    gap: 0.7rem;
+  }
+  .nav-group + .nav-group {
+    padding-left: 0.7rem;
+  }
+}
 @media (max-width: 52rem) {
   main.doc {
     display: block;
