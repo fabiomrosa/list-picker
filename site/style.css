@@ -106,6 +106,63 @@ nav a {
 nav a:hover {
   color: var(--accent);
 }
+/* The demos' code (L5.15): one file at a time, chosen by its radio, as the install's framework;
+   highlighted at build time (Shiki, a dark theme) on the terminal's background in both themes. */
+.code-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.code-files input {
+  position: absolute;
+  opacity: 0;
+}
+.code-files label {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.code-files label:hover {
+  color: var(--accent);
+}
+.code-files input:checked + label {
+  border-color: var(--text);
+  background: var(--term);
+  color: var(--term-text);
+}
+.code-files input:focus-visible + label {
+  outline: 2px solid var(--accent);
+}
+.code pre {
+  display: none;
+  position: relative; /* the copy button sits in its corner */
+  max-height: 32rem;
+  margin: 0;
+  padding: 1rem 3.25rem 1rem 1rem;
+  overflow: auto; /* long lines and long files scroll inside the block */
+  border-radius: 8px;
+  background-color: var(--term) !important; /* over Shiki's own */
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.code pre .copy {
+  position: sticky; /* stays in the corner while the block scrolls */
+  float: right;
+  top: 0;
+  margin: -0.4rem -2.6rem 0 0;
+  translate: none;
+}
+.code:has(#code-0:checked) pre[data-file="0"],
+.code:has(#code-1:checked) pre[data-file="1"],
+.code:has(#code-2:checked) pre[data-file="2"],
+.code:has(#code-3:checked) pre[data-file="3"] {
+  display: block;
+}
 /* The demos switcher (L5.10), above a demo: the demo, then the framework, as two segmented groups;
    the chosen one filled, as the install's framework. */
 .demos-switch {
@@ -415,8 +472,8 @@ li {
   content: "$ ";
   color: var(--accent);
 }
-/* The install command's copy button: in the terminal's corner; a check for a moment once copied. */
-.install .copy {
+/* A code block's copy button (the install, a demo's files): in its corner; a check once copied. */
+pre .copy {
   position: absolute;
   top: 50%;
   right: 0.6rem;
@@ -429,14 +486,14 @@ li {
   color: var(--term-text);
   cursor: pointer;
 }
-.install .copy:hover {
+pre .copy:hover {
   border-color: color-mix(in srgb, var(--term-text) 40%, transparent);
 }
-.install .copy:focus-visible {
+pre .copy:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
-.install .copy svg {
+pre .copy svg {
   width: 1.1rem;
   height: 1.1rem;
   fill: none;
@@ -448,11 +505,11 @@ li {
 .install .pkg {
   white-space: nowrap; /* a package's name in one piece: the command wraps between words */
 }
-.install .copy .icon-done,
-.install .copy[data-copied] .icon-copy {
+pre .copy .icon-done,
+pre .copy[data-copied] .icon-copy {
   display: none;
 }
-.install .copy[data-copied] .icon-done {
+pre .copy[data-copied] .icon-done {
   display: block;
 }
 /* The package manager: small links under the command, changing its start. npm without :has(). */

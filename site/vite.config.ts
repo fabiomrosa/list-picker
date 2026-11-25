@@ -4,6 +4,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { marked, type Token } from "marked";
+import { codeToHtml } from "shiki";
 import { defineConfig, type Plugin } from "vite";
 
 const REPO = "https://github.com/fabiomrosa/list-picker";
@@ -98,6 +99,49 @@ export function nav(): Plugin {
         if (!out.includes(link)) throw new Error(`nav: no link to ${current}`);
         return out.replace(link, `${link} aria-current="${section ? "true" : "page"}"`);
       }),
+  };
+}
+
+/** The copy button of a code block (`copy.ts` runs it): a copy icon, a check once copied. */
+const copyButton = (label: string) =>
+  `<button type="button" class="copy" aria-label="${label}"><svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg><svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></button>`;
+
+/**
+ * `<!-- code <file>… -->`: "The code" section, the files (in `site/`) that run a demo, read and
+ * highlighted at build time (Shiki: no script in the page for it), one shown at a time by a radio
+ * per file (`style.css`), each with a copy button.
+ */
+export function code(): Plugin {
+  return {
+    name: "code",
+    transformIndexHtml: async (html) => {
+      const marker = /<!-- code ([^>]+?) -->/.exec(html);
+      if (!marker) {
+        if (/<!--\s*code\b/.test(html)) throw new Error("code: a marker not understood");
+        return html;
+      }
+      const files = (marker[1] as string).split(" ");
+      const radios = files
+        .map(
+          (file, i) =>
+            `<input type="radio" name="code-file" id="code-${i}"${i ? "" : " checked"} /><label for="code-${i}">${file}</label>`,
+        )
+        .join("");
+      const blocks = await Promise.all(
+        files.map(async (file, i) => {
+          const text = read(`site/${file}`);
+          const lang = file.endsWith(".tsx") ? "tsx" : "ts";
+          const pre = await codeToHtml(text, { lang, theme: "github-dark" });
+          // The button first, so it sits (sticky) in the block's top corner while the code scrolls.
+          return pre.replace(
+            /^<pre ([^>]*)>/,
+            `<pre data-file="${i}" $1>${copyButton(`Copy ${file}`)}`,
+          );
+        }),
+      );
+      const section = `<section class="code" aria-labelledby="code-title"><h2 id="code-title">The code</h2><div class="code-files" role="radiogroup" aria-label="Files">${radios}</div>${blocks.join("")}<span class="sr-only" role="status" id="copied"></span></section>`;
+      return html.replace(marker[0], section);
+    },
   };
 }
 
@@ -214,7 +258,7 @@ export default defineConfig({
       "@list-picker/react": source("react"),
     },
   },
-  plugins: [nav(), demos(), markdown(), versions()],
+  plugins: [nav(), demos(), code(), markdown(), versions()],
   build: {
     outDir: "../dist-site",
     emptyOutDir: true,

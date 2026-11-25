@@ -1326,7 +1326,7 @@ shows it in the demo.
 - **References:** L5.13.
 
 ### L5.15 · The demos' code
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** each demo page shows the code that runs it, so a reader sees how to build their own.
 - **Depends on:** L5.14.
 - **In scope:** below each demo, its source files (script, markup, style; the fake server on the

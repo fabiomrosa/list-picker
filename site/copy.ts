@@ -1,8 +1,8 @@
-// The home's install command (L4 site): its copy button puts the visible command on the clipboard,
-// as the framework and package manager chosen show it (the `$` is a CSS prompt, not text).
+// A code block's copy button: the home's install command (the command shown, as the framework and
+// package manager chosen make it; the `$` is a CSS prompt, not text) and a demo's files (L5.15).
 const status = document.getElementById("copied");
 const timers = new Map<HTMLButtonElement, ReturnType<typeof setTimeout>>();
-for (const button of document.querySelectorAll<HTMLButtonElement>(".install .copy")) {
+for (const button of document.querySelectorAll<HTMLButtonElement>("pre .copy")) {
   button.addEventListener("click", async () => {
     const command = button.parentElement?.querySelector("code")?.innerText.trim() ?? "";
     try {
