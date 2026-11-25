@@ -166,10 +166,15 @@ title, review-section, size, frozen-files and secret checks.
 None yet.
 
 ## Known issues
-- Six e2e drag tests fail under WebKit (Safari's engine); CI runs Chrome only. Seen in #55's
-  review, not yet diagnosed; for the M4 close.
+None.
 
 ## Last session
+- **2026-11-24, M4 retro, proposal 1 (WebKit):** the six WebKit e2e failures (#55) had one cause: a
+  release before the last move's frame ran dropped on the Placeholder's stale place (WebKit under
+  Playwright fires the moves and the release in one frame; a quick flick can too). The release now
+  runs a pending frame first; part of `@list-picker/vanilla` 1.0.1 (unpublished). `E2E_BROWSER=webkit
+  npm run e2e` runs the suite in WebKit by hand (once: `npx playwright install webkit`) (35 pass, 1 skipped: overlay scrollbars); CI stays on
+  Chrome.
 - **2026-11-24, M4 retro, proposal 9:** `e2e/home.e2e.ts` sweeps every page (home, core, vanilla,
   player, the kanban demo) from 320 to 1400px in 2px steps: no sideways scroll, the nav's buttons on
   the brand's row, its two groups on one row. With a classic scrollbar (the tests show them) it found

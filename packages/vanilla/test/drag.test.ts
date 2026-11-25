@@ -230,6 +230,15 @@ describe("createDrag: the Placeholder follows the drop target", () => {
     await frame();
   }
 
+  it("drops where the last move points even when its frame has not run yet", () => {
+    // A quick flick, or a browser that fires the moves and the release in one frame (WebKit under
+    // Playwright): the release must not drop on the Placeholder's stale place.
+    under = list("done");
+    pointer(ctx.card("a"), "pointermove", 60, 300);
+    pointer(ctx.card("a"), "pointerup", 60, 300);
+    expect([...ctx.board.cards("done")].map((card) => card.id)).toEqual(["a"]);
+  });
+
   it("goes before a card above its middle and after it below", async () => {
     await moveTo(ctx.card("b"), 130);
     expect(order("todo")).toEqual(["b", "_"]);

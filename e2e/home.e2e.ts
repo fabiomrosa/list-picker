@@ -190,7 +190,8 @@ test("the install command follows the package manager chosen under it, by pointe
   expect(await command.innerText()).toBe(npm); // the visible text: what a copy takes
   await page.locator('label[for="pm-pnpm"]').click();
   expect(await command.innerText()).toBe("pnpm add @list-picker/core @list-picker/vanilla");
-  await page.keyboard.press("ArrowLeft"); // the group's arrows: pnpm → yarn
+  // The group's arrows, pnpm → yarn: on the radio itself (Safari does not focus it on a click).
+  await page.locator("#pm-pnpm").press("ArrowLeft");
   expect(await command.innerText()).toBe("yarn add @list-picker/core @list-picker/vanilla");
   await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeVisible();
   await page.locator('label[for="install-react"]').click(); // no command for React yet
