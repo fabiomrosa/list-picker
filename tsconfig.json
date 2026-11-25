@@ -19,6 +19,7 @@
     "packages/*/test",
     "playground",
     "bench",
+    "scripts",
     "e2e",
     "playwright.config.ts",
     "site"
