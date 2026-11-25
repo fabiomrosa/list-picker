@@ -34,8 +34,8 @@ owner to confirm.
 - **Acceptance criteria:** numbered, observable; each becomes at least one test.
 - **Files:** the files it expects to add or change, docs included (PLAN, STATE and any it updates);
   an estimate; over 15 → split it. An interaction slice budgets a browser test and a review round;
-  an element added to the user's container goes elsewhere first when it can (it churns every DOM
-  test).
+  an element the slice adds to the user's container is placed outside it when it can be (it churns
+  every DOM test).
 - **References:** design screens, decisions, docs sections.
 ```
 

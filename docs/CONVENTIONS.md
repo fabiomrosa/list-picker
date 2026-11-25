@@ -67,8 +67,8 @@ instead of reporting zero.
 allows it lists every reader of the mounted DOM (the drop target, the drop, the demo) and tests
 each one (L4.1).
 
-**Focus and keyboard** behaviour is tested in Chrome (`e2e/`), including Board changes made by code
-through `mount`: happy-dom neither blurs a moved element nor moves the focus on a press (GOTCHAS).
+**Focus kept across a move** (a keyboard grab, a card `mount` moves for a Board change made by code)
+is tested in Chrome (`e2e/`): happy-dom does not blur a moved element (GOTCHAS).
 
 **The demo's interactions** are tested through its UI (a click, a key), not through `window.board`:
 a control that calls the code directly hides a broken UI path (L4.10).
