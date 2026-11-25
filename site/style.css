@@ -251,6 +251,9 @@ nav .nav-theme + a.nav-github {
 .version-line {
   margin-top: -0.5rem;
 }
+.version-line:empty {
+  display: none; /* not on npm yet */
+}
 main {
   max-width: 46rem;
   margin: 0 auto;
@@ -438,8 +441,8 @@ main.doc {
   text-transform: uppercase;
 }
 /* On a phone, two rows: the brand and the buttons, then the pages (one line no longer fits
-   them below about 44.8rem beside a classic scrollbar). */
-@media (max-width: 45.5rem) {
+   them below about 48.6rem beside a classic scrollbar). */
+@media (max-width: 49rem) {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem 1.5rem; /* the content's edges */
@@ -467,9 +470,9 @@ main.doc {
     padding-left: 0.9rem;
   }
 }
-/* After the phone rules: below 27rem the demos no longer fit beside the docs (about 26.7rem beside
+/* After the phone rules: below 30.5rem the demos no longer fit beside the docs (about 30.1rem beside
    a classic scrollbar), so they take a row of their own, labelled, with no line between. */
-@media (max-width: 27rem) {
+@media (max-width: 30.5rem) {
   nav .nav-demos {
     flex-basis: 100%;
   }

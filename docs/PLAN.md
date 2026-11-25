@@ -1184,7 +1184,7 @@ shows it in the demo.
 - **References:** L4.17, L4.18.
 
 ### L5.7 · The React README and its page
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** someone can learn the React adapter from its README, on npm and on the site.
 - **Depends on:** L5.6.
 - **In scope:** `packages/react/README.md` (install, a complete example, the hooks, the styling
@@ -1201,7 +1201,7 @@ shows it in the demo.
 - **References:** L4.5, L4.14, M4 retro (packed packages).
 
 ### L5.8 · First publish of the React adapter
-- **Status:** waiting (L5.7)
+- **Status:** next
 - **Goal:** `@list-picker/react` is on npm.
 - **Depends on:** L5.7.
 - **In scope:** a last `npm publish --dry-run`; the owner publishes `@list-picker/vanilla` 1.1.0,

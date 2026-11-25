@@ -167,9 +167,10 @@ title, review-section, size, frozen-files and secret checks.
 
 ## Site
 - `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, a table of the
-  four packages, React and Angular "coming soon"; an Install chooser of radios with no script,
-  where React and Angular show no command until published; the lab's answer from the root README;
-  links), `core.html` and `vanilla.html` rendered from the packages' READMEs at build time, and the
+  four packages, React linked to its page and Angular "coming soon"; an Install chooser of radios
+  with no script, where React and Angular show no command until published; the lab's answer from
+  the root README; links), `core.html`, `vanilla.html` and `react.html` rendered from the packages'
+  READMEs at build time, and the
   demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
   board in the same three skins as the home, with the same chooser) in `demo/`; and the player
   (`player.html`, a playlist on `neighbours` and `swapCards`, with a pretend play that goes on to
@@ -189,8 +190,12 @@ title, review-section, size, frozen-files and secret checks.
   `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
   it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
   resolves the packages' names to their source (`site/vite.config.ts`). The nav's Demos list kanban,
-  player and react; below 27rem the demos take a row of their own, labelled, under the docs; two
-  rows below 45.5rem. `e2e/react.e2e.ts` drives it.
+  player and react (breakpoints: see the L5.7 bullet below). `e2e/react.e2e.ts` drives it.
+- `site/react.html` (L5.7) renders `packages/react/README.md`; the nav's Docs list core, vanilla and
+  react; three nav rows below 30.5rem, two below 49rem. A README link to another package's section
+  (`packages/vanilla#keyboard`) goes to its page here (`vanilla.html#keyboard`). A package npm does not
+  have (404) shows no version; one npm cannot be reached shows its `package.json`'s. Below 30.5rem
+  the demos take a row of their own, labelled, under the docs.
 
 ## Contract
 None yet.
@@ -199,6 +204,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.7:** the React README (install, a complete `tsx` example, the hooks, links to
+  vanilla's hooks, keys and announcements) and its page; `npm run packed` packs react, installs
+  React from the registry (the network, or a warm npm cache) and runs its example in Chrome like
+  vanilla's. Next: L5.8 (the owner publishes vanilla 1.1.0
+  and react 1.0.0).
 - **2026-11-25, fix (owner):** the site's lede is 47rem, in `style.css` for every page (the player's
   had no lede style: `home.css` held it; its main stays 46rem); below the home's board, blocks (headings, tables, the install, code) take the container's
   64rem like the board, and running text keeps the lede's 47rem (the code block was cut off).
