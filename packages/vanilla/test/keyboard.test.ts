@@ -294,7 +294,18 @@ describe.each(["sync", "microtask"] as const)(
       key(ctx.card("a"), "Escape");
       await settle();
       expect(boardOrder()).toEqual([["a", "b", "c"], ["d"], []]);
-      expect(grabbed()).toEqual([]);
+      expect([grabbed(), document.activeElement]).toEqual([[], ctx.card("a")]);
+    });
+
+    it("Esc does not take the focus back from where the user moved it meanwhile", async () => {
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      key(ctx.card("a"), "ArrowRight");
+      await settle();
+      key(ctx.card("a"), "Escape");
+      (document.getElementById("elsewhere") as HTMLElement).focus();
+      await settle();
+      expect(document.activeElement?.id).toBe("elsewhere");
     });
 
     it("a click away (the focus on body) after a step drops it, and leaves the focus there", async () => {

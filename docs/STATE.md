@@ -177,6 +177,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, fix (L5.2, found in Firefox):** with `moveElements: false`, Esc put the Board back but
+  left the focus on body (the pick-up was dropped before the redraw); the focus now goes back on the
+  item once drawn, unless the user moved it. The real Firefox 161 (by `geckodriver`) passes the
+  keyboard across redraws (both modes), the click away, Esc, and the published demo's drag and
+  keyboard move.
 - **2026-11-25, L5.2:** with `moveElements: false`, the keyboard changes only the Board and its
   pick-up survives the renderer's redraw (Chrome, WebKit, and happy-dom without a `focusout` on
   removal, like Firefox). Next: L5.3 (the React package and `useBoard`).
