@@ -169,6 +169,10 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, fix (M4 retro review):** the Clone is `inert` and `aria-hidden`: during a drag its
+  copied controls (the demo's arrows and ×) were focusable and announced, a duplicate of the hidden
+  card. `@list-picker/vanilla` 1.0.1, not yet published (the owner publishes:
+  `npm publish --otp=<code>` in `packages/vanilla`).
 - **2026-11-24, M4 retro, proposal 3:** `npm run packed` (in `verify`, after the build;
   `scripts/check-packed.ts`): packs both packages, installs the tarballs in an empty project,
   type-checks every README `ts` block against them, runs core's example in Node, and builds

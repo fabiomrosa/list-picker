@@ -72,6 +72,11 @@ describe("createDrag: drag start", () => {
     expect([clone.style.width, clone.style.height]).toEqual(["200px", "40px"]);
     expect(clone.style.pointerEvents).toBe("none");
     expect(clone.textContent).toContain("A");
+    // A picture of the item: none of its controls focusable or announced (the item is hidden).
+    expect([clone.hasAttribute("inert"), clone.getAttribute("aria-hidden")]).toEqual([
+      true,
+      "true",
+    ]);
     const placeholder = ctx.card("a").previousElementSibling as HTMLElement;
     expect(placeholder.hasAttribute("data-lp-placeholder")).toBe(true);
     // Only the height is fixed: the width is the list's, like any card in it (lists differ, e.g.

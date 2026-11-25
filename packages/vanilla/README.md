@@ -130,7 +130,7 @@ same `options` as `mount`.
 | `data-lp-list-handle` | The element a list is dragged by (its header). |
 | `data-lp-cards="<list id>"` | A list's container of cards. |
 | `data-lp-card="<id>"` | A card. |
-| `data-lp-clone` | The copy that follows the pointer during a drag (`position: fixed`, inside `root`). |
+| `data-lp-clone` | The copy that follows the pointer during a drag (`position: fixed`, inside `root`; `inert` and `aria-hidden`: its copied controls are neither reachable nor announced). |
 | `data-lp-placeholder` | The empty slot where the item would drop; give it a look, e.g. a dashed outline. |
 | `data-lp-dragging` | The item being dragged (hidden while the Clone stands in for it). |
 | `data-lp-grabbed` | A card or list picked up with the keyboard. |

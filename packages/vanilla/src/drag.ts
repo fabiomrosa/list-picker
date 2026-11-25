@@ -407,6 +407,9 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     for (const withId of clone.querySelectorAll("[id]")) withId.removeAttribute("id");
     clone.removeAttribute(kind.attribute);
     clone.setAttribute("data-lp-clone", "");
+    // A picture of the item, which is hidden meanwhile: its copied controls are not reachable.
+    clone.inert = true;
+    clone.setAttribute("aria-hidden", "true");
     Object.assign(clone.style, {
       position: "fixed",
       left: `${rect.left}px`,
