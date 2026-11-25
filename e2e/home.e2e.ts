@@ -147,9 +147,14 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
   page,
 }) => {
   test.setTimeout(60_000);
-  const pages = ["", "core.html", "vanilla.html", "player.html", "react-demo.html"].map(
-    (path) => `http://localhost:5181/list-picker/${path}`,
-  );
+  const pages = [
+    "",
+    "core.html",
+    "vanilla.html",
+    "react.html",
+    "player.html",
+    "react-demo.html",
+  ].map((path) => `http://localhost:5181/list-picker/${path}`);
   for (const url of [...pages, "http://localhost:5180/"]) {
     await page.setViewportSize({ width: 320, height: 640 });
     await page.goto(url);
@@ -173,12 +178,12 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
       const at = `${url} at ${width}px: ${JSON.stringify(nav)}`;
       expect(nav.scroll, at).toBeLessThanOrEqual(nav.client);
       // The buttons sit on the brand's row; the two groups share a row, the brand's or the next;
-      // below 27rem (432px) the demos take the row under the docs.
+      // below 30.5rem (488px) the demos take the row under the docs.
       expect(Math.abs(nav.theme - nav.brand), at).toBeLessThanOrEqual(6);
       expect(Math.abs(nav.github - nav.brand), at).toBeLessThanOrEqual(6);
       expect(nav.docs - nav.brand, at).toBeLessThanOrEqual(50);
-      if (width <= 432) expect(nav.demos - nav.docs, at).toBeGreaterThan(20);
-      if (width <= 432) expect(nav.demos - nav.docs, at).toBeLessThanOrEqual(50);
+      if (width <= 488) expect(nav.demos - nav.docs, at).toBeGreaterThan(20);
+      if (width <= 488) expect(nav.demos - nav.docs, at).toBeLessThanOrEqual(50);
       else expect(Math.abs(nav.demos - nav.docs), at).toBeLessThanOrEqual(6);
     }
   }

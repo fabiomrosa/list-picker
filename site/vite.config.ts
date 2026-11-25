@@ -19,9 +19,11 @@ function rewrite(dir: string) {
   return (token: Token) => {
     if (token.type !== "link") return;
     const href = token.href.replace(`${REPO}/tree/main/packages/`, "packages/");
-    const name = /^packages\/([\w-]+)\/?$/.exec(href)?.[1];
+    const [, name, section = ""] = /^packages\/([\w-]+)\/?(#[\w-]+)?$/.exec(href) ?? [];
     if (name)
-      token.href = PAGES.includes(name) ? `${name}.html` : `${REPO}/tree/main/packages/${name}`;
+      token.href = PAGES.includes(name)
+        ? `${name}.html${section}`
+        : `${REPO}/tree/main/packages/${name}${section}`;
     else if (href.startsWith("#running-locally")) token.href = `${REPO}#running-locally`;
     else if (!/^([a-z]+:|#)/.test(href)) token.href = `${REPO}/blob/main/${dir}${href}`;
   };
@@ -29,10 +31,11 @@ function rewrite(dir: string) {
 
 /**
  * A package's published version: npm's, read once per build, so the site never shows one that is not
- * installable yet (the repository can be ahead of npm); its `package.json` when npm does not answer.
+ * installable yet (the repository can be ahead of npm); its `package.json` when npm does not answer;
+ * none (`null`) when npm says it is not published.
  */
-const published = new Map<string, Promise<string>>();
-function version(name: string): Promise<string> {
+const published = new Map<string, Promise<string | null>>();
+function version(name: string): Promise<string | null> {
   const local = () => JSON.parse(read(`packages/${name}/package.json`)).version as string;
   if (!published.has(name)) {
     published.set(
@@ -41,6 +44,7 @@ function version(name: string): Promise<string> {
         signal: AbortSignal.timeout(3000),
       })
         .then(async (response) => {
+          if (response.status === 404) return null; // not on npm yet: no version to show
           // Only a version goes into the page: anything else (a broken or tampered answer) is ignored.
           const found = response.ok ? (await response.json()).version : undefined;
           return typeof found === "string" && /^\d+\.\d+\.\d+(-[\w.-]+)?$/.test(found)
@@ -50,10 +54,10 @@ function version(name: string): Promise<string> {
         .catch(local),
     );
   }
-  return published.get(name) as Promise<string>;
+  return published.get(name) as Promise<string | null>;
 }
 
-/** `<!-- version: <package> -->`: its published version, linked to its npm page. */
+/** `<!-- version: <package> -->`: its published version, linked to its npm page; nothing if none. */
 function versions(): Plugin {
   return {
     name: "versions",
@@ -63,8 +67,10 @@ function versions(): Plugin {
         await Promise.all(names.map(async (n) => [n, await version(n)] as const)),
       );
       return html.replace(/<!-- version: ([\w-]+) -->/g, (_m, name: string) => {
+        const shown = found.get(name);
+        if (!shown) return "";
         const npm = `https://www.npmjs.com/package/@list-picker/${name}`;
-        return `<a class="version" href="${npm}" title="@list-picker/${name} on npm">v${found.get(name)}</a>`;
+        return `<a class="version" href="${npm}" title="@list-picker/${name} on npm">v${shown}</a>`;
       });
     },
   };
