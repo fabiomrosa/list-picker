@@ -78,13 +78,14 @@ function versions(): Plugin {
 
 /**
  * `<!-- nav <root> [<current>] -->`: the one nav (`site/partials/nav.html`), its links from
- * `root`, the link to `current` marked as the page (or, as `in:<current>`, as the page's section). The playground's build uses it too.
+ * `root`, the link to `current` marked as the page (or, as `in:<current>`, as the page's
+ * section). The playground's build uses it too.
  */
 export function nav(): Plugin {
   return {
     name: "nav",
     transformIndexHtml: (html) =>
-      html.replace(/<!-- nav (\S+)(?: (\S+))? -->/, (_m, root: string, current?: string) => {
+      filled("nav", html, /<!-- nav (\S+)(?: (\S+))? -->/, (_m, root: string, current?: string) => {
         const out = readFileSync(fileURLToPath(new URL("partials/nav.html", SITE)), "utf8")
           .replace(/^<!--.*?-->\n/s, "")
           .replaceAll("{root}", root);
@@ -97,6 +98,19 @@ export function nav(): Plugin {
         return out.replace(link, `${link} aria-current="${section ? "true" : "page"}"`);
       }),
   };
+}
+
+/** A page's `<!-- <name> … -->` marker replaced; a marker left (misspelt) fails the build. */
+function filled(
+  name: string,
+  html: string,
+  marker: RegExp,
+  replace: (match: string, ...groups: string[]) => string,
+): string {
+  const out = html.replace(marker, replace);
+  if (new RegExp(`<!--\\s*${name}\\b`).test(out))
+    throw new Error(`${name}: a marker not understood`);
+  return out;
 }
 
 /** Each demo's page by framework; a framework missing here shows the demo as "soon" in it. */
@@ -114,7 +128,9 @@ export function demos(): Plugin {
   return {
     name: "demos",
     transformIndexHtml: (html) =>
-      html.replace(
+      filled(
+        "demos",
+        html,
         /<!-- demos (\S+) (\w+) (\w+) -->/,
         (_m, root: string, demo: string, fw: string) => {
           const pages = DEMOS[demo];

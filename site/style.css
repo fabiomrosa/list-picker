@@ -118,6 +118,7 @@ nav a:hover {
 }
 .demos-switch ul {
   display: flex;
+  flex-wrap: wrap; /* a phone too narrow for a group: its segments wrap inside its box */
   gap: 0.2rem;
   margin: 0;
   padding: 0.2rem;
@@ -129,6 +130,7 @@ nav a:hover {
 .demos-switch .soon {
   display: block;
   padding: 0.3rem 0.75rem;
+  white-space: nowrap; /* "Angular soon" in one piece */
   border: 1px solid transparent;
   border-radius: 6px;
   color: var(--muted);
@@ -141,6 +143,12 @@ nav a:hover {
   border-color: var(--text);
   background: var(--term);
   color: var(--term-text);
+}
+@media (max-width: 30rem) {
+  .demos-switch a,
+  .demos-switch .soon {
+    padding: 0.3rem 0.5rem;
+  }
 }
 .demos-switch .soon small {
   font-size: 0.8em;

@@ -186,6 +186,10 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+- The demos switcher (L5.10): above each demo page (`demo/`, `react-demo.html`, `player.html`), the
+  demo (Board, Player) and the framework (Vanilla, React, Angular "soon"), built by the site build's
+  `demos()` from its `DEMOS` table; a page's `<!-- nav … -->` or `<!-- demos … -->` marker that is
+  not understood fails the build.
 - The React demo (L5.6, `site/react-demo.html` and `.tsx`): the home's kanban board written with
   `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
   it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
