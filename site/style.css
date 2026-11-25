@@ -222,8 +222,9 @@ nav a.nav-github svg {
   height: 1.1rem;
   fill: currentColor;
 }
+/* The two buttons read as a pair: 0.5rem apart, against the nav's gap (1.25rem; 1rem on phones). */
 nav .nav-theme + a.nav-github {
-  margin-left: 0;
+  margin-left: -0.75rem;
 }
 main {
   max-width: 46rem;
@@ -411,6 +412,9 @@ main.doc {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem 1.5rem; /* the content's edges */
+  }
+  nav .nav-theme + a.nav-github {
+    margin-left: -0.5rem;
   }
   nav .nav-theme,
   nav a.nav-github {
