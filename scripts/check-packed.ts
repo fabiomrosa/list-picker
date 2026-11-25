@@ -51,7 +51,8 @@ try {
     join(dir, "package.json"),
     JSON.stringify({ name: "packed", private: true, type: "module" }),
   );
-  run("npm", ["install", "--no-audit", "--no-fund", ...tarballs, ...react]);
+  // React from the registry (a warm npm cache spares the network).
+  run("npm", ["install", "--no-audit", "--no-fund", "--prefer-offline", ...tarballs, ...react]);
 
   // Core's example, whole; vanilla's first is the example, the others are snippets set in it.
   const [coreExample = ""] = blocks("packages/core/README.md");

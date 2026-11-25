@@ -62,8 +62,8 @@ function Kanban() {
 createRoot(document.getElementById("board") as HTMLElement).render(<Kanban />);
 ```
 
-Cards are direct children of the element given `cards(listId)`, and lists direct children of the
-element given `ref`. The styles are yours; for touch dragging, the cards and handles need
+Cards are direct children of the element given `cards(listId)`, and lists share one parent inside
+the element given `ref`. The styles are yours; for touch dragging, the cards and handles need
 `touch-action: none` (see [Styling a board](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#styling-a-board)).
 
 ## API
@@ -92,7 +92,8 @@ its pick-up through the redraw. A card moved to another list is a new component 
 (React's keys are per parent): keep its state on the Board, not in the component.
 
 `options` are those of `createDrag`
-([vanilla's API](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#api)):
+([vanilla's API](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#api)) but
+`moveElements`, which is always `false` here:
 `canMove({ kind, id, toListId, beforeId })` to refuse a place, `onActivate({ kind, id })` on a click
 or Enter, and `messages` for the announcements. They are read from the latest render; giving or
 removing `onActivate` or `canMove` restarts the engine, which ends a drag in progress, so keep them

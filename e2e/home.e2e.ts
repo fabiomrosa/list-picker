@@ -239,3 +239,23 @@ test("the home and each package's page show its version, linked to npm", async (
     await page.goto(HOME);
   }
 });
+
+test("the React package's page: its README with a section index, linked from every page", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:5181/list-picker/react.html");
+  await expect(page.locator("h1")).toHaveText("@list-picker/react");
+  await expect(page.locator(".toc a")).toHaveText([
+    "Install",
+    "Example",
+    "API",
+    "Markup, keyboard and announcements",
+    "License",
+  ]);
+  for (const path of ["", "core.html", "vanilla.html", "player.html", "react-demo.html"]) {
+    await page.goto(`http://localhost:5181/list-picker/${path}`);
+    await expect(page.locator('nav [aria-label="Docs"] a[href$="react.html"]')).toHaveCount(1);
+  }
+  await page.goto("http://localhost:5180/");
+  await expect(page.locator('nav [aria-label="Docs"] a[href$="react.html"]')).toHaveCount(1);
+});
