@@ -226,6 +226,28 @@ nav a.nav-github svg {
 nav .nav-theme + a.nav-github {
   margin-left: -0.75rem;
 }
+/* The facts line wraps between facts only, the dot staying with the fact before it. */
+.eyebrow span {
+  white-space: nowrap;
+}
+/* The package table on a phone: each package a block, its name above what it is. */
+@media (max-width: 40rem) {
+  #packages + table thead {
+    display: none;
+  }
+  #packages + table td {
+    display: block;
+    padding: 0 0.7rem;
+    border: 0;
+  }
+  #packages + table td:first-child {
+    padding-top: 0.6rem;
+  }
+  #packages + table td:last-child {
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--line);
+  }
+}
 /* A package's published version, beside its name: muted, linked to npm. */
 .version {
   font-family: var(--mono);
