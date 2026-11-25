@@ -145,7 +145,8 @@ title, review-section, size, frozen-files and secret checks.
   false` when the root mounts, in `useEffect`, and is destroyed when it unmounts or changes; its
   options are the latest render's (kept in a ref after each commit, read by the engine through
   wrappers and a `messages` object of getters), and only giving or removing `onActivate` or
-  `canMove` restarts it (L5.5); `StrictMode` leaves one engine; checked once on React 18.3.1); `react` `^18.3.0 || ^19.0.0` as a peer,
+  `canMove` restarts it, ending a drag in progress (L5.5); `StrictMode` leaves one engine; checked
+  once on React 18.3.1); `react` `^18.3.0 || ^19.0.0` as a peer,
   core and vanilla as dependencies; tests with React Testing Library in happy-dom (`cleanup()` by
   hand: Vitest runs without globals). Root `workspaces` list the packages in build order (core,
   vanilla, react); `tsconfig.json`'s `paths` and `vitest.config.ts`'s aliases resolve the three
@@ -194,7 +195,8 @@ None.
 ## Last session
 - **2026-11-25, L5.5:** `useListPicker`'s options follow renders without restarting the engine (a
   changed `canMove`, `onActivate` or `messages` applies at once); without `onActivate`, Enter stays
-  the card's own; `StrictMode` runs one engine; React 18.3.1 passes too. Next: L5.6 (the React demo).
+  the card's own; `StrictMode` runs one engine; React 18.3.1 passes too. Next: L5.6 (the React
+  demo).
 - **2026-11-25, L5.4:** `useListPicker`: a React board moves cards across lists by pointer and keyboard,
   React drawing each move (with the engine in its default mode, both cross-list tests fail on
   React's `removeChild` "not a child of this node", DEC-18's reason); unmounting removes the

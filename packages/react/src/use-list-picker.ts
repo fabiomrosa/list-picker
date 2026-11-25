@@ -26,7 +26,11 @@ const getters = {
   card: (id: string) => ({ "data-lp-card": id, tabIndex: 0 }) as const,
 };
 
-/** Messages read from the latest options at each announcement (the engine reads them then). */
+/**
+ * Messages read from the latest options at each announcement (the engine reads them then). Getters
+ * by `defineProperties`: a getter that may return `undefined` is not a `Partial<Messages>` member
+ * under `exactOptionalPropertyTypes`.
+ */
 function latestMessages(current: () => ListPickerOptions): Partial<Messages> {
   const keys = ["pickUp", "move", "drop", "cancel"] as const;
   const getters = keys.map((key) => [
@@ -40,7 +44,8 @@ function latestMessages(current: () => ListPickerOptions): Partial<Messages> {
  * Pointer and keyboard moving for a board React draws (DEC-18): the engine starts when the element
  * given `ref` mounts, with `moveElements: false` (a move changes only the Board, and `useBoard`
  * draws it), and stops when that element unmounts or changes. Its options are the latest render's;
- * giving or removing `onActivate` or `canMove` restarts it.
+ * giving or removing `onActivate` or `canMove` restarts it, which ends a drag in progress: keep them
+ * given (or not) for the board's lifetime.
  */
 export function useListPicker<L extends { id: string }, C extends { id: string }>(
   board: Board<L, C>,
