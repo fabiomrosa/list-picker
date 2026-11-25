@@ -44,6 +44,18 @@ jobs:
             exit 1
           fi
 
+  review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: The Review section records the review (list-picker-code-review)
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: scripts/check-pr-review.py
+
   size:
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'oversized-ok')
     runs-on: ubuntu-latest

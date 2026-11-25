@@ -117,7 +117,7 @@ Every slice's pull request updates it (SESSION §3).
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
-title, size, frozen-files and secret checks.
+title, review-section, size, frozen-files and secret checks.
 
 ## Modules
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
@@ -169,6 +169,9 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, M4 retro, proposal 2:** CI's `review` job (`scripts/check-pr-review.py`) fails a pull
+  request whose "## Review" section is missing, empty or a placeholder (#83 merged that way);
+  milestone plans and closes (`docs(M<n>): ...`) are exempt.
 - **2026-11-24, M4 retro (the owner accepted every proposal):** 5, 6, 7, 10–13 of the M4 close here:
   CONVENTIONS (user callbacks after setup; readers of a lagging DOM; focus in Chrome; the demo
   through its UI), SESSION §0 (interaction slices' budget) and §4 (check the deploy), GOTCHAS (site,

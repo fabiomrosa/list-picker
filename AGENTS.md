@@ -63,7 +63,7 @@ Follow YAGNI and KISS strictly, in code and in communication.
 
 ## Commands
 - **Gate:** `npm run verify`: one command that runs everything CI runs here (format, lint, types, tests
-  with the coverage floor, build). CI runs it, plus the title, size, frozen-files and secret
+  with the coverage floor, build). CI runs it, plus the title, review-section, size, frozen-files and secret
   (gitleaks) checks.
 - **Pull requests:** push the slice branch, open the pull request with `gh`, and squash-merge it
   yourself once every check is green (SESSION §4). Nothing reaches `main` any other way (DEC-04).
