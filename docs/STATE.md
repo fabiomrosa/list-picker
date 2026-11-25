@@ -204,6 +204,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, docs(M5):** planned L5.9–L5.14 (owner): one nav with one Demos link, a demos
+  switcher (Board and Player, in vanilla and React), the React Player, saving the order to a
+  simulated backend (vanilla, then React), and each demo's code on its page.
 - **2026-11-25, fix (owner):** where lines break: `text-wrap: balance` on headings and the lede,
   `pretty` on paragraphs and list items (`style.css`); the widths stay (measured: the lede is 65ch,
   the home's text 92ch, so one `ch` value for both would have changed one of them).
