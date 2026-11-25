@@ -5,19 +5,13 @@
 main.demo {
   max-width: 64rem;
 }
-/* The title and its snapshot version. */
+/* The title. */
 .demo-head {
   margin-bottom: 1rem;
 }
 /* Right above the board it restyles, as on the home. */
 main.demo > .skins {
   margin: 0 0 0.75rem;
-}
-/* "Board" and its snapshot version on one baseline. */
-main.demo h1 {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
 }
 .board {
   margin: 0 0 2rem;

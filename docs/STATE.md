@@ -105,8 +105,8 @@ Every slice's pull request updates it (SESSION §3).
   card shows its neighbours and ↑ ↓ ← → × buttons, each list header (the drag handle) its card count
   and ← → ×; positions are read at click time and the neighbours, counts and button states refresh
   after every change. Forms add lists and cards at the end or before a chosen one and move cards
-  (showing "same place" when nothing changed); the page logs every `move` event, the `change`
-  count and the Snapshot version. A click or Enter on a list's header edits its name in place (Enter
+  (showing "same place" when nothing changed); the page logs every `move` event and the `change`
+  count. A click or Enter on a list's header edits its name in place (Enter
   or leaving saves, Esc cancels; `updateList`), and on a card opens a dialog that renames it
   (`updateCard`), both through `onActivate`; no browser prompt; Doing takes at most 3 cards
   (`canMove`); `window.board` is the Board. A tall Backlog list (14 cards, lists scroll past 22rem) and a
