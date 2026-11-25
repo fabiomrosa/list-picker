@@ -134,8 +134,8 @@ title, review-section, size, frozen-files and secret checks.
 - Each package has a README (install, a complete example, the API; vanilla's also the `data-lp-*`
   hooks, the keys and the announcements), the MIT `LICENSE`, and `description`, `license`,
   `repository`, `keywords`, `sideEffects: false`; `npm pack --dry-run` lists only `dist`, the
-  README, the license and `package.json`. Core `1.0.0`, vanilla `1.0.1` (unpublished; a `v1.0.1`
-  tag follows its publish), public (`publishConfig.access`),
+  README, the license and `package.json`. Core `1.0.0`, vanilla `1.0.1` (published 2026-11-25, tag
+  `v1.0.1`), public (`publishConfig.access`),
   vanilla depending on core `^1.0.0`; `prepublishOnly` builds. **Published on npm** (2026-11-24,
   L4.26): `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`, by the owner from their
   account (the `list-picker` org, 2FA: `npm publish --otp=<code>`), core first, from `main`; the
@@ -169,6 +169,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, vanilla 1.0.1 on npm:** published by the owner (the inert Clone, #100; the release
+  that runs the pending frame, #102); tag `v1.0.1` on `4101a10`. Checked against the registry:
+  `npm install @list-picker/vanilla` brings 1.0.1 with core 1.0.0, both fixes are in its `dist`, and
+  the README example runs in Chrome. Next: plan M5 (the owner's decisions first).
 - **2026-11-24, M4 retro, proposal 1 (WebKit):** the six WebKit e2e failures (#55) had one cause: a
   release before the last move's frame ran dropped on the Placeholder's stale place (WebKit under
   Playwright fires the moves and the release in one frame; a quick flick can too). The release now
