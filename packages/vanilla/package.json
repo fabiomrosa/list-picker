@@ -1,6 +1,6 @@
 {
   "name": "@list-picker/vanilla",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Drag-and-drop and keyboard reordering of the items in lists (kanban boards, playlists), headless, no framework.",
   "license": "MIT",
   "repository": {

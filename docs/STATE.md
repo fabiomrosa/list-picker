@@ -134,7 +134,8 @@ title, review-section, size, frozen-files and secret checks.
 - Each package has a README (install, a complete example, the API; vanilla's also the `data-lp-*`
   hooks, the keys and the announcements), the MIT `LICENSE`, and `description`, `license`,
   `repository`, `keywords`, `sideEffects: false`; `npm pack --dry-run` lists only `dist`, the
-  README, the license and `package.json`. Version `1.0.0`, public (`publishConfig.access`),
+  README, the license and `package.json`. Core `1.0.0`, vanilla `1.0.1` (unpublished; a `v1.0.1`
+  tag follows its publish), public (`publishConfig.access`),
   vanilla depending on core `^1.0.0`; `prepublishOnly` builds. **Published on npm** (2026-11-24,
   L4.26): `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`, by the owner from their
   account (the `list-picker` org, 2FA: `npm publish --otp=<code>`), core first, from `main`; the
@@ -169,6 +170,10 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, fix (M4 retro review):** the Clone is `inert` and `aria-hidden`: during a drag its
+  copied controls (the demo's arrows and ×) were focusable and announced, a duplicate of the hidden
+  card. `@list-picker/vanilla` 1.0.1, not yet published (the owner publishes:
+  `npm publish --otp=<code>` in `packages/vanilla`).
 - **2026-11-24, M4 retro, proposal 8:** `.claude/hooks/guard-git.py` runs `npm run lint` and
   `npm run typecheck` before a `git commit` and blocks it on a failure (about 1 s; the full `verify`
   stays in CI); #87 had committed a type error whose failing `verify` went unseen.
