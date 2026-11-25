@@ -174,6 +174,9 @@ None yet.
   copied controls (the demo's arrows and ×) were focusable and announced, a duplicate of the hidden
   card. `@list-picker/vanilla` 1.0.1, not yet published (the owner publishes:
   `npm publish --otp=<code>` in `packages/vanilla`).
+- **2026-11-24, M4 retro, proposal 8:** `.claude/hooks/guard-git.py` runs `npm run lint` and
+  `npm run typecheck` before a `git commit` and blocks it on a failure (about 1 s; the full `verify`
+  stays in CI); #87 had committed a type error whose failing `verify` went unseen.
 - **2026-11-24, M4 retro, proposal 4:** browser tests remove a card through the demo's × during a
   drag (the page and the Board stay in step, no page error; red without the demo's L4.1 guard).
 - **2026-11-24, M4 retro, proposal 3:** `npm run packed` (in `verify`, after the build;
