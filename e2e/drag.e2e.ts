@@ -382,3 +382,56 @@ test("the Clone has no transition or animation: it follows the pointer frame by 
   await page.mouse.up();
   expect(moving).toEqual([]);
 });
+
+/** Board lists and DOM lists agree: card ids per list, in order. */
+async function boardMatchesPage(page: Page): Promise<void> {
+  const fromBoard = await page.evaluate(() => {
+    const w = window as unknown as {
+      board: { lists(): Iterable<{ id: string }>; cards(id: string): Iterable<{ id: string }> };
+    };
+    return Object.fromEntries(
+      [...w.board.lists()].map((list) => [list.id, [...w.board.cards(list.id)].map((c) => c.id)]),
+    );
+  });
+  await expect.poll(() => lists(page)).toEqual(fromBoard);
+}
+
+test("removing another card with the demo's × during a drag leaves the page and the Board in step", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await dragWhile(page, async () => {
+    // The × by keyboard: the pointer is busy dragging.
+    await page.getByRole("button", { name: "remove card Write the tests" }).press("Enter");
+  });
+  await expect(card(page, "Write the tests")).toHaveCount(0);
+  await expect(cardsOf(page, "Doing").locator('[data-lp-card="Design the model"]')).toHaveCount(1);
+  await boardMatchesPage(page);
+  expect(errors).toEqual([]);
+});
+
+test("the dragged card's own × does nothing during its drag: the drop still lands it", async ({
+  page,
+}) => {
+  await dragWhile(page, async () => {
+    await page.getByRole("button", { name: "remove card Design the model" }).press("Enter");
+  });
+  await expect(cardsOf(page, "Doing").locator('[data-lp-card="Design the model"]')).toHaveCount(1);
+  await boardMatchesPage(page);
+});
+
+/** Drags "Design the model" to the end of Doing, running `during` once the Clone is up. */
+async function dragWhile(page: Page, during: () => Promise<void>): Promise<void> {
+  const from = await card(page, "Design the model").locator("strong").boundingBox();
+  const to = await cardsOf(page, "Doing").boundingBox();
+  if (!from || !to) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 40, from.y + 40, { steps: 6 });
+  await expect(page.locator("[data-lp-clone]")).toHaveCount(1);
+  await during();
+  await page.mouse.move(to.x + to.width / 2, to.y + to.height - 5, { steps: 12 });
+  await page.mouse.up();
+  await expect(page.locator("[data-lp-clone], [data-lp-placeholder]")).toHaveCount(0);
+}
