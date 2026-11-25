@@ -1254,7 +1254,7 @@ shows it in the demo.
 - **References:** L4.18 (the player), L5.6.
 
 ### L5.11 · The React Player
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** the Player demo, written in React, with `@list-picker/react`.
 - **Depends on:** L5.10.
 - **In scope:** `player-react.html` with the same playlist, look and behaviour as the vanilla Player

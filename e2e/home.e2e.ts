@@ -154,6 +154,7 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
     "react.html",
     "player.html",
     "react-demo.html",
+    "player-react.html",
   ].map((path) => `http://localhost:5181/list-picker/${path}`);
   for (const url of [...pages, "http://localhost:5180/"]) {
     await page.setViewportSize({ width: 320, height: 640 });
@@ -300,6 +301,7 @@ test("one nav on every page: the same links, a single demos link, the current pa
     ["react.html", "react"],
     ["player.html", null],
     ["react-demo.html", null],
+    ["player-react.html", null],
   ];
   for (const [path, current] of pages) {
     await page.goto(site + path);
@@ -346,11 +348,11 @@ test("the demos switcher: each demo in each framework", async ({ page }) => {
           el.getAttribute("aria-current"),
         ]),
       );
-  // The React Board: Player keeps React when it exists (not yet: the vanilla Player); Angular is soon.
+  // The React Board: Player keeps React; Angular is soon.
   await page.goto(`${site}react-demo.html`);
   expect(await switcher()).toEqual([
     ["Board", "./react-demo.html", "page"],
-    ["Player", "./player.html", null],
+    ["Player", "./player-react.html", null],
     ["Vanilla", "./demo/", null],
     ["React", "./react-demo.html", "page"],
     ["Angular soon", null, null],
@@ -361,7 +363,7 @@ test("the demos switcher: each demo in each framework", async ({ page }) => {
     ["Board", "./demo/", null],
     ["Player", "./player.html", "page"],
     ["Vanilla", "./player.html", "page"],
-    ["React soon", null, null],
+    ["React", "./player-react.html", null],
     ["Angular soon", null, null],
   ]);
   // The vanilla Board, from the playground: its links one level up.

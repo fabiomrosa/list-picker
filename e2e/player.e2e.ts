@@ -1,9 +1,12 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// The site's player (L4.25), the same tests for each page that draws it (a React one comes with
+// The site's player (L4.25), the same tests for each page that draws it (vanilla, and React since
 // L5.11): one list, previous and next by `neighbours`, tick-to-swap by `swapCards`, the engine's
 // drag and keyboard moves, a click to play.
-const PAGES = [["vanilla", "http://localhost:5181/list-picker/player.html"]] as const;
+const PAGES = [
+  ["vanilla", "http://localhost:5181/list-picker/player.html"],
+  ["react", "http://localhost:5181/list-picker/player-react.html"],
+] as const;
 
 const order = (page: Page) =>
   page
