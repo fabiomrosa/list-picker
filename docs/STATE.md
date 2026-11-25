@@ -126,6 +126,9 @@ Every slice's pull request updates it (SESSION §3).
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
 title, review-section, size, frozen-files and secret checks.
+- React (L5.3, L5.4; unpublished): `useBoard(board)` gives the Snapshot as React state;
+  `useListPicker(board, options)` attaches the engine with `moveElements: false` to a board React
+  draws, by a `ref` and the `data-lp-*` getters; cards and lists move by pointer and keyboard.
 
 ## Modules
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,

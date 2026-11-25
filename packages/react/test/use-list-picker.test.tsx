@@ -76,6 +76,19 @@ it("a keyboard step to another list: the Board moves, React draws it, the pick-u
   ]);
 });
 
+it("a list moved by its handle with the keyboard: the Board moves, React draws it", async () => {
+  const board = setup();
+  render(<Kanban board={board} />);
+  const handle = () => screen.getByRole("heading", { name: "todo" });
+  handle().focus();
+  await act(async () => key(handle(), " "));
+  await act(async () => key(handle(), "ArrowRight"));
+  await settle();
+  expect([...board.lists()].map((list) => list.id)).toEqual(["doing", "todo"]);
+  expect(screen.getAllByRole("heading").map((h) => h.textContent)).toEqual(["doing", "todo"]);
+  expect(document.activeElement).toBe(handle());
+});
+
 it("a pointer drop in another list: the Board moves and React draws it, with no error", async () => {
   const board = setup();
   render(<Kanban board={board} />);
@@ -117,6 +130,12 @@ it("unmounting removes every listener the engine added, and its announcement reg
   const root = container.firstElementChild as Element;
   const engine = () =>
     live.filter(([target, type]) => target === root || (target === document && type === "keydown"));
+  // Unmounted in the middle of a drag: its document listener too.
+  card("a").getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+  document.elementFromPoint = () => null;
+  pointer(card("a"), "pointerdown", 50, 30);
+  pointer(card("a"), "pointermove", 70, 300);
+  expect(live.some(([target, type]) => target === document && type === "keydown")).toBe(true);
   const attached = engine().length;
   unmount();
   adds.mockRestore();
