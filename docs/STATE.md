@@ -169,6 +169,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, feat (owner):** a favicon on every page and both demos: the brand's list mark, white
+  on the accent (`site/public/`: an SVG, a 32px PNG, a 180px touch icon); a browser test checks each
+  site page's three icons load.
 - **2026-11-25, plan M5:** the React adapter split into L5.1–L5.8 in PLAN; DEC-18 proposed (hooks
   over core and the engine; react depends on vanilla; `moveElements: false` leaves the DOM to the
   renderer), left to the agent by the owner; the owner approved the plan, DEC-18 accepted. Next: L5.1.
