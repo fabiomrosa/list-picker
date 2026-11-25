@@ -94,7 +94,8 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   bug there; the e2e tests run on the dev servers.
 - A file in `site/public/` is linked by its root path (`/favicon.svg`): Vite adds the site's base
   (`/list-picker/`) in dev and in the build. Written with the base (`/list-picker/favicon.svg`), the
-  build keeps it but the dev server doubles it (`/list-picker/list-picker/…`, a 404). The demo, built
+  build keeps it but the dev server doubles it (`/list-picker/list-picker/…`) and answers with its
+  HTML page, not the file (status 200, `text/html`): check a content type, not a status. The demo, built
   under `/list-picker/demo/`, links them relatively (`../favicon.svg`).
 - Vite's dev server injects CSS imported from a script (the demo's) after the first paint, so CSS
   transitions run at load: a trace or a test that starts at once measures them too.

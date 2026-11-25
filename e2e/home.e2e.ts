@@ -208,8 +208,8 @@ test("every site page has a favicon, a PNG fallback and a touch icon that load",
       .evaluateAll((links) => links.map((link) => (link as HTMLLinkElement).href));
     expect(hrefs, path || "home").toHaveLength(3);
     for (const href of hrefs) {
+      // The dev server answers a missing file with its page (200, text/html): the type tells.
       const response = await page.request.get(href);
-      expect(response.status(), href).toBe(200);
       expect(response.headers()["content-type"], href).toMatch(/^image\//);
     }
   }
