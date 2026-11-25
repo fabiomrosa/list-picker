@@ -279,3 +279,14 @@ test("the install command's copy button copies the command shown, as chosen", as
     "pnpm add @list-picker/core @list-picker/vanilla",
   );
 });
+
+test("a second copy restarts the check's time", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(HOME);
+  const copy = page.getByRole("button", { name: "Copy the install command" });
+  await copy.click();
+  await page.waitForTimeout(1000);
+  await copy.click();
+  await page.waitForTimeout(700); // 1.7 s after the first copy, 0.7 s after the second
+  await expect(copy).toHaveAttribute("data-copied", "", { timeout: 0 });
+});
