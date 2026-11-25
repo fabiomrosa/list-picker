@@ -169,6 +169,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, plan M5:** the React adapter split into L5.1–L5.6 in PLAN; DEC-18 (hooks over core
+  and the engine; react depends on vanilla; the engine can leave the DOM to the renderer), left to
+  the agent by the owner. Waits for the owner's ok on the plan's pull request.
 - **2026-11-25, vanilla 1.0.1 on npm:** published by the owner (the inert Clone, #100; the release
   that runs the pending frame, #102); tag `v1.0.1` on `4101a10`. Checked against the registry:
   `npm install @list-picker/vanilla` brings 1.0.1 with core 1.0.0, both fixes are in its `dist`, and

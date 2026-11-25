@@ -164,3 +164,24 @@ applied). Drag start and end callbacks are left for a later 1.x.
 
 ## Proposed (waiting for the owner)
 None.
+
+## DEC-18 · The React adapter: hooks over core and the engine — Accepted (left to the agent by the owner, 2026-11-25)
+`@list-picker/react` depends on `@list-picker/core` and `@list-picker/vanilla` (for `createDrag`),
+with `react` (18 or later) as a peer dependency. It offers hooks, not components: `useBoard(board)`
+returns the Board's Snapshot as React state (`useSyncExternalStore`; the Snapshot is the same object
+until the Board changes), and `useListPicker(board, options)` attaches the engine to a root element
+and returns the attributes each list, list handle, card container and card needs. The user's
+components render the Snapshot; the engine finds them by those attributes (DEC-13). The engine
+gains an option to leave the DOM to the renderer: on a drop or a keyboard step it changes only the
+Board, and React draws the result.
+- **Why:** the common shape of a framework adapter for a DOM library (dnd-kit's `@dnd-kit/react`
+  over `@dnd-kit/dom`): no new package, so DEC-12 stands and nothing published changes; hooks with
+  attribute getters, as in other headless libraries (downshift, TanStack, react-aria), keep the
+  markup the user's (DEC-07). React must own its DOM: an element the engine moves to another list
+  is one React then removes from the wrong parent, so the engine stops moving it.
+- **Consequences:** DEC-13 amended: by default the engine still moves the element itself (vanilla,
+  `mount`); with the new option it does not, and keeps a keyboard pick-up and the focus on the
+  item's id across the redraw. `mount` is not used by React and is dropped from its bundle
+  (`sideEffects: false`). The option ships in `@list-picker/vanilla` 1.1.0, before
+  `@list-picker/react` 1.0.0.
+

@@ -75,11 +75,21 @@ demo and a live board on the home, and the first npm publish.
 - **P4** · GitHub Pages turned on for the repository (Settings → Pages → Source: GitHub Actions).
   Needed by L4.12.
 
+## M5 · React adapter
+Hooks over core and the engine (DEC-18): the engine first learns to leave the DOM to the renderer,
+then `@list-picker/react` turns the Board into React state and attaches the engine; a React demo
+on the site, a README and its page, and the first publish (vanilla 1.1.0, then react 1.0.0).
+
+| Repository | Slices |
+|---|---|
+| `list-picker` | L5.1 → L5.2 → L5.3 → L5.4 → L5.5 → L5.6 |
+
 ## Later milestones (split when they start)
-- **M5 · React adapter.** **M6 · Angular adapter.**
+- **M6 · Angular adapter.**
 
 ## Recommended order (one session at a time)
 L4.1 to L4.26 in order; P3 before L4.5, GitHub Pages turned on before L4.12, P2 before L4.26.
+L5.1 to L5.6 in order; the owner publishes in L5.6.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |

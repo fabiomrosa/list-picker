@@ -1063,6 +1063,115 @@ shows it in the demo.
 - **Files:** ~2: PLAN, STATE.
 - **References:** DEC-12; ROADMAP P2.
 
+## M5 · React adapter
+
+### L5.1 · The engine leaves the DOM to the renderer
+- **Status:** next
+- **Goal:** a UI layer that renders from the Snapshot (React) can use `createDrag` without the engine
+  moving its elements.
+- **Depends on:** DEC-18.
+- **In scope:** a `createDrag` option (named in the slice; additive) with which a drop or a keyboard
+  step only calls `moveCard`/`moveList`: the Placeholder and Clone go, the item shows again where
+  it was, and the renderer draws the move; a keyboard pick-up and the focus follow the item's id to
+  the element the renderer draws for it; the default stays as now (DEC-13).
+- **Out of scope:** React itself; `mount` (it keeps the default).
+- **Contract:** none. **Public API:** the new `DragOptions` field (vanilla 1.1.0).
+- **Acceptance criteria:**
+  1. With the option, a drop changes the Board and leaves every element where it was; without it,
+     nothing changes.
+  2. With the option, a keyboard step changes the Board only; after a redraw that replaces the
+     item's element, the pick-up and the focus are on the new element.
+  3. Esc and a refused move (`canMove`) put the Board and the DOM back as today.
+- **Files:** ~6: `drag.ts`, `keyboard.ts`, their tests, the vanilla README, PLAN, STATE.
+- **References:** DEC-13, DEC-15, DEC-18.
+
+### L5.2 · The React package and the Board as state
+- **Status:** waiting (L5.1)
+- **Goal:** a React component re-renders from the Board's Snapshot whenever the Board changes.
+- **Depends on:** L5.1, DEC-18.
+- **In scope:** `packages/react` (ESM, types, `react` >= 18 as a peer, core and vanilla as
+  dependencies, built like the others); `useBoard(board)` with `useSyncExternalStore` (server
+  snapshot too); tests with React Testing Library in happy-dom.
+- **Out of scope:** dragging (L5.3); the README (L5.5).
+- **Contract:** none. **Public API:** `useBoard` (new package).
+- **Acceptance criteria:**
+  1. A component using `useBoard` renders the lists and cards, and re-renders after each Board
+     change with the new Snapshot.
+  2. Between changes the Snapshot is the same object (no extra render); rendering on the server
+     returns the current Snapshot.
+- **Files:** ~8: `packages/react` (package.json, tsconfig, `src/index.ts`, `src/use-board.ts`, a
+  test), the root workspace and tsconfig, PLAN, STATE.
+- **References:** DEC-09, DEC-12, DEC-18.
+
+### L5.3 · Drag and keyboard in React
+- **Status:** waiting (L5.2)
+- **Goal:** a React board moves cards and lists by pointer and keyboard.
+- **Depends on:** L5.2.
+- **In scope:** `useListPicker(board, options)`: a ref for the root and getters for a list, its
+  handle, its cards' container and a card (the `data-lp-*` attributes, focusability); it starts
+  the engine with L5.1's option when the root mounts, and destroys it when it unmounts; the
+  engine's options (`messages`, `onActivate`, `canMove`) passed through, current on every render
+  without restarting it; safe under `StrictMode`.
+- **Out of scope:** the demo page (L5.4).
+- **Contract:** none. **Public API:** `useListPicker` and its option and getter types.
+- **Acceptance criteria:**
+  1. A drop and a keyboard step change the Board, and React draws the move, across lists too, with
+     no DOM error.
+  2. Unmounting removes every listener the engine added; `StrictMode`'s double mount leaves one
+     engine.
+  3. A changed `canMove` or `onActivate` applies at once.
+- **Files:** ~5: `src/use-list-picker.ts`, `src/index.ts`, a test, PLAN, STATE.
+- **References:** DEC-13, DEC-15, DEC-17, DEC-18.
+
+### L5.4 · The React demo
+- **Status:** waiting (L5.3)
+- **Goal:** the kanban demo, written in React, on the site.
+- **Depends on:** L5.3.
+- **In scope:** a React page with the kanban board (the same lists, the skins, a capped list,
+  activation), built into the site as a third demo and listed in the nav's Demos; browser tests:
+  a drag across lists, a keyboard move, and the page in `StrictMode`.
+- **Out of scope:** the vanilla demo's editing panels.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. In Chrome, a card dragged to another list and a card moved by keyboard land where they were
+     put, with no page error.
+  2. The site's nav and home link the React demo.
+- **Files:** ~8: the demo's page, script and styles, the site build, the nav on each page, an e2e
+  test, PLAN, STATE.
+- **References:** L4.17, L4.18.
+
+### L5.5 · The React README and its page
+- **Status:** waiting (L5.4)
+- **Goal:** someone can learn the React adapter from its README, on npm and on the site.
+- **Depends on:** L5.4.
+- **In scope:** `packages/react/README.md` (install, a complete example, the hooks, styling hooks
+  shared with vanilla); `site/react.html` rendered from it; the home's package table links it;
+  `npm run packed` checks its examples too.
+- **Out of scope:** the publish (L5.6).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. The README's example type-checks against the packed packages and draws a working board.
+  2. The site has a React page with a section index, linked from the home.
+- **Files:** ~6: the README, `site/react.html`, `site/index.html`, `scripts/check-packed.ts`, PLAN,
+  STATE.
+- **References:** L4.5, L4.14.
+
+### L5.6 · First publish of the React adapter
+- **Status:** waiting (L5.5)
+- **Goal:** `@list-picker/react` is on npm.
+- **Depends on:** L5.5.
+- **In scope:** a last `npm publish --dry-run`; the owner publishes `@list-picker/vanilla` 1.1.0,
+  then `@list-picker/react` 1.0.0 (`--otp`); the agent tags each (`v1.1.0`, `react-v1.0.0`) and
+  checks the install from the registry; the home's Install chooser shows the React command.
+- **Out of scope:** a release workflow in CI.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. `npm install @list-picker/react` in an empty folder installs it with core and vanilla 1.1.0,
+     and the README example runs against them.
+  2. The tags point at the published commits.
+- **Files:** ~3: `site/index.html`, PLAN, STATE.
+- **References:** L4.26, GOTCHAS (Publishing).
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).
