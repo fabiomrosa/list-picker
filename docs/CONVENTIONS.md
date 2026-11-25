@@ -20,7 +20,7 @@ packages/<name>/
     index.ts           public API
     <thing>.ts
   test/
-    <thing>.test.ts
+    <thing>.test.ts     (.test.tsx when it holds JSX: the React package's)
 ```
 
 ## 3. Naming
