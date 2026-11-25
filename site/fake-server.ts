@@ -1,7 +1,6 @@
 // A pretend backend: it keeps the board in the browser's storage and answers after a delay, as your
-// API would; it can fail the next save. It places a moved card or list from the neighbours the
-// `move` event names (`prevId`, `nextId`), with a `Board` of its own, as a real backend would from
-// the same request. In your app, `load` and `save` are `fetch` calls.
+// API would; it can fail the next save. It places a moved card or list before the `nextId` the
+// `move` event names, with a `Board` of its own, as a real backend would from the same request. In your app, `load` and `save` are `fetch` calls.
 import { Board, type MoveEvent, type Snapshot } from "@list-picker/core";
 
 /** A request as the panel shows it, once answered. */
