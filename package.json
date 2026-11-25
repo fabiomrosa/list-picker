@@ -9,7 +9,7 @@
     "node": ">=26"
   },
   "scripts": {
-    "verify": "npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run e2e",
+    "verify": "npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run packed && npm run e2e",
     "dev": "vite playground",
     "bench": "node bench/run.ts",
     "trace": "node bench/drag-trace.ts",
@@ -21,7 +21,8 @@
     "e2e": "playwright test",
     "build": "npm run build --workspaces",
     "site": "vite site",
-    "site:build": "vite build site && vite build playground --base /list-picker/demo/ --outDir ../dist-site/demo"
+    "site:build": "vite build site && vite build playground --base /list-picker/demo/ --outDir ../dist-site/demo",
+    "packed": "node scripts/check-packed.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.8",
