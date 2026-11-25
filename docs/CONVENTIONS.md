@@ -37,6 +37,8 @@ packages/<name>/
 - A call that takes the user's elements checks all of them before it writes any (attributes, moves),
   so an error leaves the user's markup as it was.
 - Nothing is logged with `console` in library code.
+- Code that runs a user callback (a Renderer, a message, `canMove`, `onActivate`) finishes its own
+  setup first, so a throw from the callback leaves a working state (L4.1, L4.4).
 
 ## 5. Tests
 | Behaviour | Seam | Test |
@@ -60,6 +62,16 @@ time to be reported.
 first, and report a median; a decision record states the method next to the numbers.
 A measurement script fails when what it counts over is empty (no events found, no samples),
 instead of reporting zero.
+
+**A mounted DOM that lags the Board** (during a drag, or until `mount`'s microtask): a change that
+allows it lists every reader of the mounted DOM (the drop target, the drop, the demo) and tests
+each one (L4.1).
+
+**Focus kept across a move** (a keyboard grab, a card `mount` moves for a Board change made by code)
+is tested in Chrome (`e2e/`): happy-dom does not blur a moved element (GOTCHAS).
+
+**The demo's interactions** are tested through its UI (a click, a key), not through `window.board`:
+a control that calls the code directly hides a broken UI path (L4.10).
 
 **DOM writes** are counted when a test claims a change touches only some elements (a reconcile that
 moves only what is out of place); checking the resulting order alone passes with extra writes.
