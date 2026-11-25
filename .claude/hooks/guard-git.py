@@ -7,7 +7,8 @@ Blocks:
   - `git push --force` / `-f` (`--force-with-lease` is allowed on your own slice branch);
   - `git commit` while the current branch is main;
   - `git commit` while `npm run lint` or `npm run typecheck` fails (#87 committed a type error
-    whose failing `verify` went unseen; CI caught it);
+    whose failing `verify` went unseen; CI caught it). It checks the working tree, as `git add -A`
+    commits it, not the index;
   - `gh pr merge` without `--squash`, or with `--admin` (it bypasses the checks).
 The CI job `main-via-pr` repeats the main rule for any agent. This is a guard rail, not a sandbox.
 Exit code 2 blocks the tool call; stderr is shown to Claude.
@@ -84,12 +85,14 @@ def check_gate(directory):
     root = top.stdout.strip()
     if top.returncode != 0 or not os.path.exists(os.path.join(root, "package.json")):
         return
-    for script in ("lint", "typecheck"):
-        env = {**os.environ, "NO_COLOR": "1", "FORCE_COLOR": "0"}
-        result = subprocess.run(["npm", "run", "--silent", script], cwd=root, capture_output=True, text=True, env=env)
+    # Biome ignores NO_COLOR: plain errors only, so the output's start below is the first error, not warnings.
+    commands = {"lint": ["--", "--colors=off", "--diagnostic-level=error"], "typecheck": []}
+    for script, extra in commands.items():
+        result = subprocess.run(["npm", "run", "--silent", script, *extra], cwd=root, capture_output=True, text=True)
         if result.returncode != 0:
-            tail = "\n".join((result.stdout + result.stderr).strip().splitlines()[-15:])
-            block(f"`npm run {script}` fails; fix it before committing:\n{tail}")
+            tail = "\n".join((result.stdout + result.stderr).strip().splitlines()[:20])  # the first error
+            hint = " (no node_modules here? run `npm ci`)" if "not found" in tail else ""
+            block(f"`npm run {script}` fails{hint}; fix it before committing:\n{tail}")
 
 
 def check(tokens, directory):
