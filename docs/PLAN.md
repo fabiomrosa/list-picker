@@ -1268,19 +1268,39 @@ shows it in the demo.
 - **Files:** ~6: the page and its script, the switcher, an e2e test, PLAN, STATE.
 - **References:** L4.18, L5.6.
 
-### L5.12 · Saving the order: the vanilla Board
+### L5.12 · The vanilla Board page
+- **Status:** done (2026-11-25)
+- **Goal:** the vanilla Board demo is a small page, the twin of the React one, so saving the order
+  (L5.13) and the code shown (L5.15) stay readable; the playground stays a developer's page.
+- **Depends on:** L5.11.
+- **In scope:** `site/board.html` and `board.ts`: the home's board drawn by `mount` in the React
+  demo's markup (skins, Doing capped at 3, a click or Enter opens); the switcher's vanilla Board and
+  the nav's `demos` link to it; the Board suite (`e2e/react.e2e.ts`) runs on both pages; the
+  playground (`demo/`, the drag tests' page) leaves the switcher, is titled "Playground" and is
+  linked from the home.
+- **Out of scope:** saving the order (L5.13).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. In Chrome, the vanilla Board passes the React Board's suite (a drag across lists, a keyboard
+     move refused by the cap, one live region, Enter opens).
+  2. The switcher and the nav reach it; the playground keeps its drag tests, outside the switcher.
+- **Files:** ~13: the page and its script, the switcher's table, the nav, the demo pages' markers,
+  the playground, the home, the e2e tests, PLAN, STATE.
+- **References:** L5.6, L5.10.
+
+### L5.13 · Saving the order: the vanilla Board
 - **Status:** planned
 - **Goal:** the Board demo shows how an app saves the order: it loads from a backend and saves
   every move, so a reload keeps the order.
-- **Depends on:** L5.10.
+- **Depends on:** L5.12.
 - **In scope:** a simulated backend in the site (`site/fake-server.ts`, shared by the demos): it keeps
-  the board in `localStorage`, answers after a delay, and fails on demand; the Board demo loads its
-  lists and cards from it on open, sends each `move` event (DEC-11: `id`, `toListId`, `prevId`,
+  the board in `localStorage`, answers after a delay, and fails on demand; the vanilla Board (`board.ts`) loads
+  its lists and cards from it on open, sends each `move` event (DEC-11: `id`, `toListId`, `prevId`,
   `nextId`) as a request and shows the move at once; when a request fails, it draws the server's
   order again and says so; a panel lists the requests and their answers, with "fail the next
   request" and "reset the data"; a "Saving the order" section in vanilla's README (the pattern:
   load, save from `move`, undo on a failure).
-- **Out of scope:** the React Board (L5.13); the Player; a real backend; ranks (Later).
+- **Out of scope:** the React Board (L5.14); the Player; a real backend; ranks (Later).
 - **Contract:** none. **Public API:** none (README only; npm shows it from vanilla's next version).
 - **Acceptance criteria:**
   1. A card moved, then the page reloaded, is where it was put.
@@ -1291,23 +1311,23 @@ shows it in the demo.
   e2e test, PLAN, STATE.
 - **References:** DEC-11; the `move` event (L1.9).
 
-### L5.13 · Saving the order: the React Board
+### L5.14 · Saving the order: the React Board
 - **Status:** planned
 - **Goal:** the same as L5.12, written with `@list-picker/react`.
-- **Depends on:** L5.12.
+- **Depends on:** L5.13.
 - **In scope:** the React Board loads from the fake server, saves each `move`, draws the server's
   order again on a failure and shows the same panel; a "Saving the order" section in React's
   README.
 - **Out of scope:** a data-fetching library.
 - **Contract:** none. **Public API:** none (README only).
-- **Acceptance criteria:** those of L5.12, on the React Board.
+- **Acceptance criteria:** those of L5.13, on the React Board.
 - **Files:** ~6: the React Board's script and page, React's README, an e2e test, PLAN, STATE.
-- **References:** L5.12.
+- **References:** L5.13.
 
-### L5.14 · The demos' code
+### L5.15 · The demos' code
 - **Status:** planned
 - **Goal:** each demo page shows the code that runs it, so a reader sees how to build their own.
-- **Depends on:** L5.13.
+- **Depends on:** L5.14.
 - **In scope:** below each demo, its source files (script, markup, style; the fake server on the
   Boards) in tabs, read from the files themselves at build time and highlighted then (Shiki, a dev
   dependency of the site: no script in the page for it), each with a copy button.

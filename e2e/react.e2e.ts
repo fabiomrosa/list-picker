@@ -1,8 +1,12 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// The Board demo, the same tests for each page that draws it: in React (L5.6), drawn from the
-// Snapshot under StrictMode, the engine attached by `useListPicker` (DEC-18).
-const PAGES = [["react", "http://localhost:5181/list-picker/react-demo.html"]] as const;
+// The Board demo, the same tests for each page that draws it: in vanilla (L5.12), drawn by `mount`;
+// in React (L5.6), drawn from the Snapshot under StrictMode, the engine attached by
+// `useListPicker` (DEC-18).
+const PAGES = [
+  ["vanilla", "http://localhost:5181/list-picker/board.html"],
+  ["react", "http://localhost:5181/list-picker/react-demo.html"],
+] as const;
 const lists = (page: Page) =>
   page
     .locator("#hero-board [data-lp-cards]")
@@ -31,7 +35,7 @@ for (const [name, DEMO] of PAGES) {
       expect(errors).toEqual([]);
     });
 
-    test("a card dragged to another list lands there, drawn by React", async ({ page }) => {
+    test("a card dragged to another list lands there", async ({ page }) => {
       const from = await card(page, "a").boundingBox();
       const to = await page.locator('[data-lp-cards="done"]').boundingBox();
       if (!from || !to) throw new Error("not visible");
@@ -61,7 +65,9 @@ for (const [name, DEMO] of PAGES) {
       await expect(page.locator(".hb-count").nth(1)).toHaveText("3/3");
     });
 
-    test("StrictMode: one live region; Enter on a card opens it", async ({ page }) => {
+    test("one live region (React: under StrictMode); Enter on a card opens it", async ({
+      page,
+    }) => {
       await expect(page.locator("[aria-live]")).toHaveCount(1);
       await card(page, "c").focus();
       await page.keyboard.press("Enter");
