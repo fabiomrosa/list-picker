@@ -197,3 +197,20 @@ test("the install command follows the package manager chosen under it, by pointe
   await page.locator('label[for="install-react"]').click(); // no command for React yet
   await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeHidden();
 });
+
+test("every site page has a favicon, a PNG fallback and a touch icon that load", async ({
+  page,
+}) => {
+  for (const path of ["", "core.html", "vanilla.html", "player.html"]) {
+    await page.goto(`http://localhost:5181/list-picker/${path}`);
+    const hrefs = await page
+      .locator('link[rel="icon"], link[rel="apple-touch-icon"]')
+      .evaluateAll((links) => links.map((link) => (link as HTMLLinkElement).href));
+    expect(hrefs, path || "home").toHaveLength(3);
+    for (const href of hrefs) {
+      const response = await page.request.get(href);
+      expect(response.status(), href).toBe(200);
+      expect(response.headers()["content-type"], href).toMatch(/^image\//);
+    }
+  }
+});
