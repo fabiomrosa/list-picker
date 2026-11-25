@@ -250,6 +250,7 @@ test("the React package's page: its README with a section index, linked from eve
     "Example",
     "API",
     "Markup, keyboard and announcements",
+    "Saving the order",
     "License",
   ]);
   for (const path of ["", "core.html", "vanilla.html", "player.html", "react-demo.html"]) {

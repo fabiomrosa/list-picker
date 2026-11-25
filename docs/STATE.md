@@ -187,8 +187,8 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
-- Saving the order (L5.13): `board.html` loads from and saves to a pretend server
-  (`site/fake-server.ts`), with a panel of its requests; vanilla's README shows the pattern
+- Saving the order (L5.13, L5.14): both Board demos load from and save to one pretend server
+  (`site/fake-server.ts`, through `site/saving.ts`), each with a panel of its requests; vanilla's README shows the pattern
   ("Saving the order").
 - The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
   `@list-picker/react` in the same markup; the same e2e suite runs on both.
@@ -214,6 +214,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.14:** the React Board saves too. The saving logic is shared, `site/saving.ts`:
+  the starting board, one pretend server for both demos (one storage key: a move in one shows in
+  the other) and `keepSaved(board)` (`open`, `reset`, `onNotSaved`; each move saved, the server's
+  order taken back after a failure once no save is in flight). `board.ts` and `react-demo.tsx`
+  keep only their drawing and panel; the React panel is state (`onRequest` and `onNotSaved` return
+  their unsubscribe). React's README points to vanilla's "Saving the order". `e2e/saving.e2e.ts`
+  runs on both pages. Next: L5.15 (the demos' code).
 - **2026-11-25, L5.13:** saving the order on the vanilla Board. `site/fake-server.ts`, a pretend
   backend shared by the Board demos: it keeps the board in `localStorage` (in memory without
   storage), answers after 400 ms, places a move with core's `Board` from the event's neighbours

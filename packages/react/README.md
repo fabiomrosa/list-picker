@@ -108,6 +108,17 @@ The same as vanilla's: the
 [keys](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#keyboard) and the
 [announcements](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#announcements).
 
+## Saving the order
+
+The same as with vanilla: the Board, not React, holds the order, so load it from your backend
+(before rendering, or once in an effect), save each `move` event from `board.on("move", …)`, and
+put the backend's order back when a save fails; `useBoard` draws whatever the Board does, the
+restore included. See vanilla's
+[Saving the order](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#saving-the-order)
+for the code, and the
+[React Board demo](https://fabiomrosa.github.io/list-picker/react-demo.html) for it running
+against a pretend server.
+
 ## License
 
 MIT

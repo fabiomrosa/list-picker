@@ -84,6 +84,11 @@ export function fakeServer<L extends { id: string }, C extends { id: string }>(
       failNext = on;
     },
     /** Each answered request, for the panel. */
-    onRequest: (listener: (request: Answered) => void) => listeners.add(listener),
+    onRequest: (listener: (request: Answered) => void) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
   };
 }

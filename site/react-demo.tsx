@@ -1,32 +1,51 @@
 // The React demo (L5.6): the home's kanban board written with `@list-picker/react`, in the markup
 // `mount` draws (but for the handle: the list's title, not its whole header), so `home.css`'s skins
-// style it as they do the home's. Driven by `e2e/react.e2e.ts`.
+// style it as they do the home's. Saving the order (L5.14): `keepSaved` (`saving.ts`) loads the
+// Board from a pretend server and saves each `move`, as the vanilla demo does; the panel below shows
+// the requests. Driven by `e2e/react.e2e.ts` and `e2e/saving.e2e.ts`.
 import { Board } from "@list-picker/core";
 import { type ListPickerOptions, useBoard, useListPicker } from "@list-picker/react";
-import { Fragment, StrictMode, useState } from "react";
+import { Fragment, StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
-
-type List = { id: string; title: string };
-type Card = { id: string; text: string; tag: string };
+import type { Answered } from "./fake-server.ts";
+import { type Card, keepSaved, type List, server } from "./saving.ts";
 
 const LIMIT = 3;
+const HINT =
+  "Drag a card or a list title, or use Space and the arrows. Doing holds 3 cards; a click or Enter opens a card or a list.";
+const STATUS: Record<number, string> = {
+  200: "200 OK",
+  409: "409 Conflict",
+  500: "500 Server error",
+};
 const board = new Board<List, Card>();
-board.addList({ id: "todo", title: "To do" }, null);
-board.addList({ id: "doing", title: "Doing" }, null);
-board.addList({ id: "done", title: "Done" }, null);
-board.addCard("todo", { id: "a", text: "Sketch the onboarding flow", tag: "design" }, null);
-board.addCard("todo", { id: "b", text: "Write the release notes", tag: "docs" }, null);
-board.addCard("todo", { id: "c", text: "Fix the date picker on Safari", tag: "bug" }, null);
-board.addCard("doing", { id: "d", text: "Move cards with the keyboard", tag: "a11y" }, null);
-board.addCard("doing", { id: "e", text: "Profile the drag on a long list", tag: "perf" }, null);
-board.addCard("done", { id: "f", text: "Model lists as linked lists", tag: "core" }, null);
+const saving = keepSaved(board);
+saving.open(); // the board as the server has it: drawn when it comes
 
 const SKINS = ["Cards", "Terminal", "Pop"] as const;
 
 function Kanban() {
   const { lists } = useBoard(board);
   const [skin, setSkin] = useState<(typeof SKINS)[number]>("Cards");
-  const [opened, setOpened] = useState<string>();
+  const [status, setStatus] = useState(HINT);
+  const [requests, setRequests] = useState<Answered[]>([]);
+  const [failNext, setFailNext] = useState(false);
+  useEffect(
+    () =>
+      saving.onNotSaved(() =>
+        setStatus("Not saved: the server answered an error, so the board is back to its order."),
+      ),
+    [],
+  );
+  // The requests as answered, newest first (the last six); a failed save unticks the box.
+  useEffect(
+    () =>
+      server.onRequest((request) => {
+        setRequests((shown) => [request, ...shown].slice(0, 6));
+        if (request.status === 500) setFailNext(false);
+      }),
+    [],
+  );
   const options: ListPickerOptions = {
     // Doing holds 3 cards: a fourth is never shown there, nor dropped.
     canMove: ({ kind, id, toListId }) =>
@@ -35,7 +54,7 @@ function Kanban() {
       board.listOf(id)?.id === "doing" ||
       [...board.cards("doing")].length < LIMIT,
     onActivate: ({ kind, id }) =>
-      setOpened(kind === "card" ? board.getCard(id)?.text : board.getList(id)?.title),
+      setStatus(`Opened: ${kind === "card" ? board.getCard(id)?.text : board.getList(id)?.title}.`),
   };
   const picker = useListPicker(board, options);
   return (
@@ -84,11 +103,48 @@ function Kanban() {
           </div>
         ))}
       </div>
-      <p className="hint" role="status">
-        {opened
-          ? `Opened: ${opened}.`
-          : "Drag a card or a list title, or use Space and the arrows. Doing holds 3 cards; a click or Enter opens a card or a list."}
+      <p className="hint" id="board-status" role="status">
+        {status}
       </p>
+      <section className="server" aria-labelledby="server-title">
+        <h2 id="server-title">Saved on a server</h2>
+        <p>
+          A pretend backend in this page: it keeps the board in your browser's storage and answers
+          after 400&nbsp;ms. Each move is shown at once and saved; reload, and the order stays. A
+          failed save puts the server's order back.
+        </p>
+        <p className="server-actions">
+          <label>
+            <input
+              type="checkbox"
+              checked={failNext}
+              onChange={(event) => {
+                setFailNext(event.target.checked);
+                server.failNextSave(event.target.checked);
+              }}
+            />{" "}
+            Fail the next save
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              setStatus("Reset: the starting board.");
+              saving.reset();
+            }}
+          >
+            Reset the data
+          </button>
+        </p>
+        <ol className="requests" id="requests" aria-label="Requests, newest first">
+          {requests.map(({ method, path, body, status: code }, i) => (
+            // Requests have no id: the newest is the first, so an index keys them well enough.
+            // biome-ignore lint/suspicious/noArrayIndexKey: a log, newest first, never reordered
+            <li key={i} data-failed={code !== 200 ? "" : undefined}>
+              {`${method} ${path}${body ? ` ${JSON.stringify(body)}` : ""} → ${STATUS[code]}`}
+            </li>
+          ))}
+        </ol>
+      </section>
     </>
   );
 }

@@ -1312,7 +1312,7 @@ shows it in the demo.
 - **References:** DEC-11; the `move` event (L1.9).
 
 ### L5.14 · Saving the order: the React Board
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** the same as L5.13, written with `@list-picker/react`.
 - **Depends on:** L5.13.
 - **In scope:** the React Board loads from the fake server, saves each `move`, draws the server's
@@ -1321,7 +1321,8 @@ shows it in the demo.
 - **Out of scope:** a data-fetching library.
 - **Contract:** none. **Public API:** none (README only).
 - **Acceptance criteria:** those of L5.13, on the React Board.
-- **Files:** ~6: the React Board's script and page, React's README, an e2e test, PLAN, STATE.
+- **Files:** ~8: the React Board's script, the saving logic shared with the vanilla Board
+  (`site/saving.ts`), the vanilla Board, the fake server, React's README, an e2e test, PLAN, STATE.
 - **References:** L5.13.
 
 ### L5.15 · The demos' code
