@@ -168,7 +168,7 @@ title, review-section, size, frozen-files and secret checks.
 ## Site
 - `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, a table of the
   four packages, React linked to its page and Angular "coming soon"; an Install chooser of radios
-  with no script, where React and Angular show no command until published; the lab's answer from
+  with no script, where Angular shows no command until published; the lab's answer from
   the root README; links), `core.html`, `vanilla.html` and `react.html` rendered from the packages'
   READMEs at build time, and the
   demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
@@ -204,6 +204,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.8:** `@list-picker/vanilla` 1.1.0 and `@list-picker/react` 1.0.0 on npm (published by
+  the owner); tags `vanilla-v1.1.0` and `react-v1.0.0`; the home's Install chooser shows React's
+  command and the root README lists it. M5 done.
 - **2026-11-25, L5.7:** the React README (install, a complete `tsx` example, the hooks, links to
   vanilla's hooks, keys and announcements) and its page; `npm run packed` packs react, installs
   React from the registry (the network, or a warm npm cache) and runs its example in Chrome like

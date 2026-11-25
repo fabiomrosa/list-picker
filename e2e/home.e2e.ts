@@ -202,7 +202,12 @@ test("the install command follows the package manager chosen under it, by pointe
   await page.locator("#pm-pnpm").press("ArrowLeft");
   expect(await command.innerText()).toBe("yarn add @list-picker/core @list-picker/vanilla");
   await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeVisible();
-  await page.locator('label[for="install-react"]').click(); // no command for React yet
+  // React's command (L5.8), with the same package manager links; Angular has none yet.
+  await page.locator('label[for="install-react"]').click();
+  expect(await page.locator(".install pre.install-react").innerText()).toBe(
+    "yarn add @list-picker/core @list-picker/react",
+  );
+  await page.locator('label[for="install-angular"]').click();
   await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeHidden();
 });
 
