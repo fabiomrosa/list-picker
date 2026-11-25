@@ -225,6 +225,16 @@ nav a.nav-github svg {
 nav .nav-theme + a.nav-github {
   margin-left: 0;
 }
+/* A package's published version, beside its name: muted, linked to npm. */
+.version {
+  font-family: var(--mono);
+  font-size: 0.8em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.version-line {
+  margin-top: -0.5rem;
+}
 main {
   max-width: 46rem;
   margin: 0 auto;
