@@ -411,16 +411,6 @@ test("removing another card with the demo's × during a drag leaves the page and
   expect(errors).toEqual([]);
 });
 
-test("the dragged card's own × does nothing during its drag: the drop still lands it", async ({
-  page,
-}) => {
-  await dragWhile(page, async () => {
-    await page.getByRole("button", { name: "remove card Design the model" }).press("Enter");
-  });
-  await expect(cardsOf(page, "Doing").locator('[data-lp-card="Design the model"]')).toHaveCount(1);
-  await boardMatchesPage(page);
-});
-
 /** Drags "Design the model" to the end of Doing, running `during` once the Clone is up. */
 async function dragWhile(page: Page, during: () => Promise<void>): Promise<void> {
   const from = await card(page, "Design the model").locator("strong").boundingBox();

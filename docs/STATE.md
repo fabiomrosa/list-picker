@@ -170,8 +170,7 @@ None yet.
 
 ## Last session
 - **2026-11-24, M4 retro, proposal 4:** browser tests remove a card through the demo's × during a
-  drag (the page and the Board stay in step, no page error; red without the demo's L4.1 guard), and
-  show that the dragged card's own × does nothing during its drag (the drop still lands it).
+  drag (the page and the Board stay in step, no page error; red without the demo's L4.1 guard).
 - **2026-11-24, M4 retro, proposal 2:** CI's `review` job (`scripts/check-pr-review.py`) fails a pull
   request whose "## Review" section is missing, empty or a placeholder (#83 merged that way);
   milestone plans and closes (`docs(M<n>): ...`) are exempt.
