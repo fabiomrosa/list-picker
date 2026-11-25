@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The saved theme, before the page paints (site/theme.ts runs the button). -->
+    <script>
+        try {
+          const theme = localStorage.getItem("list-picker-theme");
+          if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        } catch {}
+    </script>
+    <title>list-picker player, React</title>
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./player.css" />
+  </head>
+  <body>
+    <!-- nav ./ in:board.html -->
+    <main class="player-page">
+      <!-- demos ./ Player React -->
+      <h1>Player</h1>
+      <p class="lede">
+        The playlist again, written in React with <code>@list-picker/react</code>: the Board as
+        state (<code>useBoard</code>), the rows drawn from it, and the same look. Previous and next
+        follow the playlist's order (<code>board.neighbours</code>); tick two tracks to swap them;
+        drag a track or move it with the keyboard; a click or Enter plays it, ten times faster
+        and with no sound.
+      </p>
+      <div id="player-root"></div>
+      <!-- code player-react.tsx -->
+    </main>
+    <script type="module" src="./copy.ts"></script>
+    <script type="module" src="./player-react.tsx"></script>
+    <script type="module" src="./theme.ts"></script>
+  </body>
+</html>

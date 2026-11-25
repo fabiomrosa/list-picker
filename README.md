@@ -24,8 +24,9 @@ A lab rewriting [list-picker-js](https://github.com/fabiomrosa/list-picker-js) (
 | [`@list-picker/vanilla`](packages/vanilla) | Draws a Board from your Renderers; pointer and keyboard moves, announcements. |
 | [`@list-picker/react`](packages/react) | React hooks over the same core and engine: the Board as state, the engine on your own elements. |
 
-The site, with the docs and the demo board: <https://fabiomrosa.github.io/list-picker/> (locally,
-`npm run dev` for the demo; see [Running locally](#running-locally)).
+The site, with the docs and the demos (a board and a playlist, in vanilla and React):
+<https://fabiomrosa.github.io/list-picker/> (locally, `npm run site`; see
+[Running locally](#running-locally)).
 
 Agents: start with `AGENTS.md`.
 
@@ -65,7 +66,7 @@ To repeat both measurements (Node 26 and Google Chrome installed):
 ```sh
 npm ci
 npm run bench   # decision 0001: linked lists against arrays, 2000 moves per board shape
-npm run trace   # decision 0002: forced layouts during five drags of the demo board, in Chrome
+npm run trace   # decision 0002: forced layouts during five drags in the playground, in Chrome
 ```
 
 Each record explains its method and what it does not cover; numbers vary by machine.
@@ -81,7 +82,7 @@ Each record explains its method and what it does not cover; numbers vary by mach
 
 ## Running locally
 
-The packages build and test; the playground is the demo board.
+The packages build and test; the playground is a page to try the model by hand (forms, events).
 
 ```sh
 git clone git@github.com:fabiomrosa/list-picker.git
@@ -91,7 +92,7 @@ npm test            # the tests once
 npm run dev         # the playground at http://localhost:5173
 npm run bench       # linked lists against arrays (docs/decisions/0001)
 npm run trace       # forced layouts during real drags (docs/decisions/0002)
-npm run site        # the site's pages (the kanban and player links work in the built site: npm run site:build)
+npm run site        # the site's pages (the playground link works in the built site: npm run site:build)
 npm run e2e         # real drags in Chrome (needs Google Chrome installed)
 npm run format      # format and apply safe lint fixes
 ```

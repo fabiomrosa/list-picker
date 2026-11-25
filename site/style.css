@@ -86,7 +86,7 @@ nav {
   border-bottom: 1px solid var(--line);
   font-size: 0.9rem;
 }
-/* The docs, then the demos, apart by a line. */
+/* The docs, then the demos' link, apart by a line. */
 .nav-group {
   display: flex;
   align-items: baseline;
@@ -95,16 +95,9 @@ nav {
   padding: 0;
   list-style: none;
 }
-.nav-group + .nav-group {
+nav .nav-demos {
   padding-left: 1.25rem;
   border-left: 1px solid var(--line);
-}
-/* The demos' visible label; the list's own name already says it to screen readers. */
-.nav-demos::before {
-  content: "demos:" / "";
-  margin-right: -0.5rem; /* closer to its links than they are to each other */
-  color: var(--muted);
-  font-size: 0.8em;
 }
 nav a {
   color: var(--muted);
@@ -112,6 +105,119 @@ nav a {
 }
 nav a:hover {
   color: var(--accent);
+}
+/* The demos' code (L5.15): one file at a time, chosen by its radio, as the install's framework;
+   highlighted at build time (Shiki, a dark theme) on the terminal's background in both themes. */
+.code-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.code-files input {
+  position: absolute;
+  opacity: 0;
+}
+.code-files label {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.code-files label:hover {
+  color: var(--accent);
+}
+.code-files input:checked + label {
+  border-color: var(--text);
+  background: var(--term);
+  color: var(--term-text);
+}
+.code-files input:focus-visible + label {
+  outline: 2px solid var(--accent);
+}
+.code-block {
+  display: none;
+  position: relative; /* the copy button sits in its corner */
+}
+.code pre {
+  max-height: 32rem;
+  margin: 0;
+  padding: 1rem 3.25rem 1rem 1rem;
+  overflow: auto; /* long lines and long files scroll inside the block */
+  border-radius: 8px;
+  background-color: var(--term) !important; /* over Shiki's own */
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.code-block .copy {
+  top: 0.6rem;
+  translate: none;
+  z-index: 1;
+  background: var(--term); /* over the long lines that scroll under it */
+}
+.code:has(#code-0:checked) .code-block[data-file="0"],
+.code:has(#code-1:checked) .code-block[data-file="1"],
+.code:has(#code-2:checked) .code-block[data-file="2"],
+.code:has(#code-3:checked) .code-block[data-file="3"] {
+  display: block;
+}
+/* The demos switcher (L5.10), above a demo: the demo, then the framework, as two segmented groups;
+   the chosen one filled, as the install's framework. */
+.demos-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1.75rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.demos-switch ul {
+  display: flex;
+  flex-wrap: wrap; /* a phone too narrow for a group: its segments wrap inside its box */
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  list-style: none;
+}
+.demos-switch a,
+.demos-switch .soon {
+  display: block;
+  padding: 0.3rem 0.75rem;
+  white-space: nowrap; /* "Angular soon" in one piece */
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.demos-switch a:hover {
+  color: var(--accent);
+}
+.demos-switch a[aria-current="page"] {
+  border-color: var(--text);
+  background: var(--term);
+  color: var(--term-text);
+}
+@media (max-width: 30rem) {
+  .demos-switch a,
+  .demos-switch .soon {
+    padding: 0.3rem 0.5rem;
+  }
+}
+.demos-switch .soon small {
+  font-size: 0.8em;
+  color: var(--accent);
+}
+/* The page you are on: its link in the text's colour, underlined (not by colour alone). */
+nav a[aria-current] {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--accent);
 }
 /* The brand a step above the links; its mark follows (em). */
 nav > a:first-child {
@@ -367,8 +473,8 @@ li {
   content: "$ ";
   color: var(--accent);
 }
-/* The install command's copy button: in the terminal's corner; a check for a moment once copied. */
-.install .copy {
+/* A code block's copy button (the install, a demo's files): in its corner; a check once copied. */
+.copy {
   position: absolute;
   top: 50%;
   right: 0.6rem;
@@ -381,14 +487,14 @@ li {
   color: var(--term-text);
   cursor: pointer;
 }
-.install .copy:hover {
+.copy:hover {
   border-color: color-mix(in srgb, var(--term-text) 40%, transparent);
 }
-.install .copy:focus-visible {
+.copy:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
-.install .copy svg {
+.copy svg {
   width: 1.1rem;
   height: 1.1rem;
   fill: none;
@@ -400,11 +506,11 @@ li {
 .install .pkg {
   white-space: nowrap; /* a package's name in one piece: the command wraps between words */
 }
-.install .copy .icon-done,
-.install .copy[data-copied] .icon-copy {
+.copy .icon-done,
+.copy[data-copied] .icon-copy {
   display: none;
 }
-.install .copy[data-copied] .icon-done {
+.copy[data-copied] .icon-done {
   display: block;
 }
 /* The package manager: small links under the command, changing its start. npm without :has(). */
@@ -521,23 +627,16 @@ main.doc {
     order: 2;
     flex-basis: 100%;
   }
-  nav .nav-group {
+  nav .nav-group,
+  nav .nav-demos {
     order: 3;
+  }
+  nav .nav-group {
     gap: 0.9rem;
   }
-  .nav-group + .nav-group {
-    padding-left: 0.9rem;
-  }
-}
-/* After the phone rules: below 30.5rem the demos no longer fit beside the docs (about 30.1rem beside
-   a classic scrollbar), so they take a row of their own, labelled, with no line between. */
-@media (max-width: 30.5rem) {
   nav .nav-demos {
-    flex-basis: 100%;
-  }
-  .nav-group + .nav-group {
-    padding-left: 0;
-    border-left: 0;
+    margin-left: -0.1rem; /* the line midway between the docs and demos, as their 0.9rem gap */
+    padding-left: 0.9rem;
   }
 }
 @media (max-width: 52rem) {

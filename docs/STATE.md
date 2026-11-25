@@ -109,7 +109,7 @@ Every slice's pull request updates it (SESSION §3).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
-- The demo board (`playground/`, `npm run dev`) is drawn by `mount` with its own Renderers: each
+- The playground (`playground/`, `npm run dev`) is drawn by `mount` with its own Renderers: each
   card shows its neighbours and ↑ ↓ ← → × buttons, each list header (the drag handle) its card count
   and ← → ×; positions are read at click time and the neighbours, counts and button states refresh
   after every change. Forms add lists and cards at the end or before a chosen one and move cards
@@ -121,7 +121,7 @@ Every slice's pull request updates it (SESSION §3).
   board that scrolls sideways when the window is narrower than its lists (under ~1040px; the
   auto-scroll tests and the trace use 900px) show auto-scroll both ways. Its look is the site's
   (`site/style.css`, then `playground/demo.css`); the package ships no styles. Its nav links are
-  relative to the site (`../`), so under `npm run dev` they stay on the demo.
+  relative to the site (`../`), so under `npm run dev` they stay on the playground.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -133,7 +133,7 @@ title, review-section, size, frozen-files and secret checks.
 ## Modules
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
-- `playground/`: the demo board, a Vite page over the packages' source; not published, outside
+- `playground/`: the playground, a Vite page over the packages' source; not published, outside
   coverage.
 - `packages/vanilla`: `createDrag` (`src/drag.ts`, with `src/keyboard.ts` and `src/landed.ts`,
   internal), `mount` (`src/mount.ts`); imports only types
@@ -171,8 +171,9 @@ title, review-section, size, frozen-files and secret checks.
   with no script, where Angular shows no command until published; the lab's answer from
   the root README; links), `core.html`, `vanilla.html` and `react.html` rendered from the packages'
   READMEs at build time, and the
-  demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
-  board in the same three skins as the home, with the same chooser) in `demo/`; and the player
+  playground (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
+  board in the same three skins as the home, with the same chooser) in `demo/`; the vanilla Board
+  demo (`board.html`, L5.12); and the player
   (`player.html`, a playlist on `neighbours` and `swapCards`, with a pretend play that goes on to
   the next track by `neighbours`). The skins
   (`site/home.css`) style any board by `[data-skin]` and the `hb-*` classes its Renderers set.
@@ -186,16 +187,27 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+- The demos' code (L5.15): under each demo, its files, highlighted at build time, with copy
+  buttons.
+- Saving the order (L5.13, L5.14): both Board demos load from and save to one pretend server
+  (`site/fake-server.ts`, through `site/saving.ts`), each with a panel of its requests; vanilla's README shows the pattern
+  ("Saving the order").
+- The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
+  `@list-picker/react` in the same markup; the same e2e suite runs on both.
+- The demos switcher (L5.10): above each demo page (`board.html` since L5.12, `react-demo.html`,
+  `player.html`, `player-react.html`), the
+  demo (Board, Player) and the framework (Vanilla, React, Angular "soon"), built by the site build's
+  `demos()` from its `DEMOS` table; a page's `<!-- nav … -->` or `<!-- demos … -->` marker that is
+  not understood fails the build.
 - The React demo (L5.6, `site/react-demo.html` and `.tsx`): the home's kanban board written with
   `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
   it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
-  resolves the packages' names to their source (`site/vite.config.ts`). The nav's Demos list kanban,
-  player and react (breakpoints: see the L5.7 bullet below). `e2e/react.e2e.ts` drives it.
+  resolves the packages' names to their source (`site/vite.config.ts`). Since L5.9 the nav (one partial,
+  `site/partials/nav.html`) has one `demos` link, to the vanilla Board (`board.html` since L5.12). `e2e/react.e2e.ts` drives it.
 - `site/react.html` (L5.7) renders `packages/react/README.md`; the nav's Docs list core, vanilla and
-  react; three nav rows below 30.5rem, two below 49rem. A README link to another package's section
+  react; two nav rows below 49rem (the brand and buttons, then the pages, down to 320px). A README link to another package's section
   (`packages/vanilla#keyboard`) goes to its page here (`vanilla.html#keyboard`). A package npm does not
-  have (404) shows no version; one npm cannot be reached shows its `package.json`'s. Below 30.5rem
-  the demos take a row of their own, labelled, under the docs.
+  have (404) shows no version; one npm cannot be reached shows its `package.json`'s.
 
 ## Contract
 None yet.
@@ -206,9 +218,61 @@ None.
 ## Last session
 - **2026-11-25, L5.8:** `@list-picker/vanilla` 1.1.0 and `@list-picker/react` 1.0.0 on npm (published by
   the owner); tags `vanilla-v1.1.0` and `react-v1.0.0`; the home's Install chooser shows React's
-  command and the root README lists it. M5 done.
-- **2026-11-25, fix (owner):** content wider: the home's text below the board takes the container's
-  64rem (no 47rem cap; the lede keeps it); a package page's text takes all the room beside its
+  command and the root README lists it. Next: the M5 close.
+- **2026-11-25, L5.15:** the demos' code. `<!-- code <file>… -->` (the site build's `code()`) puts
+  "The code" under each demo: its files from `site/`, highlighted at build time by Shiki (a dev
+  dependency; `github-dark-default` on the terminal's background), one at a time by a radio per
+  file, each in a `.code-block` with its copy button in the corner (`copy.ts` runs every `.copy`; a
+  file is copied whole, the install command trimmed). Scripts only: the markup and style are the
+  site's skins. Board: `board.ts` or `react-demo.tsx`,
+  `saving.ts`, `fake-server.ts`; Player: `player.ts` or `player-react.tsx` (their comments and
+  imports written for a reader in #136).
+  `e2e/code.e2e.ts` compares each file shown with the repository's. Next: the M5 close, after the
+  owner's publish (L5.8).
+- **2026-11-25, L5.14:** the React Board saves too. The saving logic is shared, `site/saving.ts`:
+  the starting board, one pretend server for both demos (one storage key: a move in one shows in
+  the other) and `keepSaved(board)` (`open`, `reset`, `onNotSaved`; each move saved, the server's
+  order taken back after a failure once no save is in flight). `board.ts` and `react-demo.tsx`
+  keep only their drawing and panel; the React panel is state (`onRequest` and `onNotSaved` return
+  their unsubscribe). React's README points to vanilla's "Saving the order". `e2e/saving.e2e.ts`
+  runs on both pages. Next: L5.15 (the demos' code).
+- **2026-11-25, L5.13:** saving the order on the vanilla Board. `site/fake-server.ts`, a pretend
+  backend shared by the Board demos: it keeps the board in `localStorage` (in memory without
+  storage), answers after 400 ms, places a move with core's `Board` from the event's neighbours
+  (`PATCH /cards/:id {toListId, prevId, nextId}`), resets, and fails the next save on demand (500).
+  `board.ts` loads from it on open, saves each `move` and shows it at once; after a failed save or a
+  reset it takes the server's order again once no save is in flight and no move was made since it
+  asked (each list, then each card, moved to the end; those moves not saved). A panel lists the
+  requests. Vanilla's README has "Saving the order" (the pattern with `fetch`, type-checked by
+  `npm run packed`; npm shows it from vanilla's next version).
+  `e2e/saving.e2e.ts` runs per page.
+  Known: putting the order back ends a keyboard pick-up (GOTCHAS, PLAN Later). Next: L5.14.
+- **2026-11-25, L5.12:** the vanilla Board page (`site/board.html` and `board.ts`): the home's board
+  by `mount` in the React demo's markup, with Enter opening; the switcher's vanilla Board and the
+  nav's `demos` go there; `e2e/react.e2e.ts` runs the Board suite on both. The playground (`demo/`)
+  is the developer's page (forms, events; the drag tests and the trace), titled "Playground",
+  outside the switcher, linked from the home. PLAN: saving is now L5.13 (vanilla) and L5.14 (React),
+  the code L5.15. Next: L5.13.
+- **2026-11-25, L5.11:** the React Player (`site/player-react.html` and `.tsx`): the vanilla
+  Player written with `@list-picker/react` in the same markup (`player.css` styles both), under
+  `StrictMode`; the playing track, the clock and the tick are React state, the order the Board's.
+  `e2e/player.e2e.ts` runs its whole suite on both pages; the switcher links it. Next: L5.12
+  (saving the order, the vanilla Board).
+- **2026-11-25, L5.10:** the demos switcher: `<!-- demos <root> <demo> <framework> -->` (the site
+  build's `demos()`, its table `DEMOS` in `site/vite.config.ts`) above each demo: the demo (Board,
+  Player; it keeps the framework when the demo has it) and the framework (Vanilla, React, Angular
+  "soon"; a missing one says "soon"). Pages keep their addresses:
+  `demo/` (the vanilla Board, the playground), `react-demo.html`, `player.html`. On a
+  demo page the nav's `demos` is marked `aria-current="true"` (`<!-- nav ./ in:demo/ -->`). Next:
+  L5.11 (the React Player).
+- **2026-11-25, L5.9:** one nav: `site/partials/nav.html`, put in place of `<!-- nav <root>
+  [<current>] -->` by the site build's `nav()` (the playground's `vite.config.ts` uses it too); the
+  current page's link gets `aria-current="page"`; the demos are one link, `demos` (the vanilla
+  Board), after a line; on a phone the pages fit one row under the brand down to 320px. Next: L5.10
+  (the demos switcher).
+- **2026-11-25, docs(M5):** planned L5.9–L5.14 (owner): one nav with one Demos link, a demos
+  switcher (Board and Player, in vanilla and React), the React Player, saving the order to a
+  simulated backend (vanilla, then React), and each demo's code on its page.
 - **2026-11-25, fix (owner):** where lines break: `text-wrap: balance` on headings and the lede,
   `pretty` on paragraphs and list items (`style.css`); the widths stay (measured: the lede is 65ch,
   the home's text 92ch, so one `ch` value for both would have changed one of them).

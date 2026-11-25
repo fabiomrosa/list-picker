@@ -1217,6 +1217,130 @@ shows it in the demo.
 - **Files:** ~3: `site/index.html`, PLAN, STATE.
 - **References:** L4.26, GOTCHAS (Publishing).
 
+### L5.9 · One nav, one Demos link
+- **Status:** done (2026-11-25)
+- **Goal:** the nav is written once, and its Demos are one link, so it fits on a phone and grows
+  without touching every page.
+- **Depends on:** L5.8 (owner, 2026-11-25: the demos page, the demos' code and saving the order
+  before React's launch).
+- **In scope:** a `<!-- nav -->` marker the site build replaces with the one nav (`site/partials/nav.html` (a subdirectory: every `.html` in `site/` is a page)), on
+  every page, the playground's demo too; its Demos are one link, `demos`, to the Board in vanilla;
+  the nav sweep (320–1400px) on every page.
+- **Out of scope:** the demos switcher (L5.10).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Every page shows the same nav, built from one file, with no sideways scroll from 320 to 1400px.
+  2. The nav's `demos` opens the vanilla Board; the current page's link is marked
+     (`aria-current="page"`).
+- **Files:** ~12: `site/partials/nav.html` (a subdirectory: every `.html` in `site/` is a page), the site build, the pages' nav, the e2e sweep, PLAN, STATE.
+- **References:** L4.17, L5.6.
+
+### L5.10 · The demos switcher
+- **Status:** done (2026-11-25)
+- **Goal:** one place for the demos: each demo, Board or Player, in each framework.
+- **Depends on:** L5.9.
+- **In scope:** a switcher on every demo page: the demo (Board, Player) and the framework (Vanilla,
+  React; Angular shown as "soon", not a link), each a link with `aria-current`, its demos in a
+  table in the site build (the React Player comes with L5.11: its switch shows "soon" until then);
+  the pages keep their addresses (`demo/`, `react-demo.html`, `player.html`; renaming them would
+  be a page rewritten twice in the size check, for an address nobody reads).
+- **Out of scope:** the React Player (L5.11); the demos' code (L5.15).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. From any demo page, the switcher reaches every other demo page there is, keeping the demo or
+     the framework chosen.
+- **Files:** ~11: the switcher (built by the site build, its style), the three pages, the e2e
+  tests, PLAN, STATE.
+- **References:** L4.18 (the player), L5.6.
+
+### L5.11 · The React Player
+- **Status:** done (2026-11-25)
+- **Goal:** the Player demo, written in React, with `@list-picker/react`.
+- **Depends on:** L5.10.
+- **In scope:** `player-react.html` with the same playlist, look and behaviour as the vanilla Player
+  (reorder by pointer and keyboard, play a track by click or Enter, the equalizer), its style
+  reused from `player.css`; its switch in the switcher; a browser test (a drag and a keyboard move).
+- **Out of scope:** saving the order (L5.13).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. In Chrome, a track dragged and a track moved by keyboard land where they were put, and Enter
+     plays the focused track, with no page error.
+- **Files:** ~6: the page and its script, the switcher, an e2e test, PLAN, STATE.
+- **References:** L4.18, L5.6.
+
+### L5.12 · The vanilla Board page
+- **Status:** done (2026-11-25)
+- **Goal:** the vanilla Board demo is a small page, the twin of the React one, so saving the order
+  (L5.13) and the code shown (L5.15) stay readable; the playground stays a developer's page.
+- **Depends on:** L5.11.
+- **In scope:** `site/board.html` and `board.ts`: the home's board drawn by `mount` in the React
+  demo's markup (skins, Doing capped at 3, a click or Enter opens); the switcher's vanilla Board and
+  the nav's `demos` link to it; the Board suite (`e2e/react.e2e.ts`) runs on both pages; the
+  playground (`demo/`, the drag tests' page) leaves the switcher, is titled "Playground" and is
+  linked from the home.
+- **Out of scope:** saving the order (L5.13).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. In Chrome, the vanilla Board passes the React Board's suite (a drag across lists, a keyboard
+     move refused by the cap, one live region, Enter opens).
+  2. The switcher and the nav reach it; the playground keeps its drag tests, outside the switcher.
+- **Files:** ~13: the page and its script, the switcher's table, the nav, the demo pages' markers,
+  the playground, the home, the e2e tests, PLAN, STATE.
+- **References:** L5.6, L5.10.
+
+### L5.13 · Saving the order: the vanilla Board
+- **Status:** done (2026-11-25)
+- **Goal:** the Board demo shows how an app saves the order: it loads from a backend and saves
+  every move, so a reload keeps the order.
+- **Depends on:** L5.12.
+- **In scope:** a simulated backend in the site (`site/fake-server.ts`, shared by the demos): it keeps
+  the board in `localStorage`, answers after a delay, and fails on demand; the vanilla Board (`board.ts`) loads
+  its lists and cards from it on open, sends each `move` event (DEC-11: `id`, `toListId`, `prevId`,
+  `nextId`) as a request and shows the move at once; when a request fails, it draws the server's
+  order again and says so; a panel lists the requests and their answers, with "fail the next
+  request" and "reset the data"; a "Saving the order" section in vanilla's README (the pattern:
+  load, save from `move`, undo on a failure).
+- **Out of scope:** the React Board (L5.14); the Player; a real backend; ranks (Later).
+- **Contract:** none. **Public API:** none (README only; npm shows it from vanilla's next version).
+- **Acceptance criteria:**
+  1. A card moved, then the page reloaded, is where it was put.
+  2. With "fail the next request", a move is shown, then undone with a notice; the panel shows the
+     failed request.
+  3. "Reset the data" brings back the starting board.
+- **Files:** ~8: the fake server, the Board demo's script and page, its style, vanilla's README, an
+  e2e test, PLAN, STATE.
+- **References:** DEC-11; the `move` event (L1.9).
+
+### L5.14 · Saving the order: the React Board
+- **Status:** done (2026-11-25)
+- **Goal:** the same as L5.13, written with `@list-picker/react`.
+- **Depends on:** L5.13.
+- **In scope:** the React Board loads from the fake server, saves each `move`, draws the server's
+  order again on a failure and shows the same panel; a "Saving the order" section in React's
+  README.
+- **Out of scope:** a data-fetching library.
+- **Contract:** none. **Public API:** none (README only).
+- **Acceptance criteria:** those of L5.13, on the React Board.
+- **Files:** ~8: the React Board's script, the saving logic shared with the vanilla Board
+  (`site/saving.ts`), the vanilla Board, the fake server, React's README, an e2e test, PLAN, STATE.
+- **References:** L5.13.
+
+### L5.15 · The demos' code
+- **Status:** done (2026-11-25)
+- **Goal:** each demo page shows the code that runs it, so a reader sees how to build their own.
+- **Depends on:** L5.14.
+- **In scope:** below each demo, its scripts (the fake server and the saving logic on the Boards;
+  the markup and style are the site's skins, and the READMEs cover styling) in tabs, read from the files themselves at build time and highlighted then (Shiki, a dev
+  dependency of the site: no script in the page for it), each with a copy button.
+- **Out of scope:** an editable playground (StackBlitz and the like).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. Each demo page shows its files, the same text as in the repository (a test compares one).
+  2. The copy button copies a file's text; the page has no sideways scroll at 320px.
+- **Files:** ~8: the build, the code block's style and script, the four pages, an e2e test, PLAN,
+  STATE.
+- **References:** L4.12 (the build), the install's copy button.
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).
@@ -1227,6 +1351,7 @@ Ideas not planned yet; a milestone's planning picks from here.
 - Virtualised Lists for very long boards.
 - `addList` and `addCard` generating the id when the value has none (`crypto.randomUUID()`), and
   returning it; additive, for prototypes without a backend (owner, 2026-11-23).
-- `mount` keeps the focus and keyboard grab of a card its writes move (Chrome blurs it; L4.2).
+- `mount` keeps the focus and keyboard grab of a card its writes move (Chrome blurs it; L4.2). Seen
+  again in L5.13: a Board change from outside (a failed save put back) ends a keyboard pick-up.
 - Esc during a drag also reaches the page's other Esc handlers (a dialog around the board would
   close too); stopping it needs a capture-phase listener (L2.5 review).

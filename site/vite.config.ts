@@ -1,8 +1,10 @@
 // The site (L4.12–L4.14): the home page, a page per package built from its README (one source for
-// npm and the site), and the demo board (`playground/`, built into `demo/` by `npm run site:build`).
+// npm and the site), the demos (a page each), and the playground (`playground/`, built into `demo/`
+// by `npm run site:build`).
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { marked, type Token } from "marked";
+import { codeToHtml } from "shiki";
 import { defineConfig, type Plugin } from "vite";
 
 const REPO = "https://github.com/fabiomrosa/list-picker";
@@ -76,6 +78,125 @@ function versions(): Plugin {
   };
 }
 
+/**
+ * `<!-- nav <root> [<current>] -->`: the one nav (`site/partials/nav.html`), its links from
+ * `root`, the link to `current` marked as the page (or, as `in:<current>`, as the page's
+ * section). The playground's build uses it too.
+ */
+export function nav(): Plugin {
+  return {
+    name: "nav",
+    transformIndexHtml: (html) =>
+      filled("nav", html, /<!-- nav (\S+)(?: (\S+))? -->/, (_m, root: string, current?: string) => {
+        const out = readFileSync(fileURLToPath(new URL("partials/nav.html", SITE)), "utf8")
+          .replace(/^<!--.*?-->\n/s, "")
+          .replaceAll("{root}", root);
+        if (!current) return out;
+        // `in:<link>`: the page is in that link's section (a demo page: the demos), not that page.
+        const section = current.startsWith("in:");
+        const link = `href="${root}${section ? current.slice(3) : current}"`;
+        // A page names a link the nav doesn't have: fail the build, not mark nothing.
+        if (!out.includes(link)) throw new Error(`nav: no link to ${current}`);
+        return out.replace(link, `${link} aria-current="${section ? "true" : "page"}"`);
+      }),
+  };
+}
+
+/** The copy button of a code block (`copy.ts` runs it): a copy icon, a check once copied. */
+const copyButton = (label: string) =>
+  `<button type="button" class="copy" aria-label="${label}"><svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg><svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></button>`;
+
+/**
+ * `<!-- code <file>… -->`: "The code" section, the files (in `site/`) that run a demo, read and
+ * highlighted at build time (Shiki: no script in the page for it), one shown at a time by a radio
+ * per file (`style.css`), each with a copy button. The scripts only: a page's markup and style are
+ * the site's.
+ */
+export function code(): Plugin {
+  return {
+    name: "code",
+    transformIndexHtml: async (html) => {
+      const marker = /<!-- code ([^>]+?) -->/.exec(html);
+      // One section a page; a misspelt marker or a second one fails the build.
+      if ((html.match(/<!--\s*code\b/g) ?? []).length !== (marker ? 1 : 0))
+        throw new Error("code: a marker not understood, or more than one");
+      if (!marker) return html;
+      const files = (marker[1] as string).split(" ");
+      const radios = files
+        .map(
+          (file, i) =>
+            `<input type="radio" name="code-file" id="code-${i}"${i ? "" : " checked"} /><label for="code-${i}">${file}</label>`,
+        )
+        .join("");
+      const blocks = await Promise.all(
+        files.map(async (file, i) => {
+          const lang = /\.(tsx?)$/.exec(file)?.[1];
+          if (!lang) throw new Error(`code: ${file} is not TypeScript`);
+          const pre = await codeToHtml(read(`site/${file}`), {
+            lang,
+            theme: "github-dark-default",
+          });
+          // The button beside the block, not in it: it stays in the corner while the code scrolls.
+          return `<div class="code-block" data-file="${i}">${copyButton(`Copy ${file}`)}${pre}</div>`;
+        }),
+      );
+      const section = `<section class="code" aria-labelledby="code-title"><h2 id="code-title">The code</h2><div class="code-files" role="radiogroup" aria-label="Files">${radios}</div>${blocks.join("")}<span class="sr-only" role="status" id="copied"></span></section>`;
+      return html.replace(marker[0], section);
+    },
+  };
+}
+
+/** A page's `<!-- <name> … -->` marker replaced; a marker left (misspelt) fails the build. */
+function filled(
+  name: string,
+  html: string,
+  marker: RegExp,
+  replace: (match: string, ...groups: string[]) => string,
+): string {
+  const out = html.replace(marker, replace);
+  if (new RegExp(`<!--\\s*${name}\\b`).test(out))
+    throw new Error(`${name}: a marker not understood`);
+  return out;
+}
+
+/** Each demo's page by framework; a framework missing here shows the demo as "soon" in it. */
+const DEMOS: Record<string, Record<string, string>> = {
+  Board: { Vanilla: "board.html", React: "react-demo.html" },
+  Player: { Vanilla: "player.html", React: "player-react.html" },
+};
+const FRAMEWORKS = ["Vanilla", "React", "Angular"];
+
+/**
+ * `<!-- demos <root> <demo> <framework> -->`: the demos switcher. A demo's link keeps the framework
+ * when that demo has it (else its vanilla page); a framework's link keeps the demo, or says "soon".
+ */
+export function demos(): Plugin {
+  return {
+    name: "demos",
+    transformIndexHtml: (html) =>
+      filled(
+        "demos",
+        html,
+        /<!-- demos (\S+) (\w+) (\w+) -->/,
+        (_m, root: string, demo: string, fw: string) => {
+          const pages = DEMOS[demo];
+          if (!pages?.[fw]) throw new Error(`demos: no ${demo} in ${fw}`);
+          const item = (text: string, href: string | undefined, current: boolean) =>
+            href
+              ? `<li><a href="${root}${href}"${current ? ' aria-current="page"' : ""}>${text}</a></li>`
+              : `<li><span class="soon">${text} <small>soon</small></span></li>`;
+          const demoLinks = Object.entries(DEMOS).map(([name, by]) =>
+            item(name, by[fw] ?? by.Vanilla, name === demo),
+          );
+          const fwLinks = FRAMEWORKS.map((name) => item(name, pages[name], name === fw));
+          // A landmark, but not a `<nav>`: the site's nav is styled by its element.
+          const groups = `<ul aria-label="Demo">${demoLinks.join("")}</ul><ul aria-label="Framework">${fwLinks.join("")}</ul>`;
+          return `<div class="demos-switch" role="navigation" aria-label="Demos">${groups}</div>`;
+        },
+      ),
+  };
+}
+
 /** `<!-- markdown: <file> [<from heading>] -->`: the file (or the section from that heading). */
 function markdown(): Plugin {
   return {
@@ -125,7 +246,7 @@ function markdown(): Plugin {
   };
 }
 
-/** The packages by name, from their source (as in `vitest.config.ts`): the React demo imports them. */
+/** The packages by name, from their source (as in `vitest.config.ts`): the demos import them. */
 const source = (name: string) =>
   fileURLToPath(new URL(`../packages/${name}/src/index.ts`, import.meta.url));
 
@@ -138,7 +259,7 @@ export default defineConfig({
       "@list-picker/react": source("react"),
     },
   },
-  plugins: [markdown(), versions()],
+  plugins: [nav(), demos(), code(), markdown(), versions()],
   build: {
     outDir: "../dist-site",
     emptyOutDir: true,

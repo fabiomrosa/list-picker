@@ -8,7 +8,7 @@ const DARK = "rgb(20, 19, 17)";
 
 for (const [name, url] of [
   ["the home", "http://localhost:5181/list-picker/"],
-  ["the kanban demo", "http://localhost:5180/"],
+  ["the playground", "http://localhost:5180/"],
 ] as const) {
   test(`${name}: the theme button cycles auto, light, dark, and the choice survives a reload`, async ({
     page,
