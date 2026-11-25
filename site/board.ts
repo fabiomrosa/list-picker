@@ -1,42 +1,15 @@
 // The vanilla Board demo (L5.12): one Board drawn by `mount`, styled by the skins in `home.css`, Doing
 // capped at 3, a click or Enter opening a card or a list; as the React demo (`react-demo.tsx`).
-// Saving the order (L5.13): the Board loads from a pretend server (`fake-server.ts`; in your app,
-// `fetch` to your API) and saves each `move`; a failed save puts the server's order back. Driven by
+// Saving the order (L5.13): `keepSaved` (`saving.ts`) loads the Board from a pretend server and
+// saves each `move`; a failed save puts the server's order back. Driven by
 // `e2e/react.e2e.ts` and `e2e/saving.e2e.ts`, as the React one.
-import { Board, type Snapshot } from "../packages/core/src/index.ts";
+import { Board } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
-import { fakeServer } from "./fake-server.ts";
-
-type List = { id: string; title: string };
-type Card = { id: string; text: string; tag: string };
+import { type Card, keepSaved, type List, server } from "./saving.ts";
 
 const LIMIT = 3;
-/** The board the server starts with (and goes back to on reset). */
-const START: Snapshot<List, Card> = {
-  lists: [
-    {
-      list: { id: "todo", title: "To do" },
-      cards: [
-        { id: "a", text: "Sketch the onboarding flow", tag: "design" },
-        { id: "b", text: "Write the release notes", tag: "docs" },
-        { id: "c", text: "Fix the date picker on Safari", tag: "bug" },
-      ],
-    },
-    {
-      list: { id: "doing", title: "Doing" },
-      cards: [
-        { id: "d", text: "Move cards with the keyboard", tag: "a11y" },
-        { id: "e", text: "Profile the drag on a long list", tag: "perf" },
-      ],
-    },
-    {
-      list: { id: "done", title: "Done" },
-      cards: [{ id: "f", text: "Model lists as linked lists", tag: "core" }],
-    },
-  ],
-};
-const server = fakeServer<List, Card>("list-picker-board", START);
 const board = new Board<List, Card>();
+const saving = keepSaved(board);
 
 const byId = <E extends HTMLElement>(id: string) => document.getElementById(id) as E;
 const root = byId("hero-board");
@@ -98,47 +71,9 @@ mount(
 );
 board.on("change", showCounts);
 
-/** Puts the server's order back: each list, then each of its cards, moved to the end in turn. */
-let restoring = false;
-function restore(saved: Snapshot<List, Card>): void {
-  restoring = true;
-  try {
-    for (const { list, cards } of saved.lists) {
-      board.moveList(list.id, null);
-      for (const card of cards) board.moveCard(card.id, list.id, null);
-    }
-  } finally {
-    restoring = false;
-  }
-}
-
-// Each move is shown at once and saved. Once a save fails (or the data is reset), the page takes the
-// server's order again, when no save is in flight, and with no move made since it asked.
-let inFlight = 0;
-let moves = 0;
-let stale = false;
-async function resync(): Promise<void> {
-  if (!stale || inFlight > 0) return; // the last save to settle calls it again
-  const asked = moves;
-  const saved = await server.load();
-  if (moves !== asked) return; // a newer move is being saved: its answer calls it again
-  stale = false;
-  restore(saved);
-}
-board.on("move", async (move) => {
-  if (restoring) return; // putting the server's order back: nothing to save
-  moves++;
-  inFlight++;
-  try {
-    await server.save(move);
-  } catch {
-    stale = true;
-    status.textContent =
-      "Not saved: the server answered an error, so the board is back to its order.";
-  } finally {
-    inFlight--;
-  }
-  await resync();
+saving.onNotSaved(() => {
+  status.textContent =
+    "Not saved: the server answered an error, so the board is back to its order.";
 });
 
 // The panel: the requests as answered, failing the next save, resetting the data.
@@ -157,18 +92,13 @@ server.onRequest(({ method, path, body, status: code }) => {
 });
 failNext.addEventListener("change", () => server.failNextSave(failNext.checked));
 byId("reset").addEventListener("click", async () => {
-  await server.reset();
-  stale = true;
   status.textContent = "Reset: the starting board.";
-  await resync();
+  await saving.reset();
 });
 
 // On open: the board as the server has it.
 status.textContent = "Loading the board…";
-for (const { list, cards } of (await server.load()).lists) {
-  board.addList(list, null);
-  for (const card of cards) board.addCard(list.id, card, null);
-}
+await saving.open();
 showCounts();
 status.textContent =
   "Drag a card or a list title, or use Space and the arrows. Doing holds 3 cards; a click or Enter opens a card or a list.";

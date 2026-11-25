@@ -2,8 +2,11 @@ import { expect, type Page, test } from "@playwright/test";
 
 // Saving the order (L5.13): the Board demo loads from a pretend server (`site/fake-server.ts`,
 // the browser's storage, answers after a delay) and saves each move; a failed save puts the
-// server's order back. The same tests for each page that draws it.
-const PAGES = [["vanilla", "http://localhost:5181/list-picker/board.html"]] as const;
+// server's order back. The same tests for each page that draws it (React since L5.14).
+const PAGES = [
+  ["vanilla", "http://localhost:5181/list-picker/board.html"],
+  ["react", "http://localhost:5181/list-picker/react-demo.html"],
+] as const;
 
 const order = (page: Page, list: string) =>
   page
