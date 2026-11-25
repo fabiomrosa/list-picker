@@ -1063,6 +1063,159 @@ shows it in the demo.
 - **Files:** ~2: PLAN, STATE.
 - **References:** DEC-12; ROADMAP P2.
 
+## M5 · React adapter
+
+### L5.1 · The engine leaves a pointer drop to the renderer
+- **Status:** next
+- **Goal:** a renderer that draws from the Snapshot can let the pointer drag change only the Board.
+- **Depends on:** DEC-18.
+- **In scope:** `moveElements` in `DragOptions` (default `true`); with `false`, a drop calls
+  `moveCard`/`moveList`, removes the Placeholder and the Clone and shows the item where it was,
+  moving no element; with `false`, a Board change that removes the dragged item or the
+  Placeholder's list cancels the drag; `@list-picker/vanilla` 1.1.0 (package and lockfile).
+- **Out of scope:** the keyboard (L5.2); React.
+- **Contract:** none. **Public API:** `DragOptions.moveElements` (additive, vanilla 1.1.0).
+- **Acceptance criteria:**
+  1. With `moveElements: false`, a drop changes the Board and leaves every element where it was; a
+     refused place (`canMove`) or Esc changes nothing.
+  2. With it, removing the dragged card or the Placeholder's list mid-drag cancels the drag, and the
+     release does nothing.
+  3. The existing drag tests pass unchanged (the default).
+- **Files:** ~7: `drag.ts`, its test, the vanilla README, `packages/vanilla/package.json`, the
+  lockfile, PLAN, STATE.
+- **References:** DEC-13, DEC-18; `mount`'s drag cancel (L3.x).
+
+### L5.2 · A keyboard pick-up survives the renderer's redraw
+- **Status:** waiting (L5.1)
+- **Goal:** with `moveElements: false`, moving by keyboard keeps working while the renderer redraws.
+- **Depends on:** L5.1.
+- **In scope:** with `false`, a step and Esc change only the Board; while a pick-up lasts, a
+  `MutationObserver` on `root` finds the item's element by id after each commit, puts
+  `data-lp-grabbed` and the focus back on it, and the `focusout` of the redraw does not release
+  it; the origin is kept by id; the observer is disconnected on release and by `destroy()`; a
+  browser test page in the playground that redraws from the Snapshot (in the `change` listener,
+  and in a microtask), as React does.
+- **Out of scope:** React.
+- **Contract:** none. **Public API:** none (the option of L5.1).
+- **Acceptance criteria:**
+  1. In Chrome, on the redrawing page, several steps within and across lists keep the pick-up and
+     the focus on the item's element, each announced as a move; Space drops, Esc puts the Board
+     back.
+  2. Release and `destroy()` disconnect the observer; the existing keyboard tests pass unchanged.
+- **Files:** ~7: `keyboard.ts`, its test, a playground page and its script, an e2e test, PLAN,
+  STATE.
+- **References:** DEC-15, DEC-18; GOTCHAS (Chrome's `focusout` on a moved element).
+
+### L5.3 · The React package and the Board as state
+- **Status:** waiting (L5.2)
+- **Goal:** a React component re-renders from the Board's Snapshot whenever the Board changes.
+- **Depends on:** L5.2, DEC-18.
+- **In scope:** `packages/react` at 1.0.0 (ESM, types, `sideEffects: false`, LICENSE, `files`,
+  `homepage`, `publishConfig`, `prepublishOnly`; peer `react` `^18.3.0 || ^19.0.0`; core `^1.0.0`
+  and vanilla `^1.1.0`); `useBoard(board)` with `useSyncExternalStore` and a server snapshot; the
+  workspace builds in dependency order (core, vanilla, react); the root tsconfig maps both package
+  names to their source and sets `"jsx": "react-jsx"`; Vitest and the site resolve the package
+  names to source; dev dependencies `react`, `react-dom`, their types, `@testing-library/react`
+  and `@testing-library/dom`; ARCHITECTURE says "hooks".
+- **Out of scope:** dragging (L5.4); the README (L5.7).
+- **Contract:** none. **Public API:** `useBoard` (new package).
+- **Acceptance criteria:**
+  1. A component using `useBoard` renders the lists and cards and re-renders after each change.
+  2. Between changes the Snapshot is the same object (no extra render); a server render returns the
+     current Snapshot.
+  3. `npm ci && npm run verify` passes in a clean clone (the build order and the source aliases).
+- **Files:** ~12: `packages/react` (package.json, tsconfig, LICENSE, `src/index.ts`,
+  `src/use-board.ts`, a test), the root package.json, tsconfig and Vitest config, the lockfile,
+  ARCHITECTURE, PLAN, STATE.
+- **References:** DEC-09, DEC-12, DEC-18.
+
+### L5.4 · Drag and keyboard in React
+- **Status:** waiting (L5.3)
+- **Goal:** a React board moves cards and lists by pointer and keyboard.
+- **Depends on:** L5.3.
+- **In scope:** `useListPicker(board, options)`: a callback ref for the root and getters for a
+  list, its handle, its cards' container and a card (the `data-lp-*` attributes, focusability);
+  in `useEffect`, it starts the engine with `moveElements: false` when the root mounts and
+  destroys it when the root unmounts or changes; React Testing Library tests (with `cleanup()`).
+- **Out of scope:** options kept current, `StrictMode` (L5.5); the demo (L5.6).
+- **Contract:** none. **Public API:** `useListPicker` and its getter types.
+- **Acceptance criteria:**
+  1. A drop and a keyboard step change the Board and React draws the move, across lists, with no
+     error.
+  2. Unmounting removes every listener the engine added.
+- **Files:** ~5: `src/use-list-picker.ts`, `src/index.ts`, a test, PLAN, STATE.
+- **References:** DEC-13, DEC-15, DEC-18.
+
+### L5.5 · Current options and StrictMode
+- **Status:** waiting (L5.4)
+- **Goal:** the React hook behaves like a React hook: options follow renders, `StrictMode` is safe.
+- **Depends on:** L5.4.
+- **In scope:** `messages`, `canMove` and `onActivate` are read from the latest render without
+  restarting the engine; adding or removing `onActivate` or `canMove` restarts it (the engine
+  decides at creation whether activation exists, and Enter must not be taken from a card that is a
+  link or a button without one); `StrictMode`'s double mount leaves one engine; React 18.3 checked
+  once.
+- **Out of scope:** the demo.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. A changed `canMove` or `onActivate` applies at the next move or activation.
+  2. Without `onActivate`, Enter on a card reaches the card's own handler.
+  3. Under `StrictMode`, one engine runs (one Clone, one announcement per move).
+- **Files:** ~4: `src/use-list-picker.ts`, a test, PLAN, STATE.
+- **References:** DEC-16, DEC-17, DEC-18.
+
+### L5.6 · The React demo
+- **Status:** waiting (L5.5)
+- **Goal:** the kanban demo, written in React, on the site.
+- **Depends on:** L5.5.
+- **In scope:** a React page with the kanban board (the same lists, the skins and styles reused from
+  `playground/demo.css` and `site/home.css`, a capped list, activation), built into the site and
+  listed in the nav's Demos on every page; browser tests: a drag across lists, a keyboard move,
+  `StrictMode`.
+- **Out of scope:** the vanilla demo's editing panels.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. In Chrome, a card dragged to another list and a card moved by keyboard land where they were
+     put, with no page error.
+  2. Every page's nav and the home link the React demo.
+- **Files:** ~12: the demo's page and script, the site build, the nav on five pages, the nav sweep
+  and a new e2e test, PLAN, STATE.
+- **References:** L4.17, L4.18.
+
+### L5.7 · The React README and its page
+- **Status:** waiting (L5.6)
+- **Goal:** someone can learn the React adapter from its README, on npm and on the site.
+- **Depends on:** L5.6.
+- **In scope:** `packages/react/README.md` (install, a complete example, the hooks, the styling
+  hooks shared with vanilla, local state lost by a card moved across lists); `site/react.html`
+  rendered from it, linked in the nav's Docs on every page and in the home's table; `npm run
+  packed` packs react too, installs `react` and `react-dom`, and builds its `tsx` example.
+- **Out of scope:** the publish (L5.8).
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. The README's example type-checks against the packed packages and draws a working board.
+  2. The site has a React page with a section index, linked from every page.
+- **Files:** ~11: the README, `site/react.html`, the nav on six pages, `scripts/check-packed.ts`,
+  PLAN, STATE.
+- **References:** L4.5, L4.14, M4 retro (packed packages).
+
+### L5.8 · First publish of the React adapter
+- **Status:** waiting (L5.7)
+- **Goal:** `@list-picker/react` is on npm.
+- **Depends on:** L5.7.
+- **In scope:** a last `npm publish --dry-run`; the owner publishes `@list-picker/vanilla` 1.1.0,
+  then, once the registry shows it (about two minutes), `@list-picker/react` 1.0.0 (`--otp`); the
+  agent tags `vanilla-v1.1.0` and `react-v1.0.0` and checks the install from the registry; the
+  home's Install chooser shows the React command.
+- **Out of scope:** a release workflow in CI.
+- **Contract:** none. **Public API:** none.
+- **Acceptance criteria:**
+  1. `npm install @list-picker/react` in an empty folder installs it with core and vanilla 1.1.0,
+     and the README example runs against them.
+  2. The tags point at the published commits.
+- **Files:** ~3: `site/index.html`, PLAN, STATE.
+- **References:** L4.26, GOTCHAS (Publishing).
+
 ## Later
 Ideas not planned yet; a milestone's planning picks from here.
 - Click to select several cards, then click a target List to move them all (from list-picker-js).

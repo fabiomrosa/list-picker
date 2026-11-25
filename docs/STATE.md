@@ -169,6 +169,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, plan M5:** the React adapter split into L5.1–L5.8 in PLAN; DEC-18 proposed (hooks
+  over core and the engine; react depends on vanilla; `moveElements: false` leaves the DOM to the
+  renderer), left to the agent by the owner; the owner approved the plan, DEC-18 accepted. Next: L5.1.
 - **2026-11-25, real Safari (27.0.1), by WebDriver on the published site:** the kanban demo's
   mouse drag to another list and keyboard move, the player's drag and play, and fast flicks (the
   #102 case, 5 of 5) all pass, with no page error. A trap on the way: Safari's WebDriver mouse

@@ -104,7 +104,7 @@ the slice that first needs it, with one gate (`npm run verify`) over all of them
 - **Consequences:** DEC-05's one-name-per-repository applies to the repository; package names on npm
   are chosen when the first one is published.
 
-## DEC-13 · The engine finds elements by data attributes and applies drops itself — Accepted (owner, 2026-11-22)
+## DEC-13 · The engine finds elements by data attributes and applies drops itself — Accepted (owner, 2026-11-22; amended by DEC-18)
 The drag engine (`createDrag(root, board)` in `@list-picker/vanilla`) finds cards by
 `data-lp-card="<id>"` inside list containers `data-lp-cards="<listId>"`, and lists by
 `data-lp-list="<id>"` dragged by a `data-lp-list-handle` inside them. On a drop it calls
@@ -127,7 +127,7 @@ moved, never redrawn.
 - **Consequences:** the Renderer's element is the card itself, with no wrapper; content changes to a
   card are out of v1 (the Board has no update operation).
 
-## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23; amended 2026-11-23)
+## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23; amended 2026-11-23; amended by DEC-18)
 On a focused card, Space picks it up; ↑ ↓ move it within its list, ← → to the neighbouring
 list; Space drops; Esc puts it back where it was picked up. A list moves the same way by
 its focused handle, with ← →. Each step is a real Board move.
@@ -159,6 +159,35 @@ applied). Drag start and end callbacks are left for a later 1.x.
   sees `data-lp-dragging`), so they can come later without a break.
 - **Consequences:** DEC-15 amended (Enter activates); M4 gains L4.8–L4.13 and a site published
   before the packages; the engine adds one capture-phase `click` listener on `root`.
+
+## DEC-18 · The React adapter: hooks over core and the engine — Accepted (owner, 2026-11-25; the approach left to the agent)
+`@list-picker/react` depends on `@list-picker/core` and `@list-picker/vanilla` (for `createDrag`),
+with `react` `^18.3.0 || ^19.0.0` as a peer. It offers hooks, not components: `useBoard(board)`
+returns the Board's Snapshot as React state (`useSyncExternalStore`; the Snapshot is the same object
+until the Board changes), and `useListPicker(board, options)` attaches the engine to a root element
+and returns the attributes each list, list handle, card container and card needs. The user's
+components render the Snapshot; the engine finds them by those attributes (DEC-13).
+
+The engine gains a framework-neutral option, `createDrag(root, board, { moveElements: false })`
+(default `true`), for any renderer that draws from the Snapshot (React now, Angular in M6):
+- a drop, a keyboard step and Esc change only the Board; the engine removes the Placeholder and the
+  Clone, shows the item again where it was, and moves no element;
+- a keyboard pick-up follows the item by id: while it lasts, the engine watches `root` for the
+  renderer's commit, finds the item's element again, puts `data-lp-grabbed` and the focus back on
+  it, and ignores the `focusout` the redraw causes; the pick-up's origin is kept by id;
+- a Board change that removes the dragged item, or the list its Placeholder is in, cancels the drag.
+- **Why:** the common shape of a framework adapter for a DOM library (`@dnd-kit/react` over
+  `@dnd-kit/dom`): no separate DOM package, so the engine stays in vanilla and DEC-12 stands, and
+  nothing published breaks (the option is additive). Hooks with attribute getters, as in other
+  headless libraries (downshift, TanStack, react-aria), keep the markup the user's (DEC-07). React
+  must own its DOM: an element the engine moves to another list is one React then fails to remove
+  from its old parent (`NotFoundError` in the commit, which unmounts the app).
+- **Consequences:** amends DEC-13 (a renderer that draws from the Snapshot sets `moveElements:
+  false` instead of overwriting the engine's move) and DEC-15 (with it, the engine moves no element
+  on a step). `mount` keeps the default and is dropped from a React bundle (`sideEffects: false`).
+  The option ships in `@list-picker/vanilla` 1.1.0, before `@list-picker/react` 1.0.0. Tags name
+  the package from now on (`vanilla-v1.1.0`, `react-v1.0.0`). A card moved to another list is a new
+  component instance in React: its local state does not travel (the README says so).
 
 ---
 
