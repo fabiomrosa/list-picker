@@ -5,10 +5,11 @@ import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 import { build, preview } from "vite";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const BIN = join(ROOT, "node_modules/.bin");
 const dir = mkdtempSync(join(tmpdir(), "list-picker-packed-"));
 function run(cmd: string, args: string[]): string {
@@ -20,7 +21,11 @@ function run(cmd: string, args: string[]): string {
     });
   } catch (error) {
     const { stdout = "", stderr = "" } = error as { stdout?: string; stderr?: string };
-    throw new Error(`${cmd.split("/").pop()} ${args.join(" ")} failed:\n${stdout}${stderr}`);
+    const where =
+      "(core.ts: core's README; main.ts and snippets.ts: vanilla's example, then its snippets in order)";
+    throw new Error(
+      `${cmd.split("/").pop()} ${args.join(" ")} failed ${where}:\n${stdout}${stderr}`,
+    );
   }
 }
 
@@ -40,7 +45,7 @@ try {
     join(dir, "package.json"),
     JSON.stringify({ name: "packed", private: true, type: "module" }),
   );
-  run("npm", ["install", "--no-audit", "--no-fund", "--prefer-offline", ...tarballs]);
+  run("npm", ["install", "--no-audit", "--no-fund", ...tarballs]);
 
   // Core's example, whole; vanilla's first is the example, the others are snippets set in it.
   const [coreExample = ""] = blocks("packages/core/README.md");
@@ -70,10 +75,13 @@ try {
     `types: ${1 + 1 + snippets.length} README examples check against the packed packages`,
   );
 
-  const out = run("node", ["core.ts"]);
-  if (!out.includes('fromListId: "todo"') && !out.includes("fromListId: 'todo'")) {
-    throw new Error(`core's example printed no move:\n${out}`);
-  }
+  // Its last line is the move it prints, as a comment: Node prints the same object, single-quoted.
+  const expected = (coreExample.trim().split("\n").at(-1) ?? "")
+    .replace(/^\/\/\s*/, "")
+    .replaceAll('"', "'");
+  const out = run("node", ["core.ts"]).replace(/\s+/g, " ").trim();
+  if (out !== expected)
+    throw new Error(`core's example printed\n  ${out}\nnot, as its README says,\n  ${expected}`);
   console.log("core: its example runs in Node");
 
   writeFileSync(
@@ -86,7 +94,10 @@ try {
     configFile: false,
     preview: { port: 0, strictPort: false },
   });
-  const browser = await chromium.launch({ channel: "chrome" });
+  const browser = await chromium.launch({ channel: "chrome" }).catch(async (error: unknown) => {
+    await server.close(); // Chrome did not start: the server still closes
+    throw error;
+  });
   try {
     const page = await browser.newPage();
     const errors: string[] = [];
