@@ -278,9 +278,13 @@ pre code {
   background: none;
   color: inherit;
 }
+/* A table fills the width it is given; a README's table scrolls inside its box (`.table-scroll`,
+   added by the site build) when it is wider than the page, instead of the page. */
 table {
   border-collapse: collapse;
-  display: block;
+  width: 100%;
+}
+.table-scroll {
   overflow-x: auto;
 }
 th,
@@ -407,7 +411,7 @@ td code {
 main.doc {
   max-width: 64rem;
   display: grid;
-  grid-template-columns: 12rem minmax(0, 46rem);
+  grid-template-columns: 12rem minmax(0, 1fr);
   gap: 3rem;
 }
 .toc {

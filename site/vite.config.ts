@@ -94,23 +94,29 @@ function markdown(): Plugin {
         const body = marked.parse(text, { async: false, walkTokens: rewrite(dir) });
         // Ids as GitHub gives them, so the READMEs' own `#section` links work here too.
         const sections: string[] = [];
-        const out = body.replace(/<h([1-6])>(.*?)<\/h\1>/g, (_h, level: string, inner: string) => {
-          const id = inner
-            .replace(/<[^>]+>|&[#\w]+;/g, "")
-            .toLowerCase()
-            .replace(/[^\w\s-]/g, "")
-            .trim()
-            .replace(/\s+/g, "-");
-          if (level === "2") sections.push(`<li><a href="#${id}">${inner}</a></li>`);
-          // A package's name wraps after its scope ("@list-picker/" then "vanilla"), not at a hyphen.
-          const text =
-            level === "1" ? inner.replace(/^(@[\w-]+\/)/, '<span class="scope">$1</span>') : inner;
-          // A package's page shows its version under its name.
-          const pkg = /^packages\/([\w-]+)\/README\.md$/.exec(file)?.[1];
-          const after =
-            level === "1" && pkg ? `<p class="version-line"><!-- version: ${pkg} --></p>` : "";
-          return `<h${level} id="${id}">${text}</h${level}>${after}`;
-        });
+        const out = body
+          // A table fills its width, and scrolls inside this box when it is wider than the page.
+          .replace(/<table>/g, '<div class="table-scroll"><table>')
+          .replace(/<\/table>/g, "</table></div>")
+          .replace(/<h([1-6])>(.*?)<\/h\1>/g, (_h, level: string, inner: string) => {
+            const id = inner
+              .replace(/<[^>]+>|&[#\w]+;/g, "")
+              .toLowerCase()
+              .replace(/[^\w\s-]/g, "")
+              .trim()
+              .replace(/\s+/g, "-");
+            if (level === "2") sections.push(`<li><a href="#${id}">${inner}</a></li>`);
+            // A package's name wraps after its scope ("@list-picker/" then "vanilla"), not at a hyphen.
+            const text =
+              level === "1"
+                ? inner.replace(/^(@[\w-]+\/)/, '<span class="scope">$1</span>')
+                : inner;
+            // A package's page shows its version under its name.
+            const pkg = /^packages\/([\w-]+)\/README\.md$/.exec(file)?.[1];
+            const after =
+              level === "1" && pkg ? `<p class="version-line"><!-- version: ${pkg} --></p>` : "";
+            return `<h${level} id="${id}">${text}</h${level}>${after}`;
+          });
         // A whole README is a package's page: the index of its sections goes beside it.
         if (from) return out;
         const toc = `<strong aria-hidden="true">On this page</strong><ul>${sections.join("")}</ul>`;
