@@ -4,8 +4,11 @@
 main.home {
   max-width: 64rem;
 }
-main.home > :not(.hero, .showcase) {
-  max-width: 46rem;
+/* Below the board, blocks (headings, tables, the install, code) take the container's width, as
+   the board does; running text keeps the lede's measure, about 80 characters a line. */
+main.home > :is(p, ul, ol) {
+  box-sizing: border-box; /* a list's indent inside the measure, as a paragraph's text */
+  max-width: 47rem;
 }
 .hero {
   padding: 2.5rem 0 1rem;
@@ -20,7 +23,7 @@ main.home > :not(.hero, .showcase) {
   color: var(--accent);
 }
 .lede {
-  max-width: 40rem;
+  max-width: 47rem;
   font-size: 1.15rem;
   color: var(--muted);
 }
