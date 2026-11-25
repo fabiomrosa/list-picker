@@ -138,7 +138,7 @@ title, size, frozen-files and secret checks.
   vanilla depending on core `^1.0.0`; `prepublishOnly` builds. **Published on npm** (2026-11-24,
   L4.26): `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`, by the owner from their
   account (the `list-picker` org, 2FA: `npm publish --otp=<code>`), core first, from `main`; the
-  tag `v1.0.0` marks the published commit. A new version is a new number: npm never reuses one.
+  tag `v1.0.0` marks the published commit (publishing traps: GOTCHAS).
 
 ## Site
 - `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, a table of the
@@ -169,6 +169,11 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, M4 retro (the owner accepted every proposal):** 5, 6, 7, 10–13 of the M4 close here:
+  CONVENTIONS (user callbacks after setup; readers of a lagging DOM; focus in Chrome; the demo
+  through its UI), SESSION §0 (interaction slices' budget) and §4 (check the deploy), GOTCHAS (site,
+  browser tests, publishing), the review skill (a reviewer removes only its own files). The checks
+  (2, 3, 4, 8, 9) come in their own pull requests, then the WebKit diagnosis (1); 14 is left as is.
 - **2026-11-24, close M4:** M4 done (26 slices, v1 on npm); the close lists the open retro
   proposals for the owner (`docs(M4): close the milestone`); none applied. Next: plan M5.
 - **2026-11-24, L4.26:** v1 is on npm: `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`,
