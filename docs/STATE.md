@@ -185,6 +185,12 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+- The React demo (L5.6, `site/react-demo.html` and `.tsx`): the home's kanban board written with
+  `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
+  it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
+  resolves the packages' names to their source (`site/vite.config.ts`). The nav's Demos list kanban,
+  player and react; below 27rem the demos take a row of their own, labelled, under the docs; two
+  rows below 45.5rem. `e2e/react.e2e.ts` drives it.
 
 ## Contract
 None yet.
@@ -193,6 +199,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.6:** the React demo on the site (a drag across lists, a keyboard move, Doing's cap,
+  Enter opens, one engine under StrictMode; Chrome); every page's nav links it. Next: L5.7 (the
+  React README and its page).
 - **2026-11-25, L5.5:** `useListPicker`'s options follow renders without restarting the engine (a
   changed `canMove`, `onActivate` or `messages` applies at once); without `onActivate`, Enter stays
   the card's own; `StrictMode` runs one engine; React 18.3.1 passes too. Next: L5.6 (the React

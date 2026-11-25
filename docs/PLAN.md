@@ -1166,7 +1166,7 @@ shows it in the demo.
 - **References:** DEC-16, DEC-17, DEC-18.
 
 ### L5.6 · The React demo
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** the kanban demo, written in React, on the site.
 - **Depends on:** L5.5.
 - **In scope:** a React page with the kanban board (the same lists, the skins and styles reused from
@@ -1184,7 +1184,7 @@ shows it in the demo.
 - **References:** L4.17, L4.18.
 
 ### L5.7 · The React README and its page
-- **Status:** waiting (L5.6)
+- **Status:** next
 - **Goal:** someone can learn the React adapter from its README, on npm and on the site.
 - **Depends on:** L5.6.
 - **In scope:** `packages/react/README.md` (install, a complete example, the hooks, the styling
