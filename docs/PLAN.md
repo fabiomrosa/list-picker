@@ -1223,7 +1223,7 @@ shows it in the demo.
   without touching every page.
 - **Depends on:** L5.8 (owner, 2026-11-25: the demos page, the demos' code and saving the order
   before React's launch).
-- **In scope:** a `<!-- nav -->` marker the site build replaces with the one nav (`site/nav.html`), on
+- **In scope:** a `<!-- nav -->` marker the site build replaces with the one nav (`site/partials/nav.html` (a subdirectory: every `.html` in `site/` is a page)), on
   every page, the playground's demo too; its Demos are one link, `demos`, to the Board in vanilla;
   the nav sweep (320–1400px) on every page.
 - **Out of scope:** the demos switcher (L5.10).
@@ -1232,7 +1232,7 @@ shows it in the demo.
   1. Every page shows the same nav, built from one file, with no sideways scroll from 320 to 1400px.
   2. The nav's `demos` opens the vanilla Board; the current page's link is marked
      (`aria-current="page"`).
-- **Files:** ~12: `site/nav.html`, the site build, the pages' nav, the e2e sweep, PLAN, STATE.
+- **Files:** ~12: `site/partials/nav.html` (a subdirectory: every `.html` in `site/` is a page), the site build, the pages' nav, the e2e sweep, PLAN, STATE.
 - **References:** L4.17, L5.6.
 
 ### L5.10 · The demos switcher

@@ -77,8 +77,8 @@ function versions(): Plugin {
 }
 
 /**
- * `<!-- nav <root> [<current>] -->`: the one nav (`site/partials/nav.html`), its links from `root`, the link to
- * `current` marked as the page. The playground's build uses it too.
+ * `<!-- nav <root> [<current>] -->`: the one nav (`site/partials/nav.html`), its links from
+ * `root`, the link to `current` marked as the page. The playground's build uses it too.
  */
 export function nav(): Plugin {
   return {

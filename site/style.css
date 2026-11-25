@@ -106,9 +106,12 @@ nav a {
 nav a:hover {
   color: var(--accent);
 }
-/* The page you are on: its link in the text's colour. */
+/* The page you are on: its link in the text's colour, underlined (not by colour alone). */
 nav a[aria-current="page"] {
   color: var(--text);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--accent);
 }
 /* The brand a step above the links; its mark follows (em). */
 nav > a:first-child {

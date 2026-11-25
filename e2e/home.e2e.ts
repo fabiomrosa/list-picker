@@ -318,15 +318,18 @@ test("one nav on every page: the same links, a single demos link, the current pa
     if (current) await expect(marked, path).toHaveText(current);
     else await expect(marked, path).toHaveCount(0);
   }
-  // The vanilla Board, built from the playground, has the same nav, its own link marked.
-  await page.goto(`${site}demo/`.replace("5181/list-picker/demo/", "5180/"));
+  // The vanilla Board, built from the playground into `demo/`, has the same nav, its links one
+  // level up and its own link marked.
+  await page.goto("http://localhost:5180/");
   await expect(page.locator('nav a[aria-current="page"]')).toHaveText("demos");
-  await expect(page.locator("nav a")).toHaveText([
-    "list-picker",
-    "core",
-    "vanilla",
-    "react",
-    "demos",
-    "GitHub",
+  expect(
+    await page.locator("nav a").evaluateAll((all) => all.map((a) => a.getAttribute("href"))),
+  ).toEqual([
+    "../",
+    "../core.html",
+    "../vanilla.html",
+    "../react.html",
+    "../demo/",
+    "https://github.com/fabiomrosa/list-picker",
   ]);
 });
