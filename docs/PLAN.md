@@ -1107,7 +1107,7 @@ shows it in the demo.
 - **References:** DEC-15, DEC-18; GOTCHAS (Chrome's `focusout` on a moved element).
 
 ### L5.3 · The React package and the Board as state
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** a React component re-renders from the Board's Snapshot whenever the Board changes.
 - **Depends on:** L5.2, DEC-18.
 - **In scope:** `packages/react` at 1.0.0 (ESM, types, `sideEffects: false`, LICENSE, `files`,
@@ -1130,7 +1130,7 @@ shows it in the demo.
 - **References:** DEC-09, DEC-12, DEC-18.
 
 ### L5.4 · Drag and keyboard in React
-- **Status:** waiting (L5.3)
+- **Status:** next
 - **Goal:** a React board moves cards and lists by pointer and keyboard.
 - **Depends on:** L5.3.
 - **In scope:** `useListPicker(board, options)`: a callback ref for the root and getters for a

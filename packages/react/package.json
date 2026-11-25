@@ -1,0 +1,50 @@
+{
+  "name": "@list-picker/react",
+  "version": "1.0.0",
+  "description": "React hooks for lists people reorder (kanban boards, playlists): drag-and-drop and keyboard moves, headless, over @list-picker/core.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fabiomrosa/list-picker.git",
+    "directory": "packages/react"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "kanban",
+    "board",
+    "drag-and-drop",
+    "sortable",
+    "keyboard",
+    "accessibility",
+    "headless",
+    "playlist",
+    "sortable-list"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@list-picker/core": "^1.0.0",
+    "@list-picker/vanilla": "^1.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18.3.0 || ^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://fabiomrosa.github.io/list-picker/react.html"
+}

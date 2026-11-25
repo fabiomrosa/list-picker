@@ -10,8 +10,11 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "jsx": "react-jsx",
     "paths": {
-      "@list-picker/core": ["./packages/core/src/index.ts"]
+      "@list-picker/core": ["./packages/core/src/index.ts"],
+      "@list-picker/vanilla": ["./packages/vanilla/src/index.ts"],
+      "@list-picker/react": ["./packages/react/src/index.ts"]
     }
   },
   "include": [
