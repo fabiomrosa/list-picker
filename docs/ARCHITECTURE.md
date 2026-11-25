@@ -25,7 +25,7 @@ Exact versions are pinned in the root `package.json`.
 | `packages/core` | The doubly linked list and its Index, the Board, Move, the event emitter, the Snapshot. No DOM. | nothing |
 | `packages/vanilla` | The drag engine over the user's markup (`createDrag`, M2: pointer handling, Clone, Placeholder, hit-testing, auto-scroll; DEC-13) and the vanilla mount (`mount`, M3: containers, the user's Renderers, updates by id; DEC-14) | `core` |
 | `playground/` (L1.1) | A local page that draws the model and exercises it by hand; not a package, never published | `core` (source) |
-| `site/` (L4.12) | The site: home, a page per package rendered from its README at build time, the demo built from `playground/` into `demo/`; deployed to GitHub Pages by `.github/workflows/pages.yml` | the READMEs, `playground/` |
+| `site/` (L4.12) | The site: home, a page per package rendered from its README at build time, a page per demo (Board and Player, in vanilla and React; L5.6–L5.12), the playground built from `playground/` into `demo/`; deployed to GitHub Pages by `.github/workflows/pages.yml` | the READMEs, `playground/` |
 | `packages/react` (M5) | Hooks over `core` and the engine (DEC-18): `useBoard` (the Snapshot as React state), `useListPicker` (L5.4) | `core`, `vanilla`'s engine; `react` as a peer |
 | `packages/angular` (M6) | Directive and components over `core` and the engine | `core`, `vanilla`'s engine |
 
