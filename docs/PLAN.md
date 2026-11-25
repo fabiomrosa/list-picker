@@ -1130,7 +1130,7 @@ shows it in the demo.
 - **References:** DEC-09, DEC-12, DEC-18.
 
 ### L5.4 · Drag and keyboard in React
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** a React board moves cards and lists by pointer and keyboard.
 - **Depends on:** L5.3.
 - **In scope:** `useListPicker(board, options)`: a callback ref for the root and getters for a
@@ -1147,7 +1147,7 @@ shows it in the demo.
 - **References:** DEC-13, DEC-15, DEC-18.
 
 ### L5.5 · Current options and StrictMode
-- **Status:** waiting (L5.4)
+- **Status:** next
 - **Goal:** the React hook behaves like a React hook: options follow renders, `StrictMode` is safe.
 - **Depends on:** L5.4.
 - **In scope:** `messages`, `canMove` and `onActivate` are read from the latest render without

@@ -136,7 +136,11 @@ title, review-section, size, frozen-files and secret checks.
   internal), `mount` (`src/mount.ts`); imports only types
   from `core`.
 - `packages/react` (L5.3): `useBoard` (`src/use-board.ts`: `useSyncExternalStore` over the Board's
-  `change`, its Snapshot as the value, the server's too); `react` `^18.3.0 || ^19.0.0` as a peer,
+  `change`, its Snapshot as the value, the server's too); `useListPicker` (L5.4,
+  `src/use-list-picker.ts`: a callback `ref` for the root and getters `list`, `listHandle`, `cards`,
+  `card` for the `data-lp-*` attributes and focusability; the engine starts with `moveElements:
+  false` when the root mounts, in `useEffect`, and is destroyed when it unmounts or changes; its
+  options are read when it starts until L5.5); `react` `^18.3.0 || ^19.0.0` as a peer,
   core and vanilla as dependencies; tests with React Testing Library in happy-dom (`cleanup()` by
   hand: Vitest runs without globals). Root `workspaces` list the packages in build order (core,
   vanilla, react); `tsconfig.json`'s `paths` and `vitest.config.ts`'s aliases resolve the three
@@ -183,6 +187,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.4:** `useListPicker`: a React board moves cards across lists by pointer and keyboard,
+  React drawing each move (with the engine in its default mode, both cross-list tests fail on
+  React's `removeChild` "not a child of this node", DEC-18's reason); unmounting removes the
+  engine's listeners and its announcement region. Next: L5.5 (current options, StrictMode).
 - **2026-11-25, L5.3:** `packages/react` at 1.0.0 (unpublished) with `useBoard`; the workspace builds
   in dependency order and passes `npm ci && npm run verify` in a clean clone. Next: L5.4
   (`useListPicker`: drag and keyboard in React).
