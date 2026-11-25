@@ -852,6 +852,49 @@ describe("createDrag with moveElements: false (DEC-18: a renderer draws the move
     expect([ids("todo"), ids("done")]).toEqual([["b"], []]);
   });
 
+  it("a listener that throws after the move: the Board moved, no element did", async () => {
+    ctx.board.on("move", () => {
+      throw new Error("listener failed");
+    });
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    start();
+    await overDone();
+    try {
+      pointer(ctx.card("a"), "pointerup", 60, 300);
+    } catch (error) {
+      errors.push(error);
+    }
+    window.removeEventListener("error", onError);
+    expect(String(errors[0])).toContain("listener failed");
+    expect([ids("todo"), ids("done")]).toEqual([["b"], ["a"]]);
+    expect(leftovers()).toHaveLength(0);
+    expect(ctx.root.innerHTML).toBe(markup);
+  });
+
+  it.each(["drop", "Esc", "destroy"])("its Board listener is removed on %s", async (how) => {
+    // Every unsubscribe the engine gets from the Board is recorded, then still unsubscribes.
+    const removed: string[] = [];
+    const on = ctx.board.on.bind(ctx.board);
+    vi.spyOn(ctx.board, "on").mockImplementation((event, listener) => {
+      const off = on(event, listener);
+      return () => {
+        removed.push(String(event));
+        off();
+      };
+    });
+    start();
+    await overDone();
+    if (how === "drop") pointer(ctx.card("a"), "pointerup", 60, 300);
+    else if (how === "Esc") document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    else drag.destroy();
+    expect(removed).toContain("change");
+  });
+
   it("removing the list the Placeholder is in cancels the drag; the release does nothing", async () => {
     start();
     await overDone();

@@ -41,8 +41,8 @@ export interface DragOptions {
   readonly canMove?: (move: ProposedMove) => boolean;
   /**
    * Whether a drop moves the dragged element itself (DEC-13; the default, `true`). `false` is for a
-   * renderer that draws from the Snapshot (React; DEC-18): a drop then only changes the Board and
-   * the element is shown again where it was, for the renderer to move; and a Board change that
+   * renderer that draws from the Snapshot (React; DEC-18): a pointer drop then only changes the
+   * Board and the element is shown again where it was, for the renderer to move; and a Board change that
    * removes the dragged item, or the list its Placeholder is in, cancels the drag.
    */
   readonly moveElements?: boolean;

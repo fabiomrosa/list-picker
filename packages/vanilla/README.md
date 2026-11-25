@@ -120,8 +120,8 @@ The drag engine alone, for markup you draw yourself (keep it in line with the Bo
 
 Cards are direct children of their `[data-lp-cards]`, and lists direct children of one parent.
 Returns `{ destroy() }`. A drop moves the item on the Board and then its element. It takes the
-same `options` as `mount`, plus one for markup that a renderer draws from the Snapshot (a framework
-redrawing on each Board change):
+same `options` as `mount`; one of them is for markup that a renderer draws from the Snapshot (a
+framework redrawing on each Board change; `mount` has no need for it):
 
 - `options.moveElements: false`: a pointer drop only changes the Board; the element is shown again
   where it was, for your renderer to move. A Board change that removes the dragged item, or the
