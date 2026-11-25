@@ -189,13 +189,12 @@ title, review-section, size, frozen-files and secret checks.
 - The React demo (L5.6, `site/react-demo.html` and `.tsx`): the home's kanban board written with
   `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
   it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
-  resolves the packages' names to their source (`site/vite.config.ts`). The nav's Demos list kanban,
-  player and react (breakpoints: see the L5.7 bullet below). `e2e/react.e2e.ts` drives it.
+  resolves the packages' names to their source (`site/vite.config.ts`). Since L5.9 the nav (one partial,
+  `site/partials/nav.html`) has one `demos` link, to the vanilla Board. `e2e/react.e2e.ts` drives it.
 - `site/react.html` (L5.7) renders `packages/react/README.md`; the nav's Docs list core, vanilla and
-  react; three nav rows below 30.5rem, two below 49rem. A README link to another package's section
+  react; two nav rows below 49rem (the brand and buttons, then the pages, down to 320px). A README link to another package's section
   (`packages/vanilla#keyboard`) goes to its page here (`vanilla.html#keyboard`). A package npm does not
-  have (404) shows no version; one npm cannot be reached shows its `package.json`'s. Below 30.5rem
-  the demos take a row of their own, labelled, under the docs.
+  have (404) shows no version; one npm cannot be reached shows its `package.json`'s.
 
 ## Contract
 None yet.
@@ -204,6 +203,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.9:** one nav: `site/partials/nav.html`, put in place of `<!-- nav <root>
+  [<current>] -->` by the site build's `nav()` (the playground's `vite.config.ts` uses it too); the
+  current page's link gets `aria-current="page"`; the demos are one link, `demos` (the vanilla
+  Board), after a line; on a phone the pages fit one row under the brand down to 320px. Next: L5.10
+  (the demos switcher).
 - **2026-11-25, docs(M5):** planned L5.9–L5.14 (owner): one nav with one Demos link, a demos
   switcher (Board and Player, in vanilla and React), the React Player, saving the order to a
   simulated backend (vanilla, then React), and each demo's code on its page.

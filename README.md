@@ -90,7 +90,7 @@ npm test            # the tests once
 npm run dev         # the playground at http://localhost:5173
 npm run bench       # linked lists against arrays (docs/decisions/0001)
 npm run trace       # forced layouts during real drags (docs/decisions/0002)
-npm run site        # the site's pages (the kanban and player links work in the built site: npm run site:build)
+npm run site        # the site's pages (the demos link works in the built site: npm run site:build)
 npm run e2e         # real drags in Chrome (needs Google Chrome installed)
 npm run format      # format and apply safe lint fixes
 ```
