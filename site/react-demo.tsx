@@ -1,8 +1,8 @@
 // The Board demo, in React: `useBoard` gives the Board as state, `useListPicker` the props your
 // elements spread; the same board as the vanilla demo, in the same skins (its handle is a list's
-// title, not its whole header). Doing holds 3
-// cards (`canMove`), a click or Enter opens a card or a list (`onActivate`). `keepSaved` (saving.ts)
-// loads the Board from a server and saves each move; the panel shows the requests.
+// title, not its whole header). Doing holds 3 cards (`canMove`), a click or Enter opens a card or a
+// list (`onActivate`). `keepSaved` (saving.ts) loads the Board from a server and saves each move;
+// the panel shows the requests.
 import { Board } from "@list-picker/core";
 import { type ListPickerOptions, useBoard, useListPicker } from "@list-picker/react";
 import { Fragment, StrictMode, useEffect, useState } from "react";
