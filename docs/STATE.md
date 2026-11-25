@@ -186,6 +186,10 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+- The demos switcher (L5.10): above each demo page (`demo/`, `react-demo.html`, `player.html`), the
+  demo (Board, Player) and the framework (Vanilla, React, Angular "soon"), built by the site build's
+  `demos()` from its `DEMOS` table; a page's `<!-- nav … -->` or `<!-- demos … -->` marker that is
+  not understood fails the build.
 - The React demo (L5.6, `site/react-demo.html` and `.tsx`): the home's kanban board written with
   `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
   it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
@@ -203,6 +207,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.10:** the demos switcher: `<!-- demos <root> <demo> <framework> -->` (the site
+  build's `demos()`, its table `DEMOS` in `site/vite.config.ts`) above each demo: the demo (Board,
+  Player; it keeps the framework when the demo has it) and the framework (Vanilla, React, Angular
+  "soon"; a missing one says "soon"). Pages keep their addresses:
+  `demo/` (the vanilla Board, the playground), `react-demo.html`, `player.html`. On a
+  demo page the nav's `demos` is marked `aria-current="true"` (`<!-- nav ./ in:demo/ -->`). Next:
+  L5.11 (the React Player).
 - **2026-11-25, L5.9:** one nav: `site/partials/nav.html`, put in place of `<!-- nav <root>
   [<current>] -->` by the site build's `nav()` (the playground's `vite.config.ts` uses it too); the
   current page's link gets `aria-current="page"`; the demos are one link, `demos` (the vanilla

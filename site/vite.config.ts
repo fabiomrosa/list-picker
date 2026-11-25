@@ -78,22 +78,76 @@ function versions(): Plugin {
 
 /**
  * `<!-- nav <root> [<current>] -->`: the one nav (`site/partials/nav.html`), its links from
- * `root`, the link to `current` marked as the page. The playground's build uses it too.
+ * `root`, the link to `current` marked as the page (or, as `in:<current>`, as the page's
+ * section). The playground's build uses it too.
  */
 export function nav(): Plugin {
   return {
     name: "nav",
     transformIndexHtml: (html) =>
-      html.replace(/<!-- nav (\S+)(?: (\S+))? -->/, (_m, root: string, current?: string) => {
+      filled("nav", html, /<!-- nav (\S+)(?: (\S+))? -->/, (_m, root: string, current?: string) => {
         const out = readFileSync(fileURLToPath(new URL("partials/nav.html", SITE)), "utf8")
           .replace(/^<!--.*?-->\n/s, "")
           .replaceAll("{root}", root);
         if (!current) return out;
-        const link = `href="${root}${current}"`;
+        // `in:<link>`: the page is in that link's section (a demo page: the demos), not that page.
+        const section = current.startsWith("in:");
+        const link = `href="${root}${section ? current.slice(3) : current}"`;
         // A page names a link the nav doesn't have: fail the build, not mark nothing.
         if (!out.includes(link)) throw new Error(`nav: no link to ${current}`);
-        return out.replace(link, `${link} aria-current="page"`);
+        return out.replace(link, `${link} aria-current="${section ? "true" : "page"}"`);
       }),
+  };
+}
+
+/** A page's `<!-- <name> … -->` marker replaced; a marker left (misspelt) fails the build. */
+function filled(
+  name: string,
+  html: string,
+  marker: RegExp,
+  replace: (match: string, ...groups: string[]) => string,
+): string {
+  const out = html.replace(marker, replace);
+  if (new RegExp(`<!--\\s*${name}\\b`).test(out))
+    throw new Error(`${name}: a marker not understood`);
+  return out;
+}
+
+/** Each demo's page by framework; a framework missing here shows the demo as "soon" in it. */
+const DEMOS: Record<string, Record<string, string>> = {
+  Board: { Vanilla: "demo/", React: "react-demo.html" },
+  Player: { Vanilla: "player.html" },
+};
+const FRAMEWORKS = ["Vanilla", "React", "Angular"];
+
+/**
+ * `<!-- demos <root> <demo> <framework> -->`: the demos switcher. A demo's link keeps the framework
+ * when that demo has it (else its vanilla page); a framework's link keeps the demo, or says "soon".
+ */
+export function demos(): Plugin {
+  return {
+    name: "demos",
+    transformIndexHtml: (html) =>
+      filled(
+        "demos",
+        html,
+        /<!-- demos (\S+) (\w+) (\w+) -->/,
+        (_m, root: string, demo: string, fw: string) => {
+          const pages = DEMOS[demo];
+          if (!pages?.[fw]) throw new Error(`demos: no ${demo} in ${fw}`);
+          const item = (text: string, href: string | undefined, current: boolean) =>
+            href
+              ? `<li><a href="${root}${href}"${current ? ' aria-current="page"' : ""}>${text}</a></li>`
+              : `<li><span class="soon">${text} <small>soon</small></span></li>`;
+          const demoLinks = Object.entries(DEMOS).map(([name, by]) =>
+            item(name, by[fw] ?? by.Vanilla, name === demo),
+          );
+          const fwLinks = FRAMEWORKS.map((name) => item(name, pages[name], name === fw));
+          // A landmark, but not a `<nav>`: the site's nav is styled by its element.
+          const groups = `<ul aria-label="Demo">${demoLinks.join("")}</ul><ul aria-label="Framework">${fwLinks.join("")}</ul>`;
+          return `<div class="demos-switch" role="navigation" aria-label="Demos">${groups}</div>`;
+        },
+      ),
   };
 }
 
@@ -159,7 +213,7 @@ export default defineConfig({
       "@list-picker/react": source("react"),
     },
   },
-  plugins: [nav(), markdown(), versions()],
+  plugins: [nav(), demos(), markdown(), versions()],
   build: {
     outDir: "../dist-site",
     emptyOutDir: true,
