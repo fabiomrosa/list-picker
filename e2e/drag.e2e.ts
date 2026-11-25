@@ -388,6 +388,19 @@ test("during a drag the Clone's copied controls are neither announced nor reacha
 }) => {
   const from = await card(page, "Design the model").locator("strong").boundingBox();
   if (!from) throw new Error("not visible");
+  await page.mouse.move(from.x + 10, from.y + 5);
+  await page.mouse.down();
+  await page.mouse.move(from.x + 40, from.y + 40, { steps: 6 });
+  await expect(page.locator("[data-lp-clone]")).toHaveCount(1);
+  // The dragged card is hidden, and its picture exposes nothing: no "remove card …" button at all.
+  await expect(page.getByRole("button", { name: "remove card Design the model" })).toHaveCount(0);
+  const focusable = await page
+    .locator("[data-lp-clone] button")
+    .evaluateAll((all) => all.filter((b) => (b as HTMLElement).matches(":not([inert] *)")).length);
+  await page.mouse.up();
+  expect(focusable).toBe(0);
+});
+
 /** Board lists and DOM lists agree: card ids per list, in order. */
 async function boardMatchesPage(page: Page): Promise<void> {
   const fromBoard = await page.evaluate(() => {
@@ -425,14 +438,6 @@ async function dragWhile(page: Page, during: () => Promise<void>): Promise<void>
   await page.mouse.down();
   await page.mouse.move(from.x + 40, from.y + 40, { steps: 6 });
   await expect(page.locator("[data-lp-clone]")).toHaveCount(1);
-  // The dragged card is hidden, and its picture exposes nothing: no "remove card …" button at all.
-  await expect(page.getByRole("button", { name: "remove card Design the model" })).toHaveCount(0);
-  const focusable = await page
-    .locator("[data-lp-clone] button")
-    .evaluateAll((all) => all.filter((b) => (b as HTMLElement).matches(":not([inert] *)")).length);
-  await page.mouse.up();
-  expect(focusable).toBe(0);
-});
   await during();
   await page.mouse.move(to.x + to.width / 2, to.y + to.height - 5, { steps: 12 });
   await page.mouse.up();
