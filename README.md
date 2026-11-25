@@ -22,6 +22,7 @@ A lab rewriting [list-picker-js](https://github.com/fabiomrosa/list-picker-js) (
 | --- | --- |
 | [`@list-picker/core`](packages/core) | The Board model: ordered lists of ordered cards, events. No DOM. |
 | [`@list-picker/vanilla`](packages/vanilla) | Draws a Board from your Renderers; pointer and keyboard moves, announcements. |
+| [`@list-picker/react`](packages/react) | React hooks over the same core and engine: the Board as state, the engine on your own elements. |
 
 The site, with the docs and the demos (a board and a playlist, in vanilla and React):
 <https://fabiomrosa.github.io/list-picker/> (locally, `npm run site`; see

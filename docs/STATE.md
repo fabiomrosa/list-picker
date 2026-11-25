@@ -168,7 +168,7 @@ title, review-section, size, frozen-files and secret checks.
 ## Site
 - `site/` (`npm run site`, `npm run site:build` into `dist-site/`): home (intro, a table of the
   four packages, React linked to its page and Angular "coming soon"; an Install chooser of radios
-  with no script, where React and Angular show no command until published; the lab's answer from
+  with no script, where Angular shows no command until published; the lab's answer from
   the root README; links), `core.html`, `vanilla.html` and `react.html` rendered from the packages'
   READMEs at build time, and the
   playground (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
@@ -216,6 +216,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.8:** `@list-picker/vanilla` 1.1.0 and `@list-picker/react` 1.0.0 on npm (published by
+  the owner); tags `vanilla-v1.1.0` and `react-v1.0.0`; the home's Install chooser shows React's
+  command and the root README lists it. Next: the M5 close.
 - **2026-11-25, L5.15:** the demos' code. `<!-- code <file>… -->` (the site build's `code()`) puts
   "The code" under each demo: its files from `site/`, highlighted at build time by Shiki (a dev
   dependency; `github-dark-default` on the terminal's background), one at a time by a radio per

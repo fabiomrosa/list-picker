@@ -202,7 +202,12 @@ test("the install command follows the package manager chosen under it, by pointe
   await page.locator("#pm-pnpm").press("ArrowLeft");
   expect(await command.innerText()).toBe("yarn add @list-picker/core @list-picker/vanilla");
   await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeVisible();
-  await page.locator('label[for="install-react"]').click(); // no command for React yet
+  // React's command (L5.8), with the same package manager links; Angular has none yet.
+  await page.locator('label[for="install-react"]').click();
+  expect(await page.locator(".install pre.install-react").innerText()).toBe(
+    "yarn add @list-picker/core @list-picker/react",
+  );
+  await page.locator('label[for="install-angular"]').click();
   await expect(page.getByRole("radiogroup", { name: "Package manager" })).toBeHidden();
 });
 
@@ -275,6 +280,13 @@ test("the install command's copy button copies the command shown, as chosen", as
   );
   await expect(page.getByRole("status").filter({ hasText: "Copied" })).toHaveCount(1);
   await expect(copy).toHaveAttribute("data-copied", "");
+  // React's command (L5.8) has its own button, with the same package manager.
+  await page.locator('label[for="install-react"]').click();
+  await page.locator(".install pre.install-react .copy").click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "pnpm add @list-picker/core @list-picker/react",
+  );
+  await page.locator('label[for="install-vanilla"]').click();
   // The command itself, selected by hand, is still just the command.
   expect(await page.locator(".install pre.install-vanilla").innerText()).toBe(
     "pnpm add @list-picker/core @list-picker/vanilla",
