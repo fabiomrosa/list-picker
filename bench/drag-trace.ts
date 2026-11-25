@@ -1,4 +1,4 @@
-// `npm run trace`: drags cards and a list on the demo board in Chrome with a performance trace on,
+// `npm run trace`: drags cards and a list in the playground in Chrome with a performance trace on,
 // then counts the layouts and style recalculations JavaScript forced, by where they ran: inside a
 // `pointermove` dispatch (the claim is zero) or inside an animation-frame callback. Method and
 // results: docs/decisions/0002-drag-layout-trace.md.

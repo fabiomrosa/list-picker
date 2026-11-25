@@ -65,7 +65,7 @@ To repeat both measurements (Node 26 and Google Chrome installed):
 ```sh
 npm ci
 npm run bench   # decision 0001: linked lists against arrays, 2000 moves per board shape
-npm run trace   # decision 0002: forced layouts during five drags of the demo board, in Chrome
+npm run trace   # decision 0002: forced layouts during five drags in the playground, in Chrome
 ```
 
 Each record explains its method and what it does not cover; numbers vary by machine.
