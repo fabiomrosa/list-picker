@@ -75,6 +75,12 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   sees the release before its frame. The engine runs a pending frame at the release.
 - Safari does not focus a radio (or a button) when it, or its label, is clicked: a test that presses
   an arrow key after a click presses it on the control (`locator.press`), not on `page.keyboard`.
+- The real Safari can be driven through `safaridriver` (WebDriver, port of your choice) once
+  Settings → Developer → "Allow remote automation" is on (`sudo safaridriver --enable` needs a real
+  terminal: a `!` command cannot ask for the password). Its mouse reaches the page only while the
+  automated window is in front (`document.hasFocus()`): otherwise clicks and drags silently do
+  nothing, while keys sent to a focused element still work. `osascript -e 'tell application
+  "Safari" to activate'` after creating the session.
 - WebKit on macOS shows overlay scrollbars, which take no room, whatever Playwright's launch flags:
   a test about a scrollbar's width has nothing to measure there.
 - Playwright's `toHaveText` reads `textContent`, hidden (`display: none`) text included; what a
