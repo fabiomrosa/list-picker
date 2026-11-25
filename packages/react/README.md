@@ -110,9 +110,10 @@ The same as vanilla's: the
 
 ## Saving the order
 
-The same as with vanilla: the Board, not React, holds the order, so load it from your backend
-(before rendering, or once in an effect), save each `move` event from `board.on("move", …)`, and
-put the backend's order back when a save fails; `useBoard` draws whatever the Board does, the
+The same as with vanilla: the Board, not React, holds the order. Load it from your backend before
+rendering, at module level (an effect runs twice under `StrictMode`, and adding the same card twice
+throws); save each `move` event from `board.on("move", …)`, subscribed once beside the Board; and
+put the backend's order back when a save fails: `useBoard` draws whatever the Board does, the
 restore included. See vanilla's
 [Saving the order](https://github.com/fabiomrosa/list-picker/tree/main/packages/vanilla#saving-the-order)
 for the code, and the

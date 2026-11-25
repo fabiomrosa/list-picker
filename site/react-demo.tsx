@@ -20,14 +20,17 @@ const STATUS: Record<number, string> = {
 };
 const board = new Board<List, Card>();
 const saving = keepSaved(board);
-saving.open(); // the board as the server has it: drawn when it comes
+const opening = saving.open(); // the board as the server has it: drawn when it comes
 
 const SKINS = ["Cards", "Terminal", "Pop"] as const;
 
 function Kanban() {
   const { lists } = useBoard(board);
   const [skin, setSkin] = useState<(typeof SKINS)[number]>("Cards");
-  const [status, setStatus] = useState(HINT);
+  const [status, setStatus] = useState("Loading the board…");
+  useEffect(() => {
+    opening.then(() => setStatus(HINT));
+  }, []);
   const [requests, setRequests] = useState<Answered[]>([]);
   const [failNext, setFailNext] = useState(false);
   useEffect(
@@ -137,8 +140,8 @@ function Kanban() {
         </p>
         <ol className="requests" id="requests" aria-label="Requests, newest first">
           {requests.map(({ method, path, body, status: code }, i) => (
-            // Requests have no id: the newest is the first, so an index keys them well enough.
-            // biome-ignore lint/suspicious/noArrayIndexKey: a log, newest first, never reordered
+            // Requests have no id; the rows hold no state and are at most six, so an index will do.
+            // biome-ignore lint/suspicious/noArrayIndexKey: stateless rows, at most six
             <li key={i} data-failed={code !== 200 ? "" : undefined}>
               {`${method} ${path}${body ? ` ${JSON.stringify(body)}` : ""} → ${STATUS[code]}`}
             </li>
