@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 // The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
 // not covered.
-import { Board, type MoveEvent, type Snapshot } from "../packages/core/src/index.ts";
+import { Board, type MoveEvent } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";
 // The site's look, the skins (L4.18), then the demo's own parts (L4.17).
 import "../site/style.css";
@@ -21,7 +21,6 @@ const error = byId<HTMLParagraphElement>("error");
 const boardView = byId<HTMLDivElement>("board");
 const moveForm = byId<HTMLFormElement>("move-card");
 const status = byId<HTMLParagraphElement>("status");
-const snapshotView = byId<HTMLElement>("snapshot");
 const field = <E extends Element>(form: HTMLFormElement, name: string) =>
   form.elements.namedItem(name) as unknown as E;
 
@@ -173,20 +172,11 @@ function fill(select: HTMLSelectElement, ids: string[], empty: string | null): v
   if (ids.includes(selected) || (selected === "" && empty !== null)) select.value = selected;
 }
 
-let lastSnapshot: Snapshot<Entity, Entity> | undefined;
-let version = 0;
-
 /**
  * Updates what depends on position (neighbours, counts, which buttons apply) and the forms; the
  * elements themselves are kept and ordered by `mount`.
  */
 function refresh(): void {
-  const snapshot = board.snapshot();
-  if (snapshot !== lastSnapshot) {
-    lastSnapshot = snapshot;
-    version++;
-  }
-  snapshotView.textContent = `snapshot v${version}`;
   const button = (scope: Element, role: string) =>
     scope.querySelector(`[data-role="${role}"]`) as HTMLButtonElement;
   for (const head of boardView.querySelectorAll<HTMLElement>("[data-lp-list-handle]")) {
