@@ -1086,7 +1086,7 @@ shows it in the demo.
 - **References:** DEC-13, DEC-18; `mount`'s drag cancel (L3.x).
 
 ### L5.2 · A keyboard pick-up survives the renderer's redraw
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** with `moveElements: false`, moving by keyboard keeps working while the renderer redraws.
 - **Depends on:** L5.1.
 - **In scope:** with `false`, a step and Esc change only the Board; while a pick-up lasts, a
@@ -1107,7 +1107,7 @@ shows it in the demo.
 - **References:** DEC-15, DEC-18; GOTCHAS (Chrome's `focusout` on a moved element).
 
 ### L5.3 · The React package and the Board as state
-- **Status:** waiting (L5.2)
+- **Status:** next
 - **Goal:** a React component re-renders from the Board's Snapshot whenever the Board changes.
 - **Depends on:** L5.2, DEC-18.
 - **In scope:** `packages/react` at 1.0.0 (ESM, types, `sideEffects: false`, LICENSE, `files`,

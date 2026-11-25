@@ -41,8 +41,9 @@ export interface DragOptions {
   readonly canMove?: (move: ProposedMove) => boolean;
   /**
    * Whether a drop moves the dragged element itself (DEC-13; the default, `true`). `false` is for a
-   * renderer that draws from the Snapshot (React; DEC-18): a pointer drop then only changes the
-   * Board and the element is shown again where it was, for the renderer to move; and a Board change that
+   * renderer that draws from the Snapshot (React; DEC-18): a pointer drop or a keyboard step then
+   * only changes the Board and the element stays where it was, for the renderer to move (a keyboard
+   * pick-up and the focus follow the item's id to its new element); and a Board change that
    * removes the dragged item, or the list its Placeholder is in, cancels the drag.
    */
   readonly moveElements?: boolean;
@@ -159,6 +160,7 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     announcer.say,
     onActivate && ((kind, id) => onActivate({ kind, id })),
     canMove,
+    options.moveElements !== false,
   );
   const name = (kind: Kind) => (kind === LIST ? "list" : "card");
   /** The latest pointer position; read once per animation frame. */

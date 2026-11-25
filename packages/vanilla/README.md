@@ -123,9 +123,11 @@ Returns `{ destroy() }`. A drop moves the item on the Board and then its element
 same `options` as `mount`; one of them is for markup that a renderer draws from the Snapshot (a
 framework redrawing on each Board change; `mount` has no need for it):
 
-- `options.moveElements: false`: a pointer drop only changes the Board; the element is shown again
-  where it was, for your renderer to move. A Board change that removes the dragged item, or the
-  list its Placeholder is in, ends the drag. The default, `true`, moves the element itself.
+- `options.moveElements: false`: a pointer drop and each keyboard step only change the Board; the
+  element stays where it was, for your renderer to move. A keyboard pick-up follows the item by its
+  id to the element your renderer draws for it (the focus too, even when the redraw replaced it).
+  A Board change that removes the dragged item, or the list its Placeholder is in, ends a pointer
+  drag. The default, `true`, moves the element itself.
 
 ## Markup and styling hooks
 

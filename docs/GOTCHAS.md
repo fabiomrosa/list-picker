@@ -36,6 +36,9 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - On a drop the engine calls `board.moveCard` (which emits `change` synchronously) before it moves
   the card into the Placeholder's place; a `change` listener that writes the DOM at once races the
   engine, so `mount` writes in a microtask (its Renderers run in the listener itself).
+- After a redraw blurs a focused element, the focus is on `body`, exactly as after a click on a blank
+  part of the page: `body` alone does not tell a redraw from the user leaving. The keyboard takes the
+  focus back from `body` only right after its own step (L5.2's review found the click-away case).
 - Chrome fires `focusout` on a focused element moved or replaced in the DOM (`before`, `append`,
   `replaceWith`), and it loses
   the focus; happy-dom does neither, so only the browser test catches a missing guard or refocus.
