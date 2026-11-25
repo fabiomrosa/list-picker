@@ -1130,7 +1130,7 @@ shows it in the demo.
 - **References:** DEC-09, DEC-12, DEC-18.
 
 ### L5.4 · Drag and keyboard in React
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** a React board moves cards and lists by pointer and keyboard.
 - **Depends on:** L5.3.
 - **In scope:** `useListPicker(board, options)`: a callback ref for the root and getters for a
@@ -1147,11 +1147,12 @@ shows it in the demo.
 - **References:** DEC-13, DEC-15, DEC-18.
 
 ### L5.5 · Current options and StrictMode
-- **Status:** waiting (L5.4)
+- **Status:** next
 - **Goal:** the React hook behaves like a React hook: options follow renders, `StrictMode` is safe.
 - **Depends on:** L5.4.
 - **In scope:** `messages`, `canMove` and `onActivate` are read from the latest render without
-  restarting the engine; adding or removing `onActivate` or `canMove` restarts it (the engine
+  restarting the engine, and without writing a ref during render (L5.4 does, for the start only;
+  React's rules forbid it); adding or removing `onActivate` or `canMove` restarts it (the engine
   decides at creation whether activation exists, and Enter must not be taken from a card that is a
   link or a button without one); `StrictMode`'s double mount leaves one engine; React 18.3 checked
   once.
