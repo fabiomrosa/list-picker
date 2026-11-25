@@ -240,15 +240,15 @@ does this against a pretend server.
 type Saved = { lists: { list: List; cards: Card[] }[] };
 const load = async (): Promise<Saved> => (await fetch("/api/board")).json();
 
-const saved = new Board<List, Card>();
+const board = new Board<List, Card>();
 for (const { list, cards } of (await load()).lists) {
-  saved.addList(list, null);
-  for (const card of cards) saved.addCard(list.id, card, null);
+  board.addList(list, null);
+  for (const card of cards) board.addCard(list.id, card, null);
 }
-mount(root, saved, renderers);
+mount(root, board, renderers);
 
 let restoring = false;
-saved.on("move", async ({ kind, id, toListId, prevId, nextId }) => {
+board.on("move", async ({ kind, id, toListId, prevId, nextId }) => {
   if (restoring) return; // putting the backend's order back: nothing to save
   const response = await fetch(`/api/${kind}s/${id}`, {
     method: "PATCH",
@@ -259,13 +259,20 @@ saved.on("move", async ({ kind, id, toListId, prevId, nextId }) => {
   // Not saved: the backend's order again, each list then each of its cards moved to the end.
   const { lists } = await load();
   restoring = true;
-  for (const { list, cards } of lists) {
-    saved.moveList(list.id, null);
-    for (const card of cards) saved.moveCard(card.id, list.id, null);
+  try {
+    for (const { list, cards } of lists) {
+      board.moveList(list.id, null);
+      for (const card of cards) board.moveCard(card.id, list.id, null);
+    }
+  } finally {
+    restoring = false;
   }
-  restoring = false;
 });
 ```
+
+A sketch: it assumes the page and the backend hold the same ids. A move made while the order is
+put back can be lost on the page; the demo waits until no save is in flight, and asks again if a
+move was made meanwhile.
 
 ## License
 

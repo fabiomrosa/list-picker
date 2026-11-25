@@ -102,23 +102,43 @@ board.on("change", showCounts);
 let restoring = false;
 function restore(saved: Snapshot<List, Card>): void {
   restoring = true;
-  for (const { list, cards } of saved.lists) {
-    board.moveList(list.id, null);
-    for (const card of cards) board.moveCard(card.id, list.id, null);
+  try {
+    for (const { list, cards } of saved.lists) {
+      board.moveList(list.id, null);
+      for (const card of cards) board.moveCard(card.id, list.id, null);
+    }
+  } finally {
+    restoring = false;
   }
-  restoring = false;
 }
 
-// Each move is shown at once and saved; a failed save puts the server's order back.
+// Each move is shown at once and saved. Once a save fails (or the data is reset), the page takes the
+// server's order again, when no save is in flight, and with no move made since it asked.
+let inFlight = 0;
+let moves = 0;
+let stale = false;
+async function resync(): Promise<void> {
+  if (!stale || inFlight > 0) return; // the last save to settle calls it again
+  const asked = moves;
+  const saved = await server.load();
+  if (moves !== asked) return; // a newer move is being saved: its answer calls it again
+  stale = false;
+  restore(saved);
+}
 board.on("move", async (move) => {
   if (restoring) return; // putting the server's order back: nothing to save
+  moves++;
+  inFlight++;
   try {
     await server.save(move);
   } catch {
-    restore(await server.load());
+    stale = true;
     status.textContent =
       "Not saved: the server answered an error, so the board is back to its order.";
+  } finally {
+    inFlight--;
   }
+  await resync();
 });
 
 // The panel: the requests as answered, failing the next save, resetting the data.
@@ -137,8 +157,10 @@ server.onRequest(({ method, path, body, status: code }) => {
 });
 failNext.addEventListener("change", () => server.failNextSave(failNext.checked));
 byId("reset").addEventListener("click", async () => {
-  restore(await server.reset());
+  await server.reset();
+  stale = true;
   status.textContent = "Reset: the starting board.";
+  await resync();
 });
 
 // On open: the board as the server has it.

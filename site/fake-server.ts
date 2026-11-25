@@ -14,16 +14,19 @@ export function fakeServer<L extends { id: string }, C extends { id: string }>(
   start: Snapshot<L, C>,
 ) {
   let failNext = false;
+  let memory = start; // where the board is kept when the browser has no storage (a private window)
   const listeners = new Set<(request: Answered) => void>();
 
   const read = (): Snapshot<L, C> => {
     try {
       const saved = localStorage.getItem(key);
-      if (saved) return JSON.parse(saved);
-    } catch {} // no storage (a private window): the starting board every time
-    return start;
+      return saved ? JSON.parse(saved) : start;
+    } catch {
+      return memory;
+    }
   };
   const write = (data: Snapshot<L, C>) => {
+    memory = data;
     try {
       localStorage.setItem(key, JSON.stringify(data));
     } catch {}

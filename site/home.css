@@ -353,6 +353,8 @@ kbd {
   margin-top: 0.35rem;
   opacity: 0.7;
 }
+/* The terminal is dark in both themes: the failed line in a light orange, not faded. */
 .requests li[data-failed] {
-  color: color-mix(in srgb, var(--accent) 60%, var(--term-text));
+  color: #ff9a70;
+  opacity: 1;
 }

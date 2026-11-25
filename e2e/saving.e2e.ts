@@ -51,6 +51,24 @@ for (const [name, DEMO] of PAGES) {
       await expect(page.getByLabel("Fail the next save")).not.toBeChecked();
     });
 
+    test("a move made while a failed save is being undone is kept, on the page and the server", async ({
+      page,
+    }) => {
+      await page.getByLabel("Fail the next save").check();
+      await moveA(page); // fails
+      await expect(requests(page).first()).toContainText("500");
+      // The server's order is on its way (a GET, 400 ms): c above b, in To do, meanwhile.
+      await card(page, "c").focus();
+      await page.keyboard.press("Space");
+      await page.keyboard.press("ArrowUp");
+      await page.keyboard.press("Space");
+      await expect(page.locator("#board-status")).toContainText("Not saved");
+      await expect.poll(() => order(page, "todo")).toEqual(["a", "c", "b"]);
+      await page.reload();
+      await expect(card(page, "a")).toBeVisible();
+      expect(await order(page, "todo")).toEqual(["a", "c", "b"]);
+    });
+
     test("reset brings back the starting board", async ({ page }) => {
       await moveA(page);
       await expect(requests(page).first()).toContainText("200");

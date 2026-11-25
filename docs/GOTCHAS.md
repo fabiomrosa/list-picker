@@ -42,6 +42,9 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - Chrome fires `focusout` on a focused element moved or replaced in the DOM (`before`, `append`,
   `replaceWith`), and it loses
   the focus; happy-dom does neither, so only the browser test catches a missing guard or refocus.
+- A Board change made outside the engine (a demo putting a failed save's order back, L5.13) makes
+  `mount` move the focused card: Chrome blurs it and a keyboard pick-up ends, focus on `body`. Not
+  fixed yet (PLAN Later); a keyboard test right after such a change sees it.
 - During an active drag `mount` writes nothing: the DOM can show cards and lists the Board has
   moved or removed until the drag ends. Code that reads the mounted DOM after a `change` (the
   demo's `refresh`) must check each id against the Board; the engine's drop skips such items.
