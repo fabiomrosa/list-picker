@@ -8,7 +8,8 @@ export default defineConfig({
   // A committed `test.only` would silently skip the rest of the suite.
   forbidOnly: true,
   use: {
-    // `E2E_BROWSER=webkit npm run e2e`: the same suite in WebKit (installed by Playwright), by hand.
+    // `E2E_BROWSER=webkit npm run e2e`: the same suite in WebKit, by hand (once:
+    // `npx playwright install webkit`).
     ...(process.env.E2E_BROWSER === "webkit"
       ? { browserName: "webkit" as const }
       : { channel: "chrome" }),

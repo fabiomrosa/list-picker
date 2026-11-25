@@ -173,7 +173,7 @@ None.
   release before the last move's frame ran dropped on the Placeholder's stale place (WebKit under
   Playwright fires the moves and the release in one frame; a quick flick can too). The release now
   runs a pending frame first; part of `@list-picker/vanilla` 1.0.1 (unpublished). `E2E_BROWSER=webkit
-  npm run e2e` runs the suite in WebKit by hand (35 pass, 1 skipped: overlay scrollbars); CI stays on
+  npm run e2e` runs the suite in WebKit by hand (once: `npx playwright install webkit`) (35 pass, 1 skipped: overlay scrollbars); CI stays on
   Chrome.
 - **2026-11-24, fix (M4 retro review):** the Clone is `inert` and `aria-hidden`: during a drag its
   copied controls (the demo's arrows and ×) were focusable and announced, a duplicate of the hidden
