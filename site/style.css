@@ -106,8 +106,48 @@ nav a {
 nav a:hover {
   color: var(--accent);
 }
+/* The demos switcher (L5.10), above a demo: the demo, then the framework, as two segmented groups;
+   the chosen one filled, as the install's framework. */
+.demos-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1.75rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+}
+.demos-switch ul {
+  display: flex;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0.2rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  list-style: none;
+}
+.demos-switch a,
+.demos-switch .soon {
+  display: block;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.demos-switch a:hover {
+  color: var(--accent);
+}
+.demos-switch a[aria-current="page"] {
+  border-color: var(--text);
+  background: var(--term);
+  color: var(--term-text);
+}
+.demos-switch .soon small {
+  font-size: 0.8em;
+  color: var(--accent);
+}
 /* The page you are on: its link in the text's colour, underlined (not by colour alone). */
-nav a[aria-current="page"] {
+nav a[aria-current] {
   color: var(--text);
   text-decoration: underline;
   text-decoration-thickness: 2px;

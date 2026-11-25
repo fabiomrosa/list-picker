@@ -1236,29 +1236,28 @@ shows it in the demo.
 - **References:** L4.17, L5.6.
 
 ### L5.10 · The demos switcher
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** one place for the demos: each demo, Board or Player, in each framework.
 - **Depends on:** L5.9.
 - **In scope:** a switcher on every demo page: the demo (Board, Player) and the framework (Vanilla,
-  React; Angular shown as "soon", not a link), each a link with `aria-current`; the pages named
-  `board-vanilla`, `board-react`, `player-vanilla`, `player-react` (the React Player comes with
-  L5.11: its switch shows "soon" until then); the old addresses (`demo/`, `react-demo.html`,
-  `player.html`) redirect to the new ones; the home's links follow.
+  React; Angular shown as "soon", not a link), each a link with `aria-current`, its demos in a
+  table in the site build (the React Player comes with L5.11: its switch shows "soon" until then);
+  the pages keep their addresses (`demo/`, `react-demo.html`, `player.html`; renaming them would
+  be a page rewritten twice in the size check, for an address nobody reads).
 - **Out of scope:** the React Player (L5.11); the demos' code (L5.14).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. From any demo page, the switcher reaches every other demo page there is, keeping the demo or
      the framework chosen.
-  2. The old addresses open the new pages; the e2e tests run on the new ones.
-- **Files:** ~12: the switcher (markup in a partial, its style), the four pages, the build, the
-  redirects, the e2e tests, PLAN, STATE.
+- **Files:** ~11: the switcher (built by the site build, its style), the three pages, the e2e
+  tests, PLAN, STATE.
 - **References:** L4.18 (the player), L5.6.
 
 ### L5.11 · The React Player
 - **Status:** planned
 - **Goal:** the Player demo, written in React, with `@list-picker/react`.
 - **Depends on:** L5.10.
-- **In scope:** `player-react` with the same playlist, look and behaviour as the vanilla Player
+- **In scope:** `player-react.html` with the same playlist, look and behaviour as the vanilla Player
   (reorder by pointer and keyboard, play a track by click or Enter, the equalizer), its style
   reused from `player.css`; its switch in the switcher; a browser test (a drag and a keyboard move).
 - **Out of scope:** saving the order (L5.12).
@@ -1296,7 +1295,7 @@ shows it in the demo.
 - **Status:** planned
 - **Goal:** the same as L5.12, written with `@list-picker/react`.
 - **Depends on:** L5.12.
-- **In scope:** `board-react` loads from the fake server, saves each `move`, draws the server's
+- **In scope:** the React Board loads from the fake server, saves each `move`, draws the server's
   order again on a failure and shows the same panel; a "Saving the order" section in React's
   README.
 - **Out of scope:** a data-fetching library.

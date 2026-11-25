@@ -333,3 +333,44 @@ test("one nav on every page: the same links, a single demos link, the current pa
     "https://github.com/fabiomrosa/list-picker",
   ]);
 });
+
+test("the demos switcher: each demo in each framework", async ({ page }) => {
+  const site = "http://localhost:5181/list-picker/";
+  const switcher = async () =>
+    page
+      .locator(".demos-switch")
+      .evaluate((nav) =>
+        [...nav.querySelectorAll("a, .soon")].map((el) => [
+          el.textContent?.replace(/\s+/g, " ").trim(),
+          el.getAttribute("href"),
+          el.getAttribute("aria-current"),
+        ]),
+      );
+  // The React Board: Player keeps React when it exists (not yet: the vanilla Player); Angular is soon.
+  await page.goto(`${site}react-demo.html`);
+  expect(await switcher()).toEqual([
+    ["Board", "./react-demo.html", "page"],
+    ["Player", "./player.html", null],
+    ["Vanilla", "./demo/", null],
+    ["React", "./react-demo.html", "page"],
+    ["Angular soon", null, null],
+  ]);
+  await expect(page.locator('nav a[aria-current="true"]')).toHaveText("demos");
+  await page.goto(`${site}player.html`);
+  expect(await switcher()).toEqual([
+    ["Board", "./demo/", null],
+    ["Player", "./player.html", "page"],
+    ["Vanilla", "./player.html", "page"],
+    ["React soon", null, null],
+    ["Angular soon", null, null],
+  ]);
+  // The vanilla Board, from the playground: its links one level up.
+  await page.goto("http://localhost:5180/");
+  expect(await switcher()).toEqual([
+    ["Board", "../demo/", "page"],
+    ["Player", "../player.html", null],
+    ["Vanilla", "../demo/", "page"],
+    ["React", "../react-demo.html", null],
+    ["Angular soon", null, null],
+  ]);
+});

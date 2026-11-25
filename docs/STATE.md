@@ -203,6 +203,13 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.10:** the demos switcher: `<!-- demos <root> <demo> <framework> -->` (the site
+  build's `demos()`, its table `DEMOS` in `site/vite.config.ts`) above each demo: the demo (Board,
+  Player; it keeps the framework when the demo has it) and the framework (Vanilla, React, Angular
+  "soon"; a missing one says "soon"). Pages keep their addresses:
+  `demo/` (the vanilla Board, the playground), `react-demo.html`, `player.html`. On a
+  demo page the nav's `demos` is marked `aria-current="true"` (`<!-- nav ./ in:demo/ -->`). Next:
+  L5.11 (the React Player).
 - **2026-11-25, L5.9:** one nav: `site/partials/nav.html`, put in place of `<!-- nav <root>
   [<current>] -->` by the site build's `nav()` (the playground's `vite.config.ts` uses it too); the
   current page's link gets `aria-current="page"`; the demos are one link, `demos` (the vanilla
