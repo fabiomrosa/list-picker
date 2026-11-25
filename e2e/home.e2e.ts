@@ -259,3 +259,23 @@ test("the React package's page: its README with a section index, linked from eve
   await page.goto("http://localhost:5180/");
   await expect(page.locator('nav [aria-label="Docs"] a[href$="react.html"]')).toHaveCount(1);
 });
+
+test("the install command's copy button copies the command shown, as chosen", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto(HOME);
+  await page.locator('label[for="pm-pnpm"]').click();
+  const copy = page.getByRole("button", { name: "Copy the install command" });
+  await copy.click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "pnpm add @list-picker/core @list-picker/vanilla",
+  );
+  await expect(page.getByRole("status").filter({ hasText: "Copied" })).toHaveCount(1);
+  await expect(copy).toHaveAttribute("data-copied", "");
+  // The command itself, selected by hand, is still just the command.
+  expect(await page.locator(".install pre.install-vanilla").innerText()).toBe(
+    "pnpm add @list-picker/core @list-picker/vanilla",
+  );
+});

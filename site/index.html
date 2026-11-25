@@ -99,7 +99,7 @@
         <label for="install-react">React</label>
         <input type="radio" name="install" id="install-angular" />
         <label for="install-angular">Angular</label>
-        <pre class="install-vanilla"><code><span class="pm-npm">npm install</span><span class="pm-yarn">yarn add</span><span class="pm-pnpm">pnpm add</span> @list-picker/core @list-picker/vanilla</code></pre>
+        <pre class="install-vanilla"><code><span class="pm-npm">npm install</span><span class="pm-yarn">yarn add</span><span class="pm-pnpm">pnpm add</span> <span class="pkg">@list-picker/core</span> <span class="pkg">@list-picker/vanilla</span></code><button type="button" class="copy" aria-label="Copy the install command"><svg class="icon-copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></svg><svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></button></pre>
         <div class="pm install-vanilla" role="radiogroup" aria-label="Package manager">
           <input type="radio" name="pm" id="pm-npm" checked />
           <label for="pm-npm">npm</label>
@@ -110,6 +110,7 @@
         </div>
         <!-- No command until the package is published: copying one would fail. -->
         <p class="install-react soon">Coming soon: <code>@list-picker/react</code> is on its way.</p>
+        <span class="sr-only" role="status" id="copied"></span>
         <p class="install-angular soon">
           Coming soon: <code>@list-picker/angular</code> follows React.
         </p>
@@ -136,5 +137,6 @@
     </main>
     <script type="module" src="./home.ts"></script>
     <script type="module" src="./theme.ts"></script>
+    <script type="module" src="./copy.ts"></script>
   </body>
 </html>

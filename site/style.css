@@ -355,8 +355,51 @@ td code {
   content: "$ ";
   color: var(--accent);
 }
+/* The install command's copy button: in the terminal's corner; a check for a moment once copied. */
+.install .copy {
+  position: absolute;
+  top: 50%;
+  right: 0.6rem;
+  translate: 0 -50%;
+  display: inline-flex;
+  padding: 0.35rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--term-text);
+  cursor: pointer;
+}
+.install .copy:hover {
+  border-color: color-mix(in srgb, var(--term-text) 40%, transparent);
+}
+.install .copy:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.install .copy svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.install .pkg {
+  white-space: nowrap; /* a package's name in one piece: the command wraps between words */
+}
+.install .copy .icon-done,
+.install .copy[data-copied] .icon-copy {
+  display: none;
+}
+.install .copy[data-copied] .icon-done {
+  display: block;
+}
 /* The package manager: small links under the command, changing its start. npm without :has(). */
 .install pre {
+  position: relative; /* the copy button sits in its corner */
+  padding-right: 3.25rem; /* room for it, so it never covers the command */
+  white-space: pre-wrap; /* a narrow screen wraps the command instead of scrolling under it */
   margin-bottom: 0.4rem;
 }
 .install .pm label {
