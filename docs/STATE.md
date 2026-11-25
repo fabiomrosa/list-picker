@@ -188,7 +188,7 @@ title, review-section, size, frozen-files and secret checks.
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 - Saving the order (L5.13): `board.html` loads from and saves to a pretend server
-  (`site/fake-server.ts`), with a panel of its requests; vanilla's README shows the pattern.
+  (`site/fake-server.ts`), with a panel of its requests.
 - The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
   `@list-picker/react` in the same markup; the same e2e suite runs on both.
 - The demos switcher (L5.10): above each demo page (`board.html` since L5.12, `react-demo.html`,
@@ -220,8 +220,8 @@ None.
   `board.ts` loads from it on open, saves each `move` and shows it at once; after a failed save or a
   reset it takes the server's order again once no save is in flight and no move was made since it
   asked (each list, then each card, moved to the end; those moves not saved). A panel lists the
-  requests. Vanilla's README has "Saving the order" (the pattern with `fetch`, type-checked by
-  `npm run packed`; npm shows it from vanilla's next version). `e2e/saving.e2e.ts` runs per page.
+  requests. Vanilla's README section "Saving the order" follows in its own PR (size).
+  `e2e/saving.e2e.ts` runs per page.
   Known: putting the order back ends a keyboard pick-up (GOTCHAS, PLAN Later). Next: L5.14.
 - **2026-11-25, L5.12:** the vanilla Board page (`site/board.html` and `board.ts`): the home's board
   by `mount` in the React demo's markup, with Enter opening; the switcher's vanilla Board and the
