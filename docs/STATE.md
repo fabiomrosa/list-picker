@@ -220,7 +220,8 @@ None.
   `board.ts` loads from it on open, saves each `move` and shows it at once; after a failed save or a
   reset it takes the server's order again once no save is in flight and no move was made since it
   asked (each list, then each card, moved to the end; those moves not saved). A panel lists the
-  requests. Vanilla's README section "Saving the order" follows in its own PR (size).
+  requests. Vanilla's README has "Saving the order" (the pattern with `fetch`, type-checked by
+  `npm run packed`; npm shows it from vanilla's next version).
   `e2e/saving.e2e.ts` runs per page.
   Known: putting the order back ends a keyboard pick-up (GOTCHAS, PLAN Later). Next: L5.14.
 - **2026-11-25, L5.12:** the vanilla Board page (`site/board.html` and `board.ts`): the home's board
