@@ -161,6 +161,8 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
           Math.round(document.querySelector(selector)?.getBoundingClientRect().top ?? -1);
         return {
           scroll: document.documentElement.scrollWidth,
+          // The viewport less a classic scrollbar: what the page can show without scrolling.
+          client: document.documentElement.clientWidth,
           brand: top("nav > a"),
           docs: top('nav [aria-label="Docs"]'),
           demos: top('nav [aria-label="Demos"]'),
@@ -169,7 +171,7 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
         };
       });
       const at = `${url} at ${width}px: ${JSON.stringify(nav)}`;
-      expect(nav.scroll, at).toBeLessThanOrEqual(width);
+      expect(nav.scroll, at).toBeLessThanOrEqual(nav.client);
       // The buttons sit on the brand's row; the two groups share a row, the brand's or the next.
       expect(Math.abs(nav.theme - nav.brand), at).toBeLessThanOrEqual(6);
       expect(Math.abs(nav.github - nav.brand), at).toBeLessThanOrEqual(6);
