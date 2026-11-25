@@ -170,6 +170,11 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, M4 retro, proposal 9:** `e2e/home.e2e.ts` sweeps every page (home, core, vanilla,
+  player, the kanban demo) from 320 to 1400px in 2px steps: no sideways scroll, the nav's buttons on
+  the brand's row, its two groups on one row. With a classic scrollbar (the tests show them) it found
+  three gaps the hidden-scrollbar checks missed (320, 362–368, 658–664px): the nav now takes two rows
+  below 42rem, hides "demos:" below 23.25rem, and draws its links closer below 20.5rem.
 - **2026-11-24, fix (M4 retro review):** the Clone is `inert` and `aria-hidden`: during a drag its
   copied controls (the demo's arrows and ×) were focusable and announced, a duplicate of the hidden
   card. `@list-picker/vanilla` 1.0.1, not yet published (the owner publishes:
