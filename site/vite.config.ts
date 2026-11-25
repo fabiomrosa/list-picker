@@ -27,6 +27,49 @@ function rewrite(dir: string) {
   };
 }
 
+/**
+ * A package's published version: npm's, read once per build, so the site never shows one that is not
+ * installable yet (the repository can be ahead of npm); its `package.json` when npm does not answer.
+ */
+const published = new Map<string, Promise<string>>();
+function version(name: string): Promise<string> {
+  const local = () => JSON.parse(read(`packages/${name}/package.json`)).version as string;
+  if (!published.has(name)) {
+    published.set(
+      name,
+      fetch(`https://registry.npmjs.org/@list-picker/${name}/latest`, {
+        signal: AbortSignal.timeout(3000),
+      })
+        .then(async (response) => {
+          // Only a version goes into the page: anything else (a broken or tampered answer) is ignored.
+          const found = response.ok ? (await response.json()).version : undefined;
+          return typeof found === "string" && /^\d+\.\d+\.\d+(-[\w.-]+)?$/.test(found)
+            ? found
+            : local();
+        })
+        .catch(local),
+    );
+  }
+  return published.get(name) as Promise<string>;
+}
+
+/** `<!-- version: <package> -->`: its published version, linked to its npm page. */
+function versions(): Plugin {
+  return {
+    name: "versions",
+    transformIndexHtml: async (html) => {
+      const names = [...html.matchAll(/<!-- version: ([\w-]+) -->/g)].map((m) => m[1] as string);
+      const found = new Map(
+        await Promise.all(names.map(async (n) => [n, await version(n)] as const)),
+      );
+      return html.replace(/<!-- version: ([\w-]+) -->/g, (_m, name: string) => {
+        const npm = `https://www.npmjs.com/package/@list-picker/${name}`;
+        return `<a class="version" href="${npm}" title="@list-picker/${name} on npm">v${found.get(name)}</a>`;
+      });
+    },
+  };
+}
+
 /** `<!-- markdown: <file> [<from heading>] -->`: the file (or the section from that heading). */
 function markdown(): Plugin {
   return {
@@ -56,7 +99,11 @@ function markdown(): Plugin {
           // A package's name wraps after its scope ("@list-picker/" then "vanilla"), not at a hyphen.
           const text =
             level === "1" ? inner.replace(/^(@[\w-]+\/)/, '<span class="scope">$1</span>') : inner;
-          return `<h${level} id="${id}">${text}</h${level}>`;
+          // A package's page shows its version under its name.
+          const pkg = /^packages\/([\w-]+)\/README\.md$/.exec(file)?.[1];
+          const after =
+            level === "1" && pkg ? `<p class="version-line"><!-- version: ${pkg} --></p>` : "";
+          return `<h${level} id="${id}">${text}</h${level}>${after}`;
         });
         // A whole README is a package's page: the index of its sections goes beside it.
         if (from) return out;
@@ -68,7 +115,7 @@ function markdown(): Plugin {
 
 export default defineConfig({
   base: "/list-picker/",
-  plugins: [markdown()],
+  plugins: [markdown(), versions()],
   build: {
     outDir: "../dist-site",
     emptyOutDir: true,

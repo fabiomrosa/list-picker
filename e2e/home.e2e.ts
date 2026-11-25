@@ -214,3 +214,20 @@ test("every site page has a favicon, a PNG fallback and a touch icon that load",
     }
   }
 });
+
+test("the home and each package's page show its version, linked to npm", async ({ page }) => {
+  const check = async (version: ReturnType<typeof page.locator>, name: string) => {
+    await expect(version).toHaveText(/^v\d+\.\d+\.\d+$/);
+    await expect(version).toHaveAttribute(
+      "href",
+      `https://www.npmjs.com/package/@list-picker/${name}`,
+    );
+  };
+  await page.goto(HOME);
+  for (const name of ["core", "vanilla"]) {
+    await check(page.locator(`#packages + table a.version[href$="/${name}"]`), name);
+    await page.goto(`http://localhost:5181/list-picker/${name}.html`);
+    await check(page.locator("article .version-line a.version"), name);
+    await page.goto(HOME);
+  }
+});

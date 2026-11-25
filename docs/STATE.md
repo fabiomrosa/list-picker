@@ -169,6 +169,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, feat (owner):** the site shows each package's version, linked to npm: under its name in
+  the home's table and under its page's title. The build reads npm's published version
+  (`registry.npmjs.org/@list-picker/<name>/latest`, 3 s), so the repository being ahead of npm never
+  shows (a semver only, or nothing is used); without npm, the package's `package.json`.
 - **2026-11-25, fix (owner):** the nav's theme and GitHub buttons sit 0.5rem apart, a pair (they
   were the nav's gap apart, 1.25rem, almost as far as from the links).
 - **2026-11-25, feat (owner):** a favicon on every page and both demos: the brand's list mark, white
