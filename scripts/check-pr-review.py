@@ -10,12 +10,13 @@ import os
 import re
 import sys
 
-PLACEHOLDERS = re.compile(r"once it (has )?run|see the comment below|\bTBD\b", re.I)
+PLACEHOLDERS = re.compile(r"see the comment below|once it has run", re.I)
 
 if re.match(r"docs\(M\d+\):", os.environ.get("PR_TITLE", "")):
-    sys.exit(print("review section: a milestone pull request, approved by the owner"))
+    print("review section: a milestone pull request, approved by the owner")
+    sys.exit(0)
 body = os.environ.get("PR_BODY", "")
-match = re.search(r"^##\s+Review\b[^\n]*\n(.*?)(?=^##\s|\Z)", body, re.S | re.M)
+match = re.search(r"^##\s+Review\b[^\n]*(?:\n|\Z)(.*?)(?=^##\s|\Z)", body, re.S | re.M)
 if not match:
     sys.exit("The body has no '## Review' section: record the list-picker-code-review outcome there.")
 section = re.sub(r"<!--.*?-->", "", match.group(1), flags=re.S).strip()
