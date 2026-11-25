@@ -71,7 +71,9 @@ for (const [name, DEMO] of PAGES) {
       await expect(page.locator("[aria-live]")).toHaveCount(1);
       await card(page, "c").focus();
       await page.keyboard.press("Enter");
-      await expect(page.getByRole("status")).toHaveText("Opened: Fix the date picker on Safari.");
+      await expect(page.locator("#board-status")).toHaveText(
+        "Opened: Fix the date picker on Safari.",
+      );
     });
   });
 }

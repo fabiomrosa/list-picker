@@ -187,6 +187,8 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+- The demos' code (L5.15): under each demo, its files, highlighted at build time, with copy
+  buttons.
 - Saving the order (L5.13, L5.14): both Board demos load from and save to one pretend server
   (`site/fake-server.ts`, through `site/saving.ts`), each with a panel of its requests; vanilla's README shows the pattern
   ("Saving the order").
@@ -214,6 +216,16 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.15:** the demos' code. `<!-- code <file>… -->` (the site build's `code()`) puts
+  "The code" under each demo: its files from `site/`, highlighted at build time by Shiki (a dev
+  dependency; `github-dark-default` on the terminal's background), one at a time by a radio per
+  file, each in a `.code-block` with its copy button in the corner (`copy.ts` runs every `.copy`; a
+  file is copied whole, the install command trimmed). Scripts only: the markup and style are the
+  site's skins. Board: `board.ts` or `react-demo.tsx`,
+  `saving.ts`, `fake-server.ts`; Player: `player.ts` or `player-react.tsx` (their comments and
+  imports written for a reader in #136).
+  `e2e/code.e2e.ts` compares each file shown with the repository's. Next: the M5 close, after the
+  owner's publish (L5.8).
 - **2026-11-25, L5.14:** the React Board saves too. The saving logic is shared, `site/saving.ts`:
   the starting board, one pretend server for both demos (one storage key: a move in one shows in
   the other) and `keepSaved(board)` (`open`, `reset`, `onNotSaved`; each move saved, the server's

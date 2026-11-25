@@ -1326,11 +1326,11 @@ shows it in the demo.
 - **References:** L5.13.
 
 ### L5.15 · The demos' code
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** each demo page shows the code that runs it, so a reader sees how to build their own.
 - **Depends on:** L5.14.
-- **In scope:** below each demo, its source files (script, markup, style; the fake server on the
-  Boards) in tabs, read from the files themselves at build time and highlighted then (Shiki, a dev
+- **In scope:** below each demo, its scripts (the fake server and the saving logic on the Boards;
+  the markup and style are the site's skins, and the READMEs cover styling) in tabs, read from the files themselves at build time and highlighted then (Shiki, a dev
   dependency of the site: no script in the page for it), each with a copy button.
 - **Out of scope:** an editable playground (StackBlitz and the like).
 - **Contract:** none. **Public API:** none.
