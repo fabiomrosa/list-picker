@@ -113,8 +113,19 @@ function markdown(): Plugin {
   };
 }
 
+/** The packages by name, from their source (as in `vitest.config.ts`): the React demo imports them. */
+const source = (name: string) =>
+  fileURLToPath(new URL(`../packages/${name}/src/index.ts`, import.meta.url));
+
 export default defineConfig({
   base: "/list-picker/",
+  resolve: {
+    alias: {
+      "@list-picker/core": source("core"),
+      "@list-picker/vanilla": source("vanilla"),
+      "@list-picker/react": source("react"),
+    },
+  },
   plugins: [markdown(), versions()],
   build: {
     outDir: "../dist-site",

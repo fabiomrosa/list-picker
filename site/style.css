@@ -106,13 +106,6 @@ nav {
   color: var(--muted);
   font-size: 0.8em;
 }
-/* Below 22.5rem (23.25rem beside a classic scrollbar) it would push the demos to a third row: the
-   line alone parts them there. */
-@media (max-width: 23.25rem) {
-  .nav-demos::before {
-    content: none;
-  }
-}
 nav a {
   color: var(--muted);
   text-decoration: none;
@@ -439,8 +432,8 @@ main.doc {
   text-transform: uppercase;
 }
 /* On a phone, two rows: the brand and the buttons, then the pages (one line no longer fits
-   them below about 40.7rem, or 41.6rem beside a classic scrollbar). */
-@media (max-width: 42rem) {
+   them below about 44.8rem beside a classic scrollbar). */
+@media (max-width: 45.5rem) {
   nav {
     gap: 0.3rem 1rem; /* the row break is an empty line of its own: two gaps */
     padding: 1rem 1.5rem; /* the content's edges */
@@ -468,13 +461,15 @@ main.doc {
     padding-left: 0.9rem;
   }
 }
-/* After the phone rules: narrower still (320px beside a classic scrollbar), the links draw closer to stay on one row. */
-@media (max-width: 20.5rem) {
-  nav .nav-group {
-    gap: 0.7rem;
+/* After the phone rules: below 27rem the demos no longer fit beside the docs (about 26.7rem beside
+   a classic scrollbar), so they take a row of their own, labelled, with no line between. */
+@media (max-width: 27rem) {
+  nav .nav-demos {
+    flex-basis: 100%;
   }
   .nav-group + .nav-group {
-    padding-left: 0.7rem;
+    padding-left: 0;
+    border-left: 0;
   }
 }
 @media (max-width: 52rem) {

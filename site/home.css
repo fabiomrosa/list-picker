@@ -230,7 +230,7 @@ kbd {
 /* Focus and a keyboard pick up invert a card or a list's title; a picked-up list (the engine
    marks the whole list) gets a solid border instead, so its cards stay readable. */
 [data-skin="terminal"] :is(.hb-card, [data-lp-list-handle]):is(:focus-visible, [data-lp-grabbed]),
-[data-skin="terminal"] [data-lp-grabbed] > [data-lp-list-handle] {
+[data-skin="terminal"] [data-lp-grabbed] [data-lp-list-handle] {
   outline: none;
   background: #b8f5b0;
   color: #0d0f0d;
@@ -238,7 +238,7 @@ kbd {
 [data-skin="terminal"]
   :is(.hb-card, [data-lp-list-handle]):is(:focus-visible, [data-lp-grabbed])
   :is(.hb-tag, .hb-count, .hb-text::before),
-[data-skin="terminal"] [data-lp-grabbed] > [data-lp-list-handle] .hb-count {
+[data-skin="terminal"] [data-lp-grabbed] [data-lp-list-handle] .hb-count {
   color: inherit;
 }
 [data-skin="terminal"] [data-lp-list][data-lp-grabbed] {
