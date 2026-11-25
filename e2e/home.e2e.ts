@@ -155,6 +155,7 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
     "player.html",
     "react-demo.html",
     "player-react.html",
+    "board.html",
   ].map((path) => `http://localhost:5181/list-picker/${path}`);
   for (const url of [...pages, "http://localhost:5180/"]) {
     await page.setViewportSize({ width: 320, height: 640 });
@@ -302,6 +303,7 @@ test("one nav on every page: the same links, a single demos link, the current pa
     ["player.html", null],
     ["react-demo.html", null],
     ["player-react.html", null],
+    ["board.html", "demos"],
   ];
   for (const [path, current] of pages) {
     await page.goto(site + path);
@@ -313,17 +315,16 @@ test("one nav on every page: the same links, a single demos link, the current pa
       ["core", `${site}core.html`],
       ["vanilla", `${site}vanilla.html`],
       ["react", `${site}react.html`],
-      ["demos", `${site}demo/`],
+      ["demos", `${site}board.html`],
       ["GitHub", "https://github.com/fabiomrosa/list-picker"],
     ]);
     const marked = page.locator('nav a[aria-current="page"]');
     if (current) await expect(marked, path).toHaveText(current);
     else await expect(marked, path).toHaveCount(0);
   }
-  // The vanilla Board, built from the playground into `demo/`, has the same nav, its links one
-  // level up and its own link marked.
+  // The playground, built into `demo/`, has the same nav, its links one level up, in the demos.
   await page.goto("http://localhost:5180/");
-  await expect(page.locator('nav a[aria-current="page"]')).toHaveText("demos");
+  await expect(page.locator('nav a[aria-current="true"]')).toHaveText("demos");
   expect(
     await page.locator("nav a").evaluateAll((all) => all.map((a) => a.getAttribute("href"))),
   ).toEqual([
@@ -331,7 +332,7 @@ test("one nav on every page: the same links, a single demos link, the current pa
     "../core.html",
     "../vanilla.html",
     "../react.html",
-    "../demo/",
+    "../board.html",
     "https://github.com/fabiomrosa/list-picker",
   ]);
 });
@@ -353,26 +354,28 @@ test("the demos switcher: each demo in each framework", async ({ page }) => {
   expect(await switcher()).toEqual([
     ["Board", "./react-demo.html", "page"],
     ["Player", "./player-react.html", null],
-    ["Vanilla", "./demo/", null],
+    ["Vanilla", "./board.html", null],
     ["React", "./react-demo.html", "page"],
     ["Angular soon", null, null],
   ]);
   await expect(page.locator('nav a[aria-current="true"]')).toHaveText("demos");
   await page.goto(`${site}player.html`);
   expect(await switcher()).toEqual([
-    ["Board", "./demo/", null],
+    ["Board", "./board.html", null],
     ["Player", "./player.html", "page"],
     ["Vanilla", "./player.html", "page"],
     ["React", "./player-react.html", null],
     ["Angular soon", null, null],
   ]);
-  // The vanilla Board, from the playground: its links one level up.
-  await page.goto("http://localhost:5180/");
+  await page.goto(`${site}board.html`);
   expect(await switcher()).toEqual([
-    ["Board", "../demo/", "page"],
-    ["Player", "../player.html", null],
-    ["Vanilla", "../demo/", "page"],
-    ["React", "../react-demo.html", null],
+    ["Board", "./board.html", "page"],
+    ["Player", "./player.html", null],
+    ["Vanilla", "./board.html", "page"],
+    ["React", "./react-demo.html", null],
     ["Angular soon", null, null],
   ]);
+  // The playground is not a demo of the switcher: it has none.
+  await page.goto("http://localhost:5180/");
+  await expect(page.locator(".demos-switch")).toHaveCount(0);
 });

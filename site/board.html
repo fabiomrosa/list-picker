@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The saved theme, before the page paints (site/theme.ts runs the button). -->
+    <script>
+        try {
+          const theme = localStorage.getItem("list-picker-theme");
+          if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+        } catch {}
+    </script>
+    <title>list-picker board, vanilla</title>
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./home.css" />
+  </head>
+  <body>
+    <!-- nav ./ board.html -->
+    <main class="home">
+      <!-- demos ./ Board Vanilla -->
+      <header>
+        <h1>Board</h1>
+        <p class="lede">
+          The kanban board, drawn by <code>mount</code> from <code>@list-picker/vanilla</code>: your
+          renderers return each list's header and each card, and the drag engine moves them by
+          pointer or keyboard. The same board in three skins: the look is yours.
+        </p>
+      </header>
+      <section class="showcase" aria-label="A live board">
+        <div class="skins" role="radiogroup" aria-labelledby="skins-label">
+          <span id="skins-label">Same board, your look:</span>
+          <input type="radio" name="skin" id="skin-cards" value="cards" checked />
+          <label for="skin-cards">Cards</label>
+          <input type="radio" name="skin" id="skin-terminal" value="terminal" />
+          <label for="skin-terminal">Terminal</label>
+          <input type="radio" name="skin" id="skin-pop" value="pop" />
+          <label for="skin-pop">Pop</label>
+        </div>
+        <div id="hero-board" data-skin="cards"></div>
+        <p class="hint" id="board-status" role="status">
+          Drag a card or a list title, or use Space and the arrows. Doing holds 3 cards; a click or
+          Enter opens a card or a list.
+        </p>
+      </section>
+    </main>
+    <script type="module" src="./theme.ts"></script>
+    <script type="module" src="./board.ts"></script>
+  </body>
+</html>

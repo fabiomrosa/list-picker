@@ -171,8 +171,9 @@ title, review-section, size, frozen-files and secret checks.
   with no script, where React and Angular show no command until published; the lab's answer from
   the root README; links), `core.html`, `vanilla.html` and `react.html` rendered from the packages'
   READMEs at build time, and the
-  demo (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
-  board in the same three skins as the home, with the same chooser) in `demo/`; and the player
+  playground (`playground/`, in the site's look: its stylesheet and nav, `playground/demo.css`; its
+  board in the same three skins as the home, with the same chooser) in `demo/`; the vanilla Board
+  demo (`board.html`, L5.12); and the player
   (`player.html`, a playlist on `neighbours` and `swapCards`, with a pretend play that goes on to
   the next track by `neighbours`). The skins
   (`site/home.css`) style any board by `[data-skin]` and the `hb-*` classes its Renderers set.
@@ -188,8 +189,8 @@ title, review-section, size, frozen-files and secret checks.
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 - The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
   `@list-picker/react` in the same markup; the same e2e suite runs on both.
-- The demos switcher (L5.10): above each demo page (`demo/`, `react-demo.html`, `player.html`,
-  `player-react.html` since L5.11), the
+- The demos switcher (L5.10): above each demo page (`board.html` since L5.12, `react-demo.html`,
+  `player.html`, `player-react.html`), the
   demo (Board, Player) and the framework (Vanilla, React, Angular "soon"), built by the site build's
   `demos()` from its `DEMOS` table; a page's `<!-- nav … -->` or `<!-- demos … -->` marker that is
   not understood fails the build.
@@ -197,7 +198,7 @@ title, review-section, size, frozen-files and secret checks.
   `@list-picker/react` under `StrictMode`, in the markup `mount` draws, so `home.css`'s skins style
   it; Doing capped at 3 (`canMove`), a click or Enter opens a card (`onActivate`). The site build
   resolves the packages' names to their source (`site/vite.config.ts`). Since L5.9 the nav (one partial,
-  `site/partials/nav.html`) has one `demos` link, to the vanilla Board. `e2e/react.e2e.ts` drives it.
+  `site/partials/nav.html`) has one `demos` link, to the vanilla Board (`board.html` since L5.12). `e2e/react.e2e.ts` drives it.
 - `site/react.html` (L5.7) renders `packages/react/README.md`; the nav's Docs list core, vanilla and
   react; two nav rows below 49rem (the brand and buttons, then the pages, down to 320px). A README link to another package's section
   (`packages/vanilla#keyboard`) goes to its page here (`vanilla.html#keyboard`). A package npm does not
@@ -210,6 +211,12 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.12:** the vanilla Board page (`site/board.html` and `board.ts`): the home's board
+  by `mount` in the React demo's markup, with Enter opening; the switcher's vanilla Board and the
+  nav's `demos` go there; `e2e/react.e2e.ts` runs the Board suite on both. The playground (`demo/`)
+  is the developer's page (forms, events; the drag tests and the trace), titled "Playground",
+  outside the switcher, linked from the home. PLAN: saving is now L5.13 (vanilla) and L5.14 (React),
+  the code L5.15. Next: L5.13.
 - **2026-11-25, L5.11:** the React Player (`site/player-react.html` and `.tsx`): the vanilla
   Player written with `@list-picker/react` in the same markup (`player.css` styles both), under
   `StrictMode`; the playing track, the clock and the tick are React state, the order the Board's.
