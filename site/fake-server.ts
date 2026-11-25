@@ -1,7 +1,7 @@
-// A pretend backend for the Board demos (L5.13): it keeps the board in the browser's storage and
-// answers after a delay, as `fetch` to your API would; it can fail the next save. It places a moved
-// card or list with core's own `Board`, from the neighbours the `move` event names (DEC-11), as a
-// real backend would from the same request. In your app, `load` and `save` are `fetch` calls.
+// A pretend backend: it keeps the board in the browser's storage and answers after a delay, as your
+// API would; it can fail the next save. It places a moved card or list from the neighbours the
+// `move` event names (`prevId`, `nextId`), with a `Board` of its own, as a real backend would from
+// the same request. In your app, `load` and `save` are `fetch` calls.
 import { Board, type MoveEvent, type Snapshot } from "@list-picker/core";
 
 /** A request as the panel shows it, once answered. */

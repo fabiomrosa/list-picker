@@ -1,9 +1,9 @@
-// The player (L4.25): the owner's first sketch of list-picker, a playlist. One list drawn by
-// `mount`; previous and next by `board.neighbours`; tick two tracks to swap them
-// (`board.swapCards`); drag or keyboard moves by the engine; a click or Enter plays a track
-// (`onActivate`). Not published; `e2e/player.e2e.ts` drives it.
-import { Board } from "../packages/core/src/index.ts";
-import { mount } from "../packages/vanilla/src/index.ts";
+// The Player demo, in vanilla: a playlist is one list, drawn by `mount`. Previous and next follow
+// the playlist's current order (`board.neighbours`); ticking two tracks swaps them
+// (`board.swapCards`); a drag or the keyboard moves a track; a click or Enter plays it
+// (`onActivate`). The play is pretend: ten times faster, no sound.
+import { Board } from "@list-picker/core";
+import { mount } from "@list-picker/vanilla";
 
 type Playlist = { id: string; name: string };
 type Track = { id: string; title: string; time: string };

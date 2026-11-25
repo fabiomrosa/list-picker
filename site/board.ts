@@ -1,10 +1,8 @@
-// The vanilla Board demo (L5.12): one Board drawn by `mount`, styled by the skins in `home.css`, Doing
-// capped at 3, a click or Enter opening a card or a list; as the React demo (`react-demo.tsx`).
-// Saving the order (L5.13): `keepSaved` (`saving.ts`) loads the Board from a pretend server and
-// saves each `move`; a failed save puts the server's order back. Driven by
-// `e2e/react.e2e.ts` and `e2e/saving.e2e.ts`, as the React one.
-import { Board } from "../packages/core/src/index.ts";
-import { mount } from "../packages/vanilla/src/index.ts";
+// The Board demo, in vanilla: one Board drawn by `mount` from two renderers (a list's header, a
+// card), styled by the page's skins; Doing holds 3 cards (`canMove`), and a click or Enter opens a
+// card or a list (`onActivate`). `keepSaved` (saving.ts) loads it from a server and saves each move.
+import { Board } from "@list-picker/core";
+import { mount } from "@list-picker/vanilla";
 import { type Card, keepSaved, type List, server } from "./saving.ts";
 
 const LIMIT = 3;
