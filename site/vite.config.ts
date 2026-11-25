@@ -201,7 +201,7 @@ function markdown(): Plugin {
   };
 }
 
-/** The packages by name, from their source (as in `vitest.config.ts`): the React demo imports them. */
+/** The packages by name, from their source (as in `vitest.config.ts`): the demos import them. */
 const source = (name: string) =>
   fileURLToPath(new URL(`../packages/${name}/src/index.ts`, import.meta.url));
 

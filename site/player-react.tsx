@@ -1,6 +1,6 @@
-// The React player (L5.11): the vanilla player (`player.ts`) written with `@list-picker/react`, in
-// the same markup, so `player.css` styles it. The playing track, the clock and the tick are React
-// state; the order is the Board's. Driven by `e2e/player.e2e.ts`, as the vanilla one.
+// The Player demo, in React: the vanilla one written with `@list-picker/react`, in the same markup.
+// The playing track, the clock and the ticks are React state; the order is the Board's
+// (`useBoard`), and `useListPicker` moves the tracks. The play is pretend: ten times faster, no sound.
 import { Board } from "@list-picker/core";
 import { useBoard, useListPicker } from "@list-picker/react";
 import { StrictMode, useEffect, useState } from "react";

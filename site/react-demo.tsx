@@ -1,8 +1,8 @@
-// The React demo (L5.6): the home's kanban board written with `@list-picker/react`, in the markup
-// `mount` draws (but for the handle: the list's title, not its whole header), so `home.css`'s skins
-// style it as they do the home's. Saving the order (L5.14): `keepSaved` (`saving.ts`) loads the
-// Board from a pretend server and saves each `move`, as the vanilla demo does; the panel below shows
-// the requests. Driven by `e2e/react.e2e.ts` and `e2e/saving.e2e.ts`.
+// The Board demo, in React: `useBoard` gives the Board as state, `useListPicker` the props your
+// elements spread; the same board as the vanilla demo, in the same skins (its handle is a list's
+// title, not its whole header). Doing holds 3 cards (`canMove`), a click or Enter opens a card or a
+// list (`onActivate`). `keepSaved` (saving.ts) loads the Board from a server and saves each move;
+// the panel shows the requests.
 import { Board } from "@list-picker/core";
 import { type ListPickerOptions, useBoard, useListPicker } from "@list-picker/react";
 import { Fragment, StrictMode, useEffect, useState } from "react";

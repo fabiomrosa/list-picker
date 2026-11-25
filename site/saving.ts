@@ -1,6 +1,7 @@
-// Saving the order (L5.13, L5.14), shared by the Board demos (`board.ts`, `react-demo.tsx`): the
-// board they start with, the pretend server that keeps it (`fake-server.ts`; in your app, `fetch`
-// to your API), and `keepSaved`, which loads a page's Board from it and saves each move.
+// Saving the order, shared by both Board demos: the board they start with, the pretend server that
+// keeps it (fake-server.ts; in your app, `fetch` to your API), and `keepSaved`, which loads a Board
+// from it and saves each move. The Board, not the view, holds the order, so this is the same code
+// for vanilla and React.
 import type { Board, Snapshot } from "@list-picker/core";
 import { fakeServer } from "./fake-server.ts";
 
