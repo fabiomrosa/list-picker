@@ -169,6 +169,10 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, M4 retro, proposal 3:** `npm run packed` (in `verify`, after the build;
+  `scripts/check-packed.ts`): packs both packages, installs the tarballs in an empty project,
+  type-checks every README `ts` block against them, runs core's example in Node, and builds
+  vanilla's with Vite and moves a card by keyboard in Chrome.
 - **2026-11-24, M4 retro, proposal 2:** CI's `review` job (`scripts/check-pr-review.py`) fails a pull
   request whose "## Review" section is missing, empty or a placeholder (#83 merged that way);
   milestone plans and closes (`docs(M<n>): ...`) are exempt.
