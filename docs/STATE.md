@@ -209,6 +209,9 @@ None.
   command and the root README lists it. M5 done.
 - **2026-11-25, fix (owner):** content wider: the home's text below the board takes the container's
   64rem (no 47rem cap; the lede keeps it); a package page's text takes all the room beside its
+- **2026-11-25, fix (owner):** content wider: the home's text below the board runs to 58rem (about
+  100 characters a line; headings, tables, install and code take the container's 64rem; the
+  lede keeps 47rem); a package page's text takes all the room beside its
   index (`12rem minmax(0, 1fr)`); a table fills its width (rows too); a README's table sits in a `.table-scroll` box
   (added by the site build) that scrolls when the table is wider than the page.
 - **2026-11-25, L5.7:** the React README (install, a complete `tsx` example, the hooks, links to
