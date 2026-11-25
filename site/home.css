@@ -4,6 +4,12 @@
 main.home {
   max-width: 64rem;
 }
+/* Below the board, running text stops at about 100 characters a line; headings, tables, the
+   install and code keep the container's width, as the board does. */
+main.home > :is(p, ul, ol) {
+  box-sizing: border-box; /* a list's indent inside the measure, as a paragraph's text */
+  max-width: 58rem;
+}
 .hero {
   padding: 2.5rem 0 1rem;
 }
