@@ -1,8 +1,9 @@
 // @vitest-environment happy-dom
 import { Board } from "@list-picker/core";
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { afterEach, expect, it, vi } from "vitest";
-import { useBoard, useListPicker } from "../src/index.ts";
+import { StrictMode } from "react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { type ListPickerOptions, useBoard, useListPicker } from "../src/index.ts";
 
 type Entity = { id: string };
 
@@ -14,9 +15,9 @@ function setup() {
 }
 
 /** A board drawn by React from the Snapshot, the engine attached by the hook's getters. */
-function Kanban({ board }: { board: Board<Entity, Entity> }) {
+function Kanban({ board, options }: { board: Board<Entity, Entity>; options?: ListPickerOptions }) {
   const { lists } = useBoard(board);
-  const picker = useListPicker(board);
+  const picker = useListPicker(board, options);
   return (
     <div ref={picker.ref}>
       {lists.map(({ list, cards }) => (
@@ -143,4 +144,73 @@ it("unmounting removes every listener the engine added, and its announcement reg
   expect(attached).toBeGreaterThan(0);
   expect(engine()).toEqual([]);
   expect(document.querySelector("[aria-live]")).toBeNull();
+});
+
+describe("options from the latest render, StrictMode (L5.5)", () => {
+  const region = () => document.querySelectorAll("[aria-live]");
+  const step = async (id: string, ...keys: string[]) => {
+    card(id).focus();
+    for (const name of keys) await act(async () => key(card(id), name));
+    await settle();
+  };
+
+  it("a changed canMove applies at the next move, without restarting the engine", async () => {
+    const board = setup();
+    const { rerender } = render(<Kanban board={board} options={{ canMove: () => false }} />);
+    const engine = region()[0];
+    await step("a", " ", "ArrowRight", "Escape");
+    expect([...board.cards("doing")]).toEqual([]);
+    rerender(<Kanban board={board} options={{ canMove: () => true }} />);
+    await step("a", " ", "ArrowRight", " ");
+    expect([...board.cards("doing")].map((c) => c.id)).toEqual(["a"]);
+    expect(region()[0]).toBe(engine); // the same engine
+  });
+
+  it("the latest onActivate and messages are the ones used", async () => {
+    const board = setup();
+    const called: string[] = [];
+    const options = (name: string): ListPickerOptions => ({
+      onActivate: ({ id }) => called.push(`${name} ${id}`),
+      messages: { pickUp: () => `${name} picked up` },
+    });
+    const { rerender } = render(<Kanban board={board} options={options("first")} />);
+    rerender(<Kanban board={board} options={options("second")} />);
+    await step("a", "Enter", " ");
+    expect(called).toEqual(["second a"]);
+    expect(region()[0]?.textContent).toBe("second picked up");
+  });
+
+  it("without onActivate Enter is the card's own; adding and removing it follows", async () => {
+    const board = setup();
+    const called: string[] = [];
+    const enter = () => {
+      const event = new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true });
+      act(() => void card("a").dispatchEvent(event));
+      return event.defaultPrevented;
+    };
+    const { rerender } = render(<Kanban board={board} />);
+    expect(enter()).toBe(false); // not taken: a link or a button in the card keeps it
+    rerender(<Kanban board={board} options={{ onActivate: ({ id }) => called.push(id) }} />);
+    expect([enter(), called]).toEqual([true, ["a"]]);
+    rerender(<Kanban board={board} options={{}} />);
+    expect(enter()).toBe(false);
+  });
+
+  it("under StrictMode one engine runs: one announcement region, one Clone", async () => {
+    const board = setup();
+    render(
+      <StrictMode>
+        <Kanban board={board} />
+      </StrictMode>,
+    );
+    expect(region()).toHaveLength(1);
+    card("a").getBoundingClientRect = () => new DOMRect(10, 20, 200, 40);
+    document.elementFromPoint = () => null;
+    await act(async () => {
+      pointer(card("a"), "pointerdown", 50, 30);
+      pointer(card("a"), "pointermove", 70, 300);
+    });
+    expect(document.querySelectorAll("[data-lp-clone]")).toHaveLength(1);
+    await act(async () => pointer(card("a"), "pointerup", 70, 300));
+  });
 });

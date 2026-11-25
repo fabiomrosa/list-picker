@@ -1147,7 +1147,7 @@ shows it in the demo.
 - **References:** DEC-13, DEC-15, DEC-18.
 
 ### L5.5 · Current options and StrictMode
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** the React hook behaves like a React hook: options follow renders, `StrictMode` is safe.
 - **Depends on:** L5.4.
 - **In scope:** `messages`, `canMove` and `onActivate` are read from the latest render without
@@ -1166,7 +1166,7 @@ shows it in the demo.
 - **References:** DEC-16, DEC-17, DEC-18.
 
 ### L5.6 · The React demo
-- **Status:** waiting (L5.5)
+- **Status:** next
 - **Goal:** the kanban demo, written in React, on the site.
 - **Depends on:** L5.5.
 - **In scope:** a React page with the kanban board (the same lists, the skins and styles reused from
