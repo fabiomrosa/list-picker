@@ -1289,7 +1289,7 @@ shows it in the demo.
 - **References:** L5.6, L5.10.
 
 ### L5.13 · Saving the order: the vanilla Board
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** the Board demo shows how an app saves the order: it loads from a backend and saves
   every move, so a reload keeps the order.
 - **Depends on:** L5.12.
@@ -1350,6 +1350,7 @@ Ideas not planned yet; a milestone's planning picks from here.
 - Virtualised Lists for very long boards.
 - `addList` and `addCard` generating the id when the value has none (`crypto.randomUUID()`), and
   returning it; additive, for prototypes without a backend (owner, 2026-11-23).
-- `mount` keeps the focus and keyboard grab of a card its writes move (Chrome blurs it; L4.2).
+- `mount` keeps the focus and keyboard grab of a card its writes move (Chrome blurs it; L4.2). Seen
+  again in L5.13: a Board change from outside (a failed save put back) ends a keyboard pick-up.
 - Esc during a drag also reaches the page's other Esc handlers (a dialog around the board would
   close too); stopping it needs a capture-phase listener (L2.5 review).
