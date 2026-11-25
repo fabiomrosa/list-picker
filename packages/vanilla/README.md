@@ -228,6 +228,58 @@ Each message (`pickUp`, `move`, `drop`, `cancel`) receives an `Announcement`:
 `{ kind: "card" | "list", label, listLabel, position, count }`, where `listLabel` is a card's
 list (`null` for a list) and `position` is 1-based among the cards of that list, or among the lists.
 
+## Saving the order
+
+The Board lives in the page; your backend keeps the order. Load the Board from it, then save each
+`move` event: it names where the card (or list) went by its new neighbours, `prevId` and `nextId`,
+so the backend can place it without indexes that shift. Show the move at once; if the save fails,
+put the backend's order back. The [Board demo](https://fabiomrosa.github.io/list-picker/board.html)
+does this against a pretend server.
+
+```ts
+type Saved = { lists: { list: List; cards: Card[] }[] };
+async function load(): Promise<Saved> {
+  const response = await fetch("/api/board");
+  if (!response.ok) throw new Error(`GET /api/board: ${response.status}`);
+  return response.json();
+}
+
+const board = new Board<List, Card>();
+for (const { list, cards } of (await load()).lists) {
+  board.addList(list, null);
+  for (const card of cards) board.addCard(list.id, card, null);
+}
+mount(root, board, renderers);
+
+let restoring = false;
+board.on("move", async ({ kind, id, toListId, prevId, nextId }) => {
+  if (restoring) return; // putting the backend's order back: nothing to save
+  const response = await fetch(`/api/${kind}s/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ toListId, prevId, nextId }),
+  }).catch(() => undefined);
+  if (response?.ok) return;
+  // Not saved: the backend's order again, each list then each of its cards moved to the end.
+  try {
+    const { lists } = await load();
+    restoring = true; // after the await: a move made while loading is still saved
+    for (const { list, cards } of lists) {
+      board.moveList(list.id, null);
+      for (const card of cards) board.moveCard(card.id, list.id, null);
+    }
+  } catch {
+    // The backend can't be reached either: keep the page as it is, and tell the user.
+  } finally {
+    restoring = false;
+  }
+});
+```
+
+A sketch: it assumes the page and the backend hold the same ids (`moveCard` throws on an unknown
+one). A move made while the backend's order is being fetched can be lost on the page; the demo
+waits until no save is in flight, and asks again if a move was made meanwhile.
+
 ## License
 
 MIT

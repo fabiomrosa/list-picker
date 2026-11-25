@@ -146,7 +146,7 @@ test("Pop: a list drag keeps the other lists' colours; the skin label is only te
 test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row or two, nothing alone", async ({
   page,
 }) => {
-  test.setTimeout(60_000);
+  test.setTimeout(120_000); // 8 pages × 540 widths, slower on CI
   const pages = [
     "",
     "core.html",

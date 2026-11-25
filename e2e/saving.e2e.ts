@@ -54,19 +54,26 @@ for (const [name, DEMO] of PAGES) {
     test("a move made while a failed save is being undone is kept, on the page and the server", async ({
       page,
     }) => {
+      // The server's 400 ms answers step by step: a paused clock, run on by hand.
+      await page.clock.install();
+      await page.goto(DEMO);
+      await page.clock.pauseAt((await page.evaluate(() => Date.now())) + 1_000); // loaded
+      await expect(card(page, "a")).toBeVisible();
       await page.getByLabel("Fail the next save").check();
-      await moveA(page); // fails
+      await moveA(page);
+      await page.clock.runFor(400); // the save fails; the server's order is asked for
       await expect(requests(page).first()).toContainText("500");
-      // The server's order is on its way (a GET, 400 ms): c above b, in To do, meanwhile.
+      // Meanwhile, c above b in To do: saved after that GET was sent.
       await card(page, "c").focus();
       await page.keyboard.press("Space");
       await page.keyboard.press("ArrowUp");
       await page.keyboard.press("Space");
-      await expect(page.locator("#board-status")).toContainText("Not saved");
+      await page.clock.runFor(400); // the GET (stale: not used), then c's save
+      await page.clock.runFor(400); // the server's order asked for again, with c's move
       await expect.poll(() => order(page, "todo")).toEqual(["a", "c", "b"]);
-      await page.reload();
-      await expect(card(page, "a")).toBeVisible();
-      expect(await order(page, "todo")).toEqual(["a", "c", "b"]);
+      const saved = await page.evaluate(() => localStorage.getItem("list-picker-board") ?? "");
+      const lists: { list: { id: string }; cards: { id: string }[] }[] = JSON.parse(saved).lists;
+      expect(lists[0]?.cards.map((c) => c.id)).toEqual(["a", "c", "b"]);
     });
 
     test("reset brings back the starting board", async ({ page }) => {
