@@ -143,12 +143,39 @@ test("Pop: a list drag keeps the other lists' colours; the skin label is only te
   await release();
 });
 
-test("no page scrolls sideways on a 320px phone", async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 640 });
-  for (const path of ["", "core.html", "vanilla.html", "player.html"]) {
-    await page.goto(`http://localhost:5181/list-picker/${path}`);
-    const width = await page.evaluate(() => document.documentElement.scrollWidth);
-    expect(width, path || "home").toBeLessThanOrEqual(320);
+test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row or two, nothing alone", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+  const pages = ["", "core.html", "vanilla.html", "player.html"].map(
+    (path) => `http://localhost:5181/list-picker/${path}`,
+  );
+  for (const url of [...pages, "http://localhost:5180/"]) {
+    await page.setViewportSize({ width: 320, height: 640 });
+    await page.goto(url);
+    await page.evaluate(() => document.fonts.ready);
+    for (let width = 320; width <= 1400; width += 2) {
+      await page.setViewportSize({ width, height: 640 });
+      const nav = await page.evaluate(() => {
+        const top = (selector: string) =>
+          Math.round(document.querySelector(selector)?.getBoundingClientRect().top ?? -1);
+        return {
+          scroll: document.documentElement.scrollWidth,
+          brand: top("nav > a"),
+          docs: top('nav [aria-label="Docs"]'),
+          demos: top('nav [aria-label="Demos"]'),
+          theme: top("nav .nav-theme"),
+          github: top("nav .nav-github"),
+        };
+      });
+      const at = `${url} at ${width}px: ${JSON.stringify(nav)}`;
+      expect(nav.scroll, at).toBeLessThanOrEqual(width);
+      // The buttons sit on the brand's row; the two groups share a row, the brand's or the next.
+      expect(Math.abs(nav.theme - nav.brand), at).toBeLessThanOrEqual(6);
+      expect(Math.abs(nav.github - nav.brand), at).toBeLessThanOrEqual(6);
+      expect(Math.abs(nav.demos - nav.docs), at).toBeLessThanOrEqual(6);
+      expect(nav.docs - nav.brand, at).toBeLessThanOrEqual(50);
+    }
   }
 });
 
