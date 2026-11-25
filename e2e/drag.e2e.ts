@@ -295,7 +295,9 @@ test("the Placeholder takes the width of the list it is in, scrollbar or not", a
   const from = await card(page, "Design the model").locator("strong").boundingBox();
   const backlog = await cardsOf(page, "Backlog").boundingBox();
   if (!backlogCard || !todoCard || !from || !backlog) throw new Error("not visible");
-  // The scrolling Backlog list is narrower inside than To do.
+  // The scrolling Backlog list is narrower inside than To do, by its scrollbar. Overlay scrollbars
+  // (WebKit on macOS) take no room: nothing differs to test there.
+  test.skip(backlogCard.width === todoCard.width, "overlay scrollbars: no narrower list");
   expect(backlogCard.width).toBeLessThan(todoCard.width);
   await page.mouse.move(from.x + 10, from.y + 5);
   await page.mouse.down();

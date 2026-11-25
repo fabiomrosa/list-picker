@@ -70,6 +70,13 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.
 
 ## Site and browser tests
+- Playwright in WebKit fires a `mouse.move` with `steps` and the following `mouse.up` within one
+  animation frame (Chrome paces each step to a frame): code that writes on `requestAnimationFrame`
+  sees the release before its frame. The engine runs a pending frame at the release.
+- Safari does not focus a radio (or a button) when it, or its label, is clicked: a test that presses
+  an arrow key after a click presses it on the control (`locator.press`), not on `page.keyboard`.
+- WebKit on macOS shows overlay scrollbars, which take no room, whatever Playwright's launch flags:
+  a test about a scrollbar's width has nothing to measure there.
 - Playwright's `toHaveText` reads `textContent`, hidden (`display: none`) text included; what a
   copy takes, and what a person sees, is `innerText`.
 - Chrome reads a `<wbr>` as a space in the accessible name ("@list-picker/ vanilla"), and

@@ -341,8 +341,15 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
 
   function onPointerEnd(event: PointerEvent): void {
     if (!press || event.pointerId !== press.pointerId) return;
-    if (event.type === "pointerup" && active) drop(active);
-    else cancel();
+    if (event.type === "pointerup" && active) {
+      // A move whose frame has not run yet (a quick flick; WebKit can fire the moves and the
+      // release in one frame) still counts: run that frame now, then drop where it points.
+      if (frame !== undefined) {
+        cancelAnimationFrame(frame);
+        update();
+      }
+      drop(active);
+    } else cancel();
   }
 
   /** Ends the press or drag without a move, announcing an abandoned drag. */
