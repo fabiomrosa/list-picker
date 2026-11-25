@@ -90,7 +90,7 @@ attaches the engine; a React demo on the site, a README and its page, and the fi
 
 ## Recommended order (one session at a time)
 L4.1 to L4.26 in order; P3 before L4.5, GitHub Pages turned on before L4.12, P2 before L4.26.
-L5.1 to L5.8 in order, after DEC-18 is accepted; the owner publishes in L5.8.
+L5.1 to L5.8 in order; the owner publishes in L5.8.
 
 ## Open decisions (see DECISIONS.md)
 | Id | Question | Status | Needed by |

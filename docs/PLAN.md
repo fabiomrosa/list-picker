@@ -1066,7 +1066,7 @@ shows it in the demo.
 ## M5 · React adapter
 
 ### L5.1 · The engine leaves a pointer drop to the renderer
-- **Status:** waiting (DEC-18)
+- **Status:** next
 - **Goal:** a renderer that draws from the Snapshot can let the pointer drag change only the Board.
 - **Depends on:** DEC-18.
 - **In scope:** `moveElements` in `DragOptions` (default `true`); with `false`, a drop calls

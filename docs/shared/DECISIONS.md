@@ -104,7 +104,7 @@ the slice that first needs it, with one gate (`npm run verify`) over all of them
 - **Consequences:** DEC-05's one-name-per-repository applies to the repository; package names on npm
   are chosen when the first one is published.
 
-## DEC-13 · The engine finds elements by data attributes and applies drops itself — Accepted (owner, 2026-11-22)
+## DEC-13 · The engine finds elements by data attributes and applies drops itself — Accepted (owner, 2026-11-22; amended by DEC-18)
 The drag engine (`createDrag(root, board)` in `@list-picker/vanilla`) finds cards by
 `data-lp-card="<id>"` inside list containers `data-lp-cards="<listId>"`, and lists by
 `data-lp-list="<id>"` dragged by a `data-lp-list-handle` inside them. On a drop it calls
@@ -127,7 +127,7 @@ moved, never redrawn.
 - **Consequences:** the Renderer's element is the card itself, with no wrapper; content changes to a
   card are out of v1 (the Board has no update operation).
 
-## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23; amended 2026-11-23)
+## DEC-15 · Keyboard moving: pick up, arrows, drop — Accepted (owner, 2026-11-23; amended 2026-11-23; amended by DEC-18)
 On a focused card, Space picks it up; ↑ ↓ move it within its list, ← → to the neighbouring
 list; Space drops; Esc puts it back where it was picked up. A list moves the same way by
 its focused handle, with ← →. Each step is a real Board move.
@@ -160,10 +160,7 @@ applied). Drag start and end callbacks are left for a later 1.x.
 - **Consequences:** DEC-15 amended (Enter activates); M4 gains L4.8–L4.13 and a site published
   before the packages; the engine adds one capture-phase `click` listener on `root`.
 
----
-
-## Proposed (waiting for the owner)
-## DEC-18 · The React adapter: hooks over core and the engine — Proposed (the agent, 2026-11-25; the owner left it to the agent)
+## DEC-18 · The React adapter: hooks over core and the engine — Accepted (owner, 2026-11-25; the approach left to the agent)
 `@list-picker/react` depends on `@list-picker/core` and `@list-picker/vanilla` (for `createDrag`),
 with `react` `^18.3.0 || ^19.0.0` as a peer. It offers hooks, not components: `useBoard(board)`
 returns the Board's Snapshot as React state (`useSyncExternalStore`; the Snapshot is the same object
@@ -191,3 +188,8 @@ The engine gains a framework-neutral option, `createDrag(root, board, { moveElem
   The option ships in `@list-picker/vanilla` 1.1.0, before `@list-picker/react` 1.0.0. Tags name
   the package from now on (`vanilla-v1.1.0`, `react-v1.0.0`). A card moved to another list is a new
   component instance in React: its local state does not travel (the README says so).
+
+---
+
+## Proposed (waiting for the owner)
+None.
