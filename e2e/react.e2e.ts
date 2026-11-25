@@ -18,16 +18,15 @@ const lists = (page: Page) =>
     );
 const card = (page: Page, id: string) => page.locator(`[data-lp-card="${id}"]`);
 
+let errors: string[] = [];
 test.beforeEach(async ({ page }) => {
-  const errors: string[] = [];
+  errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto(DEMO);
   await expect(card(page, "a")).toBeVisible();
-  test.info().annotations.push({ type: "errors", description: "" });
-  (page as unknown as { errors: string[] }).errors = errors;
 });
-test.afterEach(async ({ page }) => {
-  expect((page as unknown as { errors: string[] }).errors).toEqual([]);
+test.afterEach(() => {
+  expect(errors).toEqual([]);
 });
 
 test("a card dragged to another list lands there, drawn by React", async ({ page }) => {
@@ -56,7 +55,7 @@ test("a card moved with the keyboard keeps its focus; Doing refuses a fourth", a
   await expect(page.locator(".hb-count").nth(1)).toHaveText("3/3");
 });
 
-test("under StrictMode one engine runs; Enter on a card opens it", async ({ page }) => {
+test("StrictMode: one live region; Enter on a card opens it", async ({ page }) => {
   await expect(page.locator("[aria-live]")).toHaveCount(1);
   await card(page, "c").focus();
   await page.keyboard.press("Enter");

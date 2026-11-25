@@ -196,7 +196,9 @@ describe("options from the latest render, StrictMode (L5.5)", () => {
     expect(enter()).toBe(false);
   });
 
-  it("under StrictMode one engine runs: one announcement region, one Clone", async () => {
+  // A smoke check: the engine starts from an update (the ref puts the root in state), which
+  // StrictMode does not run twice, so one engine is by design; this asserts what is seen.
+  it("under StrictMode: one announcement region, one Clone", async () => {
     const board = setup();
     render(
       <StrictMode>

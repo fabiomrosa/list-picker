@@ -1,5 +1,6 @@
 // The React demo (L5.6): the home's kanban board written with `@list-picker/react`, in the markup
-// `mount` draws, so `home.css`'s skins style it as they do the home's. Driven by `e2e/react.e2e.ts`.
+// `mount` draws (but for the handle: the list's title, not its whole header), so `home.css`'s skins
+// style it as they do the home's. Driven by `e2e/react.e2e.ts`.
 import { Board } from "@list-picker/core";
 import { type ListPickerOptions, useBoard, useListPicker } from "@list-picker/react";
 import { Fragment, StrictMode, useState } from "react";
@@ -39,8 +40,8 @@ function Kanban() {
   const picker = useListPicker(board, options);
   return (
     <>
-      <div className="skins" role="radiogroup" aria-label="Skin">
-        <span>Same board, your look:</span>
+      <div className="skins" role="radiogroup" aria-labelledby="skins-label">
+        <span id="skins-label">Same board, your look:</span>
         {/* The input before its label, as on the home: `home.css` styles `input:checked + label`. */}
         {SKINS.map((name) => (
           <Fragment key={name}>
@@ -86,7 +87,7 @@ function Kanban() {
       <p className="hint" role="status">
         {opened
           ? `Opened: ${opened}.`
-          : "Drag a card or a list title, or use Space and the arrows. Doing holds 3 cards; a click or Enter opens a card."}
+          : "Drag a card or a list title, or use Space and the arrows. Doing holds 3 cards; a click or Enter opens a card or a list."}
       </p>
     </>
   );
