@@ -199,8 +199,8 @@ None yet.
 None.
 
 ## Last session
-- **2026-11-25, fix (owner):** the site's lede is 47rem (home, React demo; the player's main stays
-  46rem); below the home's board, blocks (headings, tables, the install, code) take the container's
+- **2026-11-25, fix (owner):** the site's lede is 47rem, in `style.css` for every page (the player's
+  had no lede style: `home.css` held it; its main stays 46rem); below the home's board, blocks (headings, tables, the install, code) take the container's
   64rem like the board, and running text keeps the lede's 47rem (the code block was cut off).
 - **2026-11-25, L5.6:** the React demo on the site (a drag across lists, a keyboard move, Doing's cap,
   Enter opens, one engine under StrictMode; Chrome); every page's nav links it. Next: L5.7 (the

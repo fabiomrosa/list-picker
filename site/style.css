@@ -295,6 +295,12 @@ th {
 td code {
   white-space: nowrap;
 }
+/* The page's opening paragraph (the home, the demos), at a reading measure. */
+.lede {
+  max-width: 47rem;
+  font-size: 1.15rem;
+  color: var(--muted);
+}
 .button {
   display: inline-block;
   padding: 0.55rem 1.1rem;
