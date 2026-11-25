@@ -39,6 +39,13 @@ export interface DragOptions {
    * allowed while it is shown. Synchronous and cheap.
    */
   readonly canMove?: (move: ProposedMove) => boolean;
+  /**
+   * Whether a drop moves the dragged element itself (DEC-13; the default, `true`). `false` is for a
+   * renderer that draws from the Snapshot (React; DEC-18): a pointer drop then only changes the
+   * Board and the element is shown again where it was, for the renderer to move; and a Board change that
+   * removes the dragged item, or the list its Placeholder is in, cancels the drag.
+   */
+  readonly moveElements?: boolean;
 }
 
 /** How far (px) the pointer must move after a press before the press becomes a drag. */
@@ -142,6 +149,9 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
   let pressedOn: { kind: Kind; item: HTMLElement } | undefined;
   const announcer = createAnnouncer(root, board, options.messages);
   const { onActivate, canMove } = options;
+  const moveElements = options.moveElements !== false;
+  /** With `moveElements: false`, the Board change listener of the active drag. */
+  let unfollow: (() => void) | undefined;
   const keyboard = createKeyboard(
     root,
     board,
@@ -198,6 +208,8 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
       }
       active = start(press.kind, press.item);
       dragged = true;
+      // No renderer of ours follows the Board here (`mount` cancels itself): the engine does.
+      if (!moveElements) unfollow = board.on("change", cancelIfGone);
       // Only during a drag (AGENTS: no document listener outside one).
       document.addEventListener("keydown", onKeyDown);
       // Last: a user's message that throws leaves a drag that Esc still cancels.
@@ -388,14 +400,27 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     } catch (error) {
       // A listener may throw after the Board has moved the item: keep the DOM in step anyway.
       const moved = landed(board, name(kind), id, listId, beforeId);
-      if (moved) placeholder.replaceWith(item);
+      if (moved && moveElements) placeholder.replaceWith(item);
       end();
       announcer.say(moved ? "drop" : "cancel", name(kind), item);
       throw error;
     }
-    placeholder.replaceWith(item);
+    if (moveElements) placeholder.replaceWith(item);
     end();
     announcer.say("drop", name(kind), item);
+  }
+
+  /** `moveElements: false`: a drag whose item, or whose Placeholder's list, left the Board ends. */
+  function cancelIfGone(): void {
+    if (!active) return;
+    const { kind, item, placeholder } = active;
+    const id = item.getAttribute(kind.attribute) ?? "";
+    const listId = placeholder.parentElement?.getAttribute("data-lp-cards") ?? "";
+    const there =
+      kind === LIST
+        ? board.getList(id) !== undefined
+        : board.getCard(id) !== undefined && board.getList(listId) !== undefined;
+    if (!there) cancel();
   }
 
   /** Whether `element` is an item the Board holds (for a card, in list `listId`). */
@@ -470,6 +495,8 @@ export function startDrag<L extends { id: string }, C extends { id: string }>(
     press = undefined;
     active = undefined;
     if (ended) {
+      unfollow?.();
+      unfollow = undefined;
       document.removeEventListener("keydown", onKeyDown);
       ended.clone.remove();
       ended.placeholder.remove();

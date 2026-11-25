@@ -1066,7 +1066,7 @@ shows it in the demo.
 ## M5 · React adapter
 
 ### L5.1 · The engine leaves a pointer drop to the renderer
-- **Status:** next
+- **Status:** done (2026-11-25)
 - **Goal:** a renderer that draws from the Snapshot can let the pointer drag change only the Board.
 - **Depends on:** DEC-18.
 - **In scope:** `moveElements` in `DragOptions` (default `true`); with `false`, a drop calls
@@ -1086,7 +1086,7 @@ shows it in the demo.
 - **References:** DEC-13, DEC-18; `mount`'s drag cancel (L3.x).
 
 ### L5.2 · A keyboard pick-up survives the renderer's redraw
-- **Status:** waiting (L5.1)
+- **Status:** next
 - **Goal:** with `moveElements: false`, moving by keyboard keeps working while the renderer redraws.
 - **Depends on:** L5.1.
 - **In scope:** with `false`, a step and Esc change only the Board; while a pick-up lasts, a

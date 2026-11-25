@@ -788,3 +788,119 @@ describe("createDrag: lists", () => {
     expect(moves).toEqual([]);
   });
 });
+
+describe("createDrag with moveElements: false (DEC-18: a renderer draws the move)", () => {
+  let ctx: ReturnType<typeof setup>;
+  let drag: ReturnType<typeof createDrag>;
+  let under: Element | null;
+  let markup: string;
+  const list = (id: string) => ctx.root.querySelector(`[data-lp-cards="${id}"]`) as HTMLElement;
+  const ids = (id: string) => [...ctx.board.cards(id)].map((card) => card.id);
+  const leftovers = () => document.querySelectorAll("[data-lp-placeholder], [data-lp-clone]");
+
+  function start(canMove?: () => boolean): void {
+    drag = createDrag(ctx.root, ctx.board, { moveElements: false, ...(canMove && { canMove }) });
+    markup = ctx.root.innerHTML;
+    pointer(ctx.card("a"), "pointerdown", 50, 30);
+    pointer(ctx.card("a"), "pointermove", 70, 30);
+  }
+  /** Points at the empty "done" list and lets the frame place the Placeholder there. */
+  async function overDone(): Promise<void> {
+    under = list("done");
+    pointer(ctx.card("a"), "pointermove", 60, 300);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+
+  beforeEach(() => {
+    ctx = setup();
+    under = null;
+    document.elementFromPoint = () => under;
+  });
+  afterEach(() => drag.destroy());
+
+  it("a drop changes the Board and moves no element", async () => {
+    start();
+    await overDone();
+    expect(list("done").querySelector("[data-lp-placeholder]")).not.toBeNull();
+    pointer(ctx.card("a"), "pointerup", 60, 300);
+    expect([ids("todo"), ids("done")]).toEqual([["b"], ["a"]]);
+    // The card is shown again where it was, as it was: the renderer draws the move.
+    expect(leftovers()).toHaveLength(0);
+    expect(ctx.root.innerHTML).toBe(markup);
+  });
+
+  it("a refused drop or Esc changes nothing", async () => {
+    start(() => false);
+    await overDone();
+    pointer(ctx.card("a"), "pointerup", 60, 300);
+    expect([ids("todo"), ids("done")]).toEqual([["a", "b"], []]);
+    expect(ctx.root.innerHTML).toBe(markup);
+    drag.destroy();
+    start();
+    await overDone();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect([ids("todo"), ids("done")]).toEqual([["a", "b"], []]);
+    expect(ctx.root.innerHTML).toBe(markup);
+  });
+
+  it("removing the dragged card cancels the drag; the release does nothing", async () => {
+    start();
+    await overDone();
+    ctx.board.removeCard("a");
+    expect(leftovers()).toHaveLength(0);
+    pointer(ctx.card("a"), "pointerup", 60, 300);
+    expect([ids("todo"), ids("done")]).toEqual([["b"], []]);
+  });
+
+  it("a listener that throws after the move: the Board moved, no element did", async () => {
+    ctx.board.on("move", () => {
+      throw new Error("listener failed");
+    });
+    const errors: unknown[] = [];
+    const onError = (event: ErrorEvent) => {
+      errors.push(event.error);
+      event.preventDefault();
+    };
+    window.addEventListener("error", onError);
+    start();
+    await overDone();
+    try {
+      pointer(ctx.card("a"), "pointerup", 60, 300);
+    } catch (error) {
+      errors.push(error);
+    }
+    window.removeEventListener("error", onError);
+    expect(String(errors[0])).toContain("listener failed");
+    expect([ids("todo"), ids("done")]).toEqual([["b"], ["a"]]);
+    expect(leftovers()).toHaveLength(0);
+    expect(ctx.root.innerHTML).toBe(markup);
+  });
+
+  it.each(["drop", "Esc", "destroy"])("its Board listener is removed on %s", async (how) => {
+    // Every unsubscribe the engine gets from the Board is recorded, then still unsubscribes.
+    const removed: string[] = [];
+    const on = ctx.board.on.bind(ctx.board);
+    vi.spyOn(ctx.board, "on").mockImplementation((event, listener) => {
+      const off = on(event, listener);
+      return () => {
+        removed.push(String(event));
+        off();
+      };
+    });
+    start();
+    await overDone();
+    if (how === "drop") pointer(ctx.card("a"), "pointerup", 60, 300);
+    else if (how === "Esc") document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    else drag.destroy();
+    expect(removed).toContain("change");
+  });
+
+  it("removing the list the Placeholder is in cancels the drag; the release does nothing", async () => {
+    start();
+    await overDone();
+    ctx.board.removeList("done");
+    expect(leftovers()).toHaveLength(0);
+    pointer(ctx.card("a"), "pointerup", 60, 300);
+    expect(ids("todo")).toEqual(["a", "b"]);
+  });
+});
