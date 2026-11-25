@@ -170,8 +170,8 @@ None.
 
 ## Last session
 - **2026-11-25, real Safari (27.0.1), by WebDriver on the published site:** the kanban demo's
-  mouse drag to another list and keyboard move, the player's drag and play, and five fast flicks
-  (the #102 case, 5/5) all pass, with no page error. A trap on the way: Safari's WebDriver mouse
+  mouse drag to another list and keyboard move, the player's drag and play, and fast flicks (the
+  #102 case, 5 of 5) all pass, with no page error. A trap on the way: Safari's WebDriver mouse
   needs its window in front (GOTCHAS).
 - **2026-11-25, vanilla 1.0.1 on npm:** published by the owner (the inert Clone, #100; the release
   that runs the pending frame, #102); tag `v1.0.1` on `4101a10`. Checked against the registry:
