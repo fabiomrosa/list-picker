@@ -169,6 +169,10 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, fix (owner):** the home's eyebrow lists facts ("Open source · TypeScript · MIT · 0
+  third-party dependencies"; vanilla depends only on core, react will add a peer), and the lede opens
+  with "a headless library of sortable lists for TypeScript"; on a phone the package table stacks
+  each package's name, version and description.
 - **2026-11-25, feat (owner):** the site shows each package's version, linked to npm: under its name in
   the home's table and under its page's title. The build reads npm's published version
   (`registry.npmjs.org/@list-picker/<name>/latest`, 3 s), so the repository being ahead of npm never
