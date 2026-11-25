@@ -302,6 +302,18 @@ th {
 td code {
   white-space: nowrap;
 }
+/* Where lines break, not how wide they are: headings and the lede in lines of even length, running
+   text without a word alone on its last line (browsers without `text-wrap` keep their own). */
+h1,
+h2,
+h3,
+.lede {
+  text-wrap: balance;
+}
+p,
+li {
+  text-wrap: pretty;
+}
 /* The page's opening paragraph (the home, the demos), at a reading measure. */
 .lede {
   max-width: 47rem;

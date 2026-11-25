@@ -209,6 +209,9 @@ None.
   command and the root README lists it. M5 done.
 - **2026-11-25, fix (owner):** content wider: the home's text below the board takes the container's
   64rem (no 47rem cap; the lede keeps it); a package page's text takes all the room beside its
+- **2026-11-25, fix (owner):** where lines break: `text-wrap: balance` on headings and the lede,
+  `pretty` on paragraphs and list items (`style.css`); the widths stay (measured: the lede is 65ch,
+  the home's text 92ch, so one `ch` value for both would have changed one of them).
 - **2026-11-25, feat (owner):** a copy button in the home's install command (`site/copy.ts`): it copies
   the command shown, as the framework and package manager chosen make it (the `$` is CSS), shows a
   check for a moment and says "Copied" in a status region; the command wraps between words on a
