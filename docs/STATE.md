@@ -169,6 +169,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, fix (owner):** the kanban demo's title is "Board": the "snapshot v<n>" counter beside it
+  (a change count, read as a library version next to the site's real versions) is gone, as in the
+  player.
 - **2026-11-25, fix (owner):** the home's eyebrow lists facts ("Open source · TypeScript · MIT · 0
   third-party dependencies"; vanilla depends only on core, react will add a peer), and the lede opens
   with "a headless library of sortable lists for TypeScript"; on a phone the package table stacks
