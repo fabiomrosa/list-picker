@@ -338,7 +338,10 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     moveElement();
   }
 
-  /** `moveElements: false`: one Board move, announced; the renderer draws it and `follow` refocuses. */
+  /**
+   * `moveElements: false`: one Board move, announced; the renderer draws it and `follow` (or, after
+   * Esc, `back`) refocuses.
+   */
   function byId(
     kind: Kind,
     id: string,
