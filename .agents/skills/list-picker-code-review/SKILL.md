@@ -7,7 +7,8 @@ description: The list-picker review checklist. Use when about to open any list-p
 
 Review as a reader who did not write the change. If your agent can start a subagent, start one with a
 fresh context (not a fork of this conversation) and give it this skill, the slice entry and the diff,
-without your summary of the change. Otherwise reread the slice entry before the diff.
+without your summary of the change; tell it to remove only the files it creates. Otherwise reread
+the slice entry before the diff.
 
 Run `git diff main...HEAD --stat` and read every changed file. Answer each item with yes/no + file
 reference. Any "no" is fixed before the pull request (or explicitly listed as a deviation in it).
