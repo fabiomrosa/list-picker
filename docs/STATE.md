@@ -188,7 +188,8 @@ title, review-section, size, frozen-files and secret checks.
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
 - Saving the order (L5.13): `board.html` loads from and saves to a pretend server
-  (`site/fake-server.ts`), with a panel of its requests.
+  (`site/fake-server.ts`), with a panel of its requests; vanilla's README shows the pattern
+  ("Saving the order").
 - The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
   `@list-picker/react` in the same markup; the same e2e suite runs on both.
 - The demos switcher (L5.10): above each demo page (`board.html` since L5.12, `react-demo.html`,

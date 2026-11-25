@@ -238,7 +238,11 @@ does this against a pretend server.
 
 ```ts
 type Saved = { lists: { list: List; cards: Card[] }[] };
-const load = async (): Promise<Saved> => (await fetch("/api/board")).json();
+async function load(): Promise<Saved> {
+  const response = await fetch("/api/board");
+  if (!response.ok) throw new Error(`GET /api/board: ${response.status}`);
+  return response.json();
+}
 
 const board = new Board<List, Card>();
 for (const { list, cards } of (await load()).lists) {
@@ -257,22 +261,24 @@ board.on("move", async ({ kind, id, toListId, prevId, nextId }) => {
   }).catch(() => undefined);
   if (response?.ok) return;
   // Not saved: the backend's order again, each list then each of its cards moved to the end.
-  const { lists } = await load();
-  restoring = true;
   try {
+    const { lists } = await load();
+    restoring = true; // after the await: a move made while loading is still saved
     for (const { list, cards } of lists) {
       board.moveList(list.id, null);
       for (const card of cards) board.moveCard(card.id, list.id, null);
     }
+  } catch {
+    // The backend can't be reached either: keep the page as it is, and tell the user.
   } finally {
     restoring = false;
   }
 });
 ```
 
-A sketch: it assumes the page and the backend hold the same ids. A move made while the order is
-put back can be lost on the page; the demo waits until no save is in flight, and asks again if a
-move was made meanwhile.
+A sketch: it assumes the page and the backend hold the same ids (`moveCard` throws on an unknown
+one). A move made while the backend's order is being fetched can be lost on the page; the demo
+waits until no save is in flight, and asks again if a move was made meanwhile.
 
 ## License
 
