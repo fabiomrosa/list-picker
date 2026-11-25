@@ -62,6 +62,10 @@ Every slice's pull request updates it (SESSION §3).
   at the drop with the ids it applies (refused: the drop cancels), and before each keyboard step;
   where the item was picked up is always allowed while shown. The keyboard skips to the next allowed place in
   that direction (within a container, or the next list across), or does nothing.
+  `createDrag`'s `options.moveElements: false` (DEC-18, vanilla 1.1.0) is for a renderer that draws
+  from the Snapshot: a pointer drop only changes the Board and shows the element again where it was;
+  a Board change that removes the dragged item or the Placeholder's list cancels the drag (the
+  keyboard follows in L5.2).
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
   `aria-live="assertive"` region in the document's body, not in `root` (removed by `destroy()`) says pick up, drop and cancel
   of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
@@ -134,8 +138,8 @@ title, review-section, size, frozen-files and secret checks.
 - Each package has a README (install, a complete example, the API; vanilla's also the `data-lp-*`
   hooks, the keys and the announcements), the MIT `LICENSE`, and `description`, `license`,
   `repository`, `keywords`, `sideEffects: false`; `npm pack --dry-run` lists only `dist`, the
-  README, the license and `package.json`. Core `1.0.0`, vanilla `1.0.1` (published 2026-11-25, tag
-  `v1.0.1`), public (`publishConfig.access`),
+  README, the license and `package.json`. Core `1.0.0`, vanilla `1.0.1` on npm (published 2026-11-25,
+  tag `v1.0.1`) and `1.1.0` in the repository (unpublished until L5.8), public (`publishConfig.access`),
   vanilla depending on core `^1.0.0`; `prepublishOnly` builds. **Published on npm** (2026-11-24,
   L4.26): `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`, by the owner from their
   account (the `list-picker` org, 2FA: `npm publish --otp=<code>`), core first, from `main`; the
@@ -169,6 +173,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.1:** `createDrag`'s `moveElements: false`: a pointer drop changes only the Board
+  and moves no element; a Board change that removes the dragged item or the Placeholder's list
+  cancels the drag; vanilla 1.1.0 in the repository. Next: L5.2 (the keyboard across a redraw).
 - **2026-11-25, fix (owner):** the kanban demo's title is "Board": the "snapshot v<n>" counter beside it
   (a change count, read as a library version next to the site's real versions) is gone, as in the
   player.
