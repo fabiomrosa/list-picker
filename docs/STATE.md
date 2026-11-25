@@ -172,7 +172,7 @@ None.
 - **2026-11-25, feat (owner):** the site shows each package's version, linked to npm: under its name in
   the home's table and under its page's title. The build reads npm's published version
   (`registry.npmjs.org/@list-picker/<name>/latest`, 3 s), so the repository being ahead of npm never
-  shows; without npm, the package's `package.json`.
+  shows (a semver only, or nothing is used); without npm, the package's `package.json`.
 - **2026-11-25, feat (owner):** a favicon on every page and both demos: the brand's list mark, white
   on the accent (`site/public/`: an SVG, a 32px PNG, a 180px touch icon); a browser test checks each
   site page's three icons load.

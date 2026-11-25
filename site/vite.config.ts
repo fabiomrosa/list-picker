@@ -40,7 +40,13 @@ function version(name: string): Promise<string> {
       fetch(`https://registry.npmjs.org/@list-picker/${name}/latest`, {
         signal: AbortSignal.timeout(3000),
       })
-        .then(async (response) => (response.ok ? (await response.json()).version : local()))
+        .then(async (response) => {
+          // Only a version goes into the page: anything else (a broken or tampered answer) is ignored.
+          const found = response.ok ? (await response.json()).version : undefined;
+          return typeof found === "string" && /^\d+\.\d+\.\d+(-[\w.-]+)?$/.test(found)
+            ? found
+            : local();
+        })
         .catch(local),
     );
   }
