@@ -217,3 +217,96 @@ describe("createDrag: moving a list with the keyboard", () => {
     expect(document.activeElement).toBe(handle("two"));
   });
 });
+
+describe.each(["sync", "microtask"] as const)(
+  "createDrag with moveElements: false, keyboard, a renderer redrawing in %s (DEC-18)",
+  (when) => {
+    let ctx: ReturnType<typeof setup>;
+    let drag: ReturnType<typeof createDrag>;
+    const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+    const boardOrder = () =>
+      [...ctx.board.lists()].map((list) => [...ctx.board.cards(list.id)].map((card) => card.id));
+    const grabbed = () => [...ctx.root.querySelectorAll("[data-lp-grabbed]")].map((el) => el.id);
+
+    /** Draws every list and card from the Snapshot with new elements, as a framework may. */
+    function redraw(): void {
+      ctx.root.replaceChildren(
+        ...ctx.board.snapshot().lists.map(({ list, cards }) => {
+          const ul = document.createElement("ul");
+          ul.setAttribute("data-lp-cards", list.id);
+          for (const card of cards) {
+            const li = document.createElement("li");
+            li.setAttribute("data-lp-card", card.id);
+            li.id = card.id;
+            li.tabIndex = 0;
+            ul.append(li);
+          }
+          return ul;
+        }),
+      );
+    }
+
+    beforeEach(() => {
+      ctx = setup();
+      redraw();
+      ctx.board.on("change", () => (when === "sync" ? redraw() : queueMicrotask(redraw)));
+      drag = createDrag(ctx.root, ctx.board, { moveElements: false });
+    });
+    afterEach(() => drag.destroy());
+
+    it("steps move the Board only; the pick-up and the focus follow the redrawn item", async () => {
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      key(ctx.card("a"), "ArrowDown");
+      await settle();
+      expect(boardOrder()).toEqual([["b", "a", "c"], ["d"], []]);
+      expect([grabbed(), document.activeElement]).toEqual([["a"], ctx.card("a")]);
+      key(ctx.card("a"), "ArrowRight");
+      await settle();
+      // The same position in the next list: after "d", at its end.
+      expect(boardOrder()).toEqual([["b", "c"], ["d", "a"], []]);
+      expect([grabbed(), document.activeElement]).toEqual([["a"], ctx.card("a")]);
+      key(ctx.card("a"), " ");
+      await settle();
+      expect(grabbed()).toEqual([]);
+      expect(ctx.moves).toHaveLength(2);
+    });
+
+    it.runIf(when === "microtask")(
+      "the engine writes no element move: until the renderer runs, the DOM is as it was",
+      () => {
+        ctx.card("a").focus();
+        key(ctx.card("a"), " ");
+        const markup = ctx.root.innerHTML.replace(/ data-lp-grabbed=""/g, "");
+        key(ctx.card("a"), "ArrowRight");
+        expect(boardOrder()).toEqual([["b", "c"], ["a", "d"], []]); // first place: "a" was first
+        expect(ctx.root.innerHTML.replace(/ data-lp-grabbed=""/g, "")).toBe(markup);
+      },
+    );
+
+    it("Esc puts the Board back where the item was picked up", async () => {
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      key(ctx.card("a"), "ArrowRight");
+      await settle();
+      key(ctx.card("a"), "ArrowRight");
+      await settle();
+      key(ctx.card("a"), "Escape");
+      await settle();
+      expect(boardOrder()).toEqual([["a", "b", "c"], ["d"], []]);
+      expect(grabbed()).toEqual([]);
+    });
+
+    it("the focus really leaving drops it; then a redraw neither marks nor focuses it", async () => {
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      (document.getElementById("elsewhere") as HTMLElement).focus();
+      await settle();
+      expect(grabbed()).toEqual([]);
+      ctx.board.moveCard("d", "done", null); // a redraw after the drop
+      await settle();
+      expect(grabbed()).toEqual([]);
+      expect(document.activeElement?.id).toBe("elsewhere");
+    });
+  },
+);

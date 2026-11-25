@@ -64,8 +64,12 @@ Every slice's pull request updates it (SESSION §3).
   that direction (within a container, or the next list across), or does nothing.
   `createDrag`'s `options.moveElements: false` (DEC-18, vanilla 1.1.0) is for a renderer that draws
   from the Snapshot: a pointer drop only changes the Board and shows the element again where it was;
-  a Board change that removes the dragged item or the Placeholder's list cancels the drag (the
-  keyboard follows in L5.2).
+  a Board change that removes the dragged item or the Placeholder's list cancels the drag. With it,
+  a keyboard step and Esc change only the Board too; the pick-up is kept by id: a `MutationObserver`
+  on `root` (while a card is picked up) finds its element again after each redraw and puts
+  `data-lp-grabbed` and the focus back on it, and a `focusout` is decided after a `setTimeout(0)`
+  (a redraw's blur is not the focus leaving). `playground/redraw.html` (browser tests only, not
+  built) redraws from the Snapshot in the change listener or in a microtask.
   Announcements (DEC-16, `src/announce.ts`): a visually hidden `[data-lp-live]`
   `aria-live="assertive"` region in the document's body, not in `root` (removed by `destroy()`) says pick up, drop and cancel
   of a pointer drag, and also each keyboard step: "Picked up Design the model. To do, position 1
@@ -173,6 +177,9 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.2:** with `moveElements: false`, the keyboard changes only the Board and its
+  pick-up survives the renderer's redraw (Chrome, WebKit, and happy-dom without a `focusout` on
+  removal, like Firefox). Next: L5.3 (the React package and `useBoard`).
 - **2026-11-25, L5.1:** `createDrag`'s `moveElements: false`: a pointer drop changes only the Board
   and moves no element; a Board change that removes the dragged item or the Placeholder's list
   cancels the drag; vanilla 1.1.0 in the repository. Next: L5.2 (the keyboard across a redraw).
