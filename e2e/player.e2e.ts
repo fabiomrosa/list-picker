@@ -116,6 +116,27 @@ for (const [name, PLAYER] of PAGES) {
       await expect(page.locator("#now-time")).toHaveText(time ?? "");
     });
 
+    test("stopped at the end of the last track, a reorder leaves it there; play restarts it", async ({
+      page,
+    }) => {
+      await page.clock.install();
+      await page.goto(PLAYER);
+      await track(page, "Everything's Not Lost").focus();
+      await page.keyboard.press("Enter");
+      await page.clock.runFor(45_000); // 7:15 at ten times: 43.5 s
+      await expect(page.locator("#now-time")).toHaveText("7:15 / 7:15");
+      await expect(page.locator("#toggle")).toHaveAccessibleName("Play");
+      await track(page, "Everything's Not Lost").locator("input").click();
+      await track(page, "Shiver").locator("input").click();
+      await expect(now(page)).toHaveText("Everything's Not Lost");
+      await expect(page.locator("#now-time")).toHaveText("7:15 / 7:15");
+      // Play starts the same track over (its clock running from 0, not a stopped 7:15).
+      await page.locator("#toggle").click();
+      await expect(now(page)).toHaveText("Everything's Not Lost");
+      await expect(page.locator("#now-time")).not.toHaveText("7:15 / 7:15");
+      await expect(page.locator("#now-time")).toHaveText(/ \/ 7:15$/);
+    });
+
     test("with reduced motion the equalizer stands still while playing", async ({ page }) => {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.locator("#toggle").click();

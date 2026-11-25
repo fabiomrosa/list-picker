@@ -186,6 +186,8 @@ title, review-section, size, frozen-files and secret checks.
   the board's `data-skin` (`site/home.css`): the same elements, restyled, Clone and Placeholder
   included. `.github/workflows/pages.yml`
   deploys it to GitHub Pages on every push to `main`: <https://fabiomrosa.github.io/list-picker/>.
+- The React Player (L5.11, `site/player-react.html` and `.tsx`): the player written with
+  `@list-picker/react` in the same markup; the same e2e suite runs on both.
 - The demos switcher (L5.10): above each demo page (`demo/`, `react-demo.html`, `player.html`,
   `player-react.html` since L5.11), the
   demo (Board, Player) and the framework (Vanilla, React, Angular "soon"), built by the site build's

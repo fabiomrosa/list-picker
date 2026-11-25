@@ -66,10 +66,11 @@ function Player() {
     const timer = setInterval(() => setElapsed((e) => e + STEP * SPEED), STEP * 1000);
     return () => clearInterval(timer);
   }, [running]);
-  // At a track's end, the next one in the playlist's current order, or a stop.
+  // At a track's end while playing, the next one in the playlist's current order, or a stop (a
+  // reorder while stopped at the end leaves it there).
   useEffect(() => {
     const total = seconds(board.getCard(playing)?.time ?? "0:00");
-    if (elapsed < total) return;
+    if (!running || elapsed < total) return;
     const { next } = board.neighbours(playing);
     if (next) play(next.id);
     else {
@@ -95,6 +96,8 @@ function Player() {
   const track = board.getCard(playing);
   const total = seconds(track?.time ?? "0:00");
   const { prev, next } = board.neighbours(playing);
+  // The clock never shows past the track's end (a tick can overshoot it until the effect moves on).
+  const shown = Math.min(elapsed, total);
   return (
     <section className="player" aria-label="Music player" data-running={running ? "" : undefined}>
       <header className="now">
@@ -112,19 +115,19 @@ function Player() {
               aria-label="Played"
               aria-valuemin={0}
               aria-valuemax={total}
-              aria-valuenow={Math.floor(elapsed)}
-              aria-valuetext={`${clock(elapsed)} of ${track?.time}`}
+              aria-valuenow={Math.floor(shown)}
+              aria-valuetext={`${clock(shown)} of ${track?.time}`}
             >
               <span
                 id="progress-fill"
                 // Back to the start at once (a new track), sliding only while it plays.
                 style={{
-                  transform: `scaleX(${Math.min(elapsed, total) / total})`,
+                  transform: `scaleX(${shown / total})`,
                   transition: elapsed === 0 ? "none" : undefined,
                 }}
               />
             </div>
-            <span id="now-time">{`${clock(elapsed)} / ${track?.time}`}</span>
+            <span id="now-time">{`${clock(shown)} / ${track?.time}`}</span>
           </div>
         </div>
         <div className="controls">
