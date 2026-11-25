@@ -1,5 +1,6 @@
 // The site (L4.12–L4.14): the home page, a page per package built from its README (one source for
-// npm and the site), and the demo board (`playground/`, built into `demo/` by `npm run site:build`).
+// npm and the site), the demos (a page each), and the playground (`playground/`, built into `demo/`
+// by `npm run site:build`).
 import { readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { marked, type Token } from "marked";

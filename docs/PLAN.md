@@ -1244,7 +1244,7 @@ shows it in the demo.
   table in the site build (the React Player comes with L5.11: its switch shows "soon" until then);
   the pages keep their addresses (`demo/`, `react-demo.html`, `player.html`; renaming them would
   be a page rewritten twice in the size check, for an address nobody reads).
-- **Out of scope:** the React Player (L5.11); the demos' code (L5.14).
+- **Out of scope:** the React Player (L5.11); the demos' code (L5.15).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. From any demo page, the switcher reaches every other demo page there is, keeping the demo or
@@ -1260,7 +1260,7 @@ shows it in the demo.
 - **In scope:** `player-react.html` with the same playlist, look and behaviour as the vanilla Player
   (reorder by pointer and keyboard, play a track by click or Enter, the equalizer), its style
   reused from `player.css`; its switch in the switcher; a browser test (a drag and a keyboard move).
-- **Out of scope:** saving the order (L5.12).
+- **Out of scope:** saving the order (L5.13).
 - **Contract:** none. **Public API:** none.
 - **Acceptance criteria:**
   1. In Chrome, a track dragged and a track moved by keyboard land where they were put, and Enter
@@ -1313,7 +1313,7 @@ shows it in the demo.
 
 ### L5.14 · Saving the order: the React Board
 - **Status:** planned
-- **Goal:** the same as L5.12, written with `@list-picker/react`.
+- **Goal:** the same as L5.13, written with `@list-picker/react`.
 - **Depends on:** L5.13.
 - **In scope:** the React Board loads from the fake server, saves each `move`, draws the server's
   order again on a failure and shows the same panel; a "Saving the order" section in React's
