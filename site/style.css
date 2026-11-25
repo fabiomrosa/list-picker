@@ -86,7 +86,7 @@ nav {
   border-bottom: 1px solid var(--line);
   font-size: 0.9rem;
 }
-/* The docs, then the demos, apart by a line. */
+/* The docs, then the demos' link, apart by a line. */
 .nav-group {
   display: flex;
   align-items: baseline;
@@ -95,16 +95,9 @@ nav {
   padding: 0;
   list-style: none;
 }
-.nav-group + .nav-group {
+nav .nav-demos {
   padding-left: 1.25rem;
   border-left: 1px solid var(--line);
-}
-/* The demos' visible label; the list's own name already says it to screen readers. */
-.nav-demos::before {
-  content: "demos:" / "";
-  margin-right: -0.5rem; /* closer to its links than they are to each other */
-  color: var(--muted);
-  font-size: 0.8em;
 }
 nav a {
   color: var(--muted);
@@ -112,6 +105,10 @@ nav a {
 }
 nav a:hover {
   color: var(--accent);
+}
+/* The page you are on: its link in the text's colour. */
+nav a[aria-current="page"] {
+  color: var(--text);
 }
 /* The brand a step above the links; its mark follows (em). */
 nav > a:first-child {
@@ -521,23 +518,16 @@ main.doc {
     order: 2;
     flex-basis: 100%;
   }
-  nav .nav-group {
+  nav .nav-group,
+  nav .nav-demos {
     order: 3;
+  }
+  nav .nav-group {
     gap: 0.9rem;
   }
-  .nav-group + .nav-group {
-    padding-left: 0.9rem;
-  }
-}
-/* After the phone rules: below 30.5rem the demos no longer fit beside the docs (about 30.1rem beside
-   a classic scrollbar), so they take a row of their own, labelled, with no line between. */
-@media (max-width: 30.5rem) {
   nav .nav-demos {
-    flex-basis: 100%;
-  }
-  .nav-group + .nav-group {
-    padding-left: 0;
-    border-left: 0;
+    margin-left: -0.1rem; /* the line midway between the docs and demos, as their 0.9rem gap */
+    padding-left: 0.9rem;
   }
 }
 @media (max-width: 52rem) {

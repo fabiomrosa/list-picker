@@ -170,21 +170,19 @@ test("every page, 320px to 1400px wide: no sideways scroll, the nav in one row o
           client: document.documentElement.clientWidth,
           brand: top("nav > a"),
           docs: top('nav [aria-label="Docs"]'),
-          demos: top('nav [aria-label="Demos"]'),
+          demos: top("nav .nav-demos"),
           theme: top("nav .nav-theme"),
           github: top("nav .nav-github"),
         };
       });
       const at = `${url} at ${width}px: ${JSON.stringify(nav)}`;
       expect(nav.scroll, at).toBeLessThanOrEqual(nav.client);
-      // The buttons sit on the brand's row; the two groups share a row, the brand's or the next;
-      // below 30.5rem (488px) the demos take the row under the docs.
+      // The buttons sit on the brand's row; the docs and the demos link share a row, the brand's or
+      // the next, down to 320px.
       expect(Math.abs(nav.theme - nav.brand), at).toBeLessThanOrEqual(6);
       expect(Math.abs(nav.github - nav.brand), at).toBeLessThanOrEqual(6);
       expect(nav.docs - nav.brand, at).toBeLessThanOrEqual(50);
-      if (width <= 488) expect(nav.demos - nav.docs, at).toBeGreaterThan(20);
-      if (width <= 488) expect(nav.demos - nav.docs, at).toBeLessThanOrEqual(50);
-      else expect(Math.abs(nav.demos - nav.docs), at).toBeLessThanOrEqual(6);
+      expect(Math.abs(nav.demos - nav.docs), at).toBeLessThanOrEqual(6);
     }
   }
 });
@@ -289,4 +287,46 @@ test("a second copy restarts the check's time", async ({ page, context }) => {
   await copy.click();
   await page.waitForTimeout(700); // 1.7 s after the first copy, 0.7 s after the second
   await expect(copy).toHaveAttribute("data-copied", "", { timeout: 0 });
+});
+
+test("one nav on every page: the same links, a single demos link, the current page marked", async ({
+  page,
+}) => {
+  const site = "http://localhost:5181/list-picker/";
+  const pages: [string, string | null][] = [
+    ["", null],
+    ["core.html", "core"],
+    ["vanilla.html", "vanilla"],
+    ["react.html", "react"],
+    ["player.html", null],
+    ["react-demo.html", null],
+  ];
+  for (const [path, current] of pages) {
+    await page.goto(site + path);
+    const links = await page
+      .locator("nav a")
+      .evaluateAll((all) => all.map((a) => [a.textContent?.trim(), (a as HTMLAnchorElement).href]));
+    expect(links, path).toEqual([
+      ["list-picker", site],
+      ["core", `${site}core.html`],
+      ["vanilla", `${site}vanilla.html`],
+      ["react", `${site}react.html`],
+      ["demos", `${site}demo/`],
+      ["GitHub", "https://github.com/fabiomrosa/list-picker"],
+    ]);
+    const marked = page.locator('nav a[aria-current="page"]');
+    if (current) await expect(marked, path).toHaveText(current);
+    else await expect(marked, path).toHaveCount(0);
+  }
+  // The vanilla Board, built from the playground, has the same nav, its own link marked.
+  await page.goto(`${site}demo/`.replace("5181/list-picker/demo/", "5180/"));
+  await expect(page.locator('nav a[aria-current="page"]')).toHaveText("demos");
+  await expect(page.locator("nav a")).toHaveText([
+    "list-picker",
+    "core",
+    "vanilla",
+    "react",
+    "demos",
+    "GitHub",
+  ]);
 });

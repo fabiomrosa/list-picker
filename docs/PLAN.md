@@ -1218,7 +1218,7 @@ shows it in the demo.
 - **References:** L4.26, GOTCHAS (Publishing).
 
 ### L5.9 · One nav, one Demos link
-- **Status:** planned
+- **Status:** done (2026-11-25)
 - **Goal:** the nav is written once, and its Demos are one link, so it fits on a phone and grows
   without touching every page.
 - **Depends on:** L5.8 (owner, 2026-11-25: the demos page, the demos' code and saving the order

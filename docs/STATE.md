@@ -204,6 +204,11 @@ None yet.
 None.
 
 ## Last session
+- **2026-11-25, L5.9:** one nav: `site/partials/nav.html`, put in place of `<!-- nav <root>
+  [<current>] -->` by the site build's `nav()` (the playground's `vite.config.ts` uses it too); the
+  current page's link gets `aria-current="page"`; the demos are one link, `demos` (the vanilla
+  Board), after a line; on a phone the pages fit one row under the brand down to 320px. Next: L5.10
+  (the demos switcher).
 - **2026-11-25, docs(M5):** planned L5.9–L5.14 (owner): one nav with one Demos link, a demos
   switcher (Board and Player, in vanilla and React), the React Player, saving the order to a
   simulated backend (vanilla, then React), and each demo's code on its page.

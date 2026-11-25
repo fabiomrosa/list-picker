@@ -76,6 +76,27 @@ function versions(): Plugin {
   };
 }
 
+/**
+ * `<!-- nav <root> [<current>] -->`: the one nav (`site/partials/nav.html`), its links from `root`, the link to
+ * `current` marked as the page. The playground's build uses it too.
+ */
+export function nav(): Plugin {
+  return {
+    name: "nav",
+    transformIndexHtml: (html) =>
+      html.replace(/<!-- nav (\S+)(?: (\S+))? -->/, (_m, root: string, current?: string) => {
+        const out = readFileSync(fileURLToPath(new URL("partials/nav.html", SITE)), "utf8")
+          .replace(/^<!--.*?-->\n/s, "")
+          .replaceAll("{root}", root);
+        if (!current) return out;
+        const link = `href="${root}${current}"`;
+        // A page names a link the nav doesn't have: fail the build, not mark nothing.
+        if (!out.includes(link)) throw new Error(`nav: no link to ${current}`);
+        return out.replace(link, `${link} aria-current="page"`);
+      }),
+  };
+}
+
 /** `<!-- markdown: <file> [<from heading>] -->`: the file (or the section from that heading). */
 function markdown(): Plugin {
   return {
@@ -138,7 +159,7 @@ export default defineConfig({
       "@list-picker/react": source("react"),
     },
   },
-  plugins: [markdown(), versions()],
+  plugins: [nav(), markdown(), versions()],
   build: {
     outDir: "../dist-site",
     emptyOutDir: true,
