@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // The source, not the package: `core/dist` does not exist in a clean clone before the build.
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Board, type MoveEvent } from "../../core/src/index.ts";
 import { createDrag } from "../src/index.ts";
 
@@ -295,6 +295,48 @@ describe.each(["sync", "microtask"] as const)(
       await settle();
       expect(boardOrder()).toEqual([["a", "b", "c"], ["d"], []]);
       expect(grabbed()).toEqual([]);
+    });
+
+    it("a click away (the focus on body) after a step drops it, and leaves the focus there", async () => {
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      key(ctx.card("a"), "ArrowDown");
+      await settle();
+      expect(document.activeElement).toBe(ctx.card("a"));
+      ctx.card("a").blur();
+      await settle();
+      expect([grabbed(), document.activeElement]).toEqual([[], document.body]);
+    });
+
+    it("a step the Board refuses is not announced as a move", async () => {
+      drag.destroy();
+      let moves = 0;
+      drag = createDrag(ctx.root, ctx.board, {
+        moveElements: false,
+        messages: { move: () => `move ${++moves}` },
+      });
+      ctx.card("d").focus();
+      key(ctx.card("d"), " ");
+      key(ctx.card("d"), "ArrowRight"); // to "done"
+      await settle();
+      const ghost = document.createElement("ul");
+      ghost.setAttribute("data-lp-cards", "ghost"); // not on the Board
+      ctx.root.append(ghost);
+      expect(() => key(ctx.card("d"), "ArrowRight")).toThrow(/unknown list/);
+      expect(moves).toBe(1);
+    });
+
+    it("the observer is disconnected on a drop and by destroy()", () => {
+      const disconnect = vi.spyOn(MutationObserver.prototype, "disconnect");
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      key(ctx.card("a"), " ");
+      expect(disconnect).toHaveBeenCalledTimes(1);
+      ctx.card("a").focus();
+      key(ctx.card("a"), " ");
+      drag.destroy();
+      expect(disconnect).toHaveBeenCalledTimes(2);
+      disconnect.mockRestore();
     });
 
     it("the focus really leaving drops it; then a redraw neither marks nor focuses it", async () => {

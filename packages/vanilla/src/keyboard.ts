@@ -47,7 +47,8 @@ function itemsIn(container: Element, kind: Kind): HTMLElement[] {
  * focused card, or a list's focused `[data-lp-list-handle]`, Space picks it up; a card's ↑ ↓ move
  * it one place in its list and ← → to the same position (or the end) in the neighbouring list; a
  * list's ← → move it one place; Space drops it; Esc moves it back to where it was picked up; the
- * focus leaving drops it. Each step is one Board move, then the element moves and the focus stays.
+ * focus leaving drops it. Each step is one Board move, then the element moves and the focus stays
+ * (with `moveElements: false`, the renderer draws the move and the pick-up follows the item's id).
  * Enter, when nothing is picked up, calls `activate` instead (DEC-17). Nothing is picked up or
  * activated while `pointerBusy()`.
  */
@@ -67,6 +68,8 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
    * redraw and puts the pick-up and the focus back on it.
    */
   const observer = moveElements ? undefined : new MutationObserver(() => follow());
+  /** Set by a step of ours until the next key or `focusout` decision: only then is a focus on body a redraw's. */
+  let stepped = false;
   /** Set while the focused element (or the list around it) moves: leaving the document may blur it. */
   let moving = false;
 
@@ -87,7 +90,10 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     // Only on the card or the handle itself: their controls keep their keys.
     if (!(focus instanceof HTMLElement) || !root.contains(focus)) return;
     if (event.repeat && (event.key === " " || event.key === "Enter")) return;
-    if (!moveElements) follow();
+    if (!moveElements) {
+      follow();
+      stepped = false;
+    }
     if (!grab?.item.isConnected) release(); // its item removed by other code
     const held = grab;
     if (event.key === "Enter") {
@@ -135,6 +141,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     // renderer and `follow` are done; only a focus that really left drops the item.
     setTimeout(() => {
       follow();
+      stepped = false;
       if (!grab || grab.focus.contains(document.activeElement)) return;
       const { kind, item } = grab;
       release();
@@ -156,10 +163,14 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       grab.item.removeAttribute("data-lp-grabbed");
       item.setAttribute("data-lp-grabbed", "");
     }
+    // Taken back only from the old element, or from body right after our own step (a redraw blur);
+    // body otherwise is a click away, which drops the item.
     const lost =
-      grab.focus.contains(document.activeElement) || document.activeElement === document.body;
+      grab.focus.contains(document.activeElement) ||
+      (stepped && document.activeElement === document.body);
     grab = { ...grab, item, focus, container: item.parentElement };
     if (lost && document.activeElement !== focus) focus.focus();
+    if (document.activeElement === focus) stepped = false; // back on it: the redraw is over
   }
 
   function pick(what: Omit<Grab, "before" | "id" | "origin">): void {
@@ -272,7 +283,8 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
   }
 
   /**
-   * Moves the item on the Board, then its element, before `before` (or last) in `container`, keeps
+   * Moves the item on the Board, then (unless `moveElements` is false) its element, before `before`
+   * (or last) in `container`, keeps
    * the focus and announces `event`. If the Board throws, the element follows only when the move happened anyway;
    * the error is rethrown.
    */
@@ -291,7 +303,7 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       byId(kind, id, item, listId, beforeId, event);
       return;
     }
-    const follow = () => {
+    const moveElement = () => {
       moving = true;
       try {
         if (before) before.before(item);
@@ -306,10 +318,10 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
       if (kind === "list") board.moveList(id, beforeId);
       else board.moveCard(id, listId, beforeId);
     } catch (error) {
-      if (landed(board, kind, id, listId, beforeId)) follow();
+      if (landed(board, kind, id, listId, beforeId)) moveElement();
       throw error;
     }
-    follow();
+    moveElement();
   }
 
   /** `moveElements: false`: one Board move, announced; the renderer draws it and `follow` refocuses. */
@@ -321,12 +333,16 @@ export function createKeyboard<L extends { id: string }, C extends { id: string 
     beforeId: string | null,
     event: "move" | "cancel",
   ): void {
+    stepped = true;
     try {
       if (kind === "list") board.moveList(id, beforeId);
       else board.moveCard(id, listId, beforeId);
-    } finally {
-      say(event, kind, item);
+    } catch (error) {
+      // Announced only if the Board moved it anyway (a listener threw after the move).
+      if (landed(board, kind, id, listId, beforeId)) say(event, kind, item);
+      throw error;
     }
+    say(event, kind, item);
   }
 
   function replace(current: HTMLElement, next: HTMLElement): void {

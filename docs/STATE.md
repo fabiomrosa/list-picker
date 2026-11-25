@@ -66,7 +66,7 @@ Every slice's pull request updates it (SESSION §3).
   from the Snapshot: a pointer drop only changes the Board and shows the element again where it was;
   a Board change that removes the dragged item or the Placeholder's list cancels the drag. With it,
   a keyboard step and Esc change only the Board too; the pick-up is kept by id: a `MutationObserver`
-  on `root` (while a card is picked up) finds its element again after each redraw and puts
+  on `root` (while a card or a list is picked up) finds its element again after each redraw and puts
   `data-lp-grabbed` and the focus back on it, and a `focusout` is decided after a `setTimeout(0)`
   (a redraw's blur is not the focus leaving). `playground/redraw.html` (browser tests only, not
   built) redraws from the Snapshot in the change listener or in a microtask.

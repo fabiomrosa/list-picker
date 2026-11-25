@@ -64,3 +64,16 @@ for (const redraw of ["sync", "microtask"]) {
     });
   });
 }
+
+test("after a step, a click on the page away from the board drops the card there", async ({
+  page,
+}) => {
+  await page.goto("/redraw.html?redraw=microtask");
+  await page.locator('[data-lp-card="a"]').focus();
+  await page.keyboard.press("Space");
+  await page.keyboard.press("ArrowDown");
+  await expect.poll(() => focused(page)).toEqual({ id: "a", grabbed: true });
+  await page.mouse.click(700, 500); // blank page: the focus goes to body
+  await expect(page.locator("[data-lp-grabbed]")).toHaveCount(0);
+  expect(await page.evaluate(() => document.activeElement === document.body)).toBe(true);
+});
