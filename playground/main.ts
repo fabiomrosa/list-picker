@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-// The demo board (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
+// The playground (`npm run dev`): `mount` draws the Board from the Renderers below. Not published,
 // not covered.
 import { Board, type MoveEvent } from "../packages/core/src/index.ts";
 import { mount } from "../packages/vanilla/src/index.ts";

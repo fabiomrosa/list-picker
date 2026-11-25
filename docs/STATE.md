@@ -109,7 +109,7 @@ Every slice's pull request updates it (SESSION §3).
 - `npm run bench` compares the Board with an array board on seeded random moves; the result is in
   `docs/decisions/0001-linked-lists-vs-arrays.md` (about equal at 10 cards per list, ~3× faster at
   100, ~8× at 500).
-- The demo board (`playground/`, `npm run dev`) is drawn by `mount` with its own Renderers: each
+- The playground (`playground/`, `npm run dev`) is drawn by `mount` with its own Renderers: each
   card shows its neighbours and ↑ ↓ ← → × buttons, each list header (the drag handle) its card count
   and ← → ×; positions are read at click time and the neighbours, counts and button states refresh
   after every change. Forms add lists and cards at the end or before a chosen one and move cards
@@ -121,7 +121,7 @@ Every slice's pull request updates it (SESSION §3).
   board that scrolls sideways when the window is narrower than its lists (under ~1040px; the
   auto-scroll tests and the trace use 900px) show auto-scroll both ways. Its look is the site's
   (`site/style.css`, then `playground/demo.css`); the package ships no styles. Its nav links are
-  relative to the site (`../`), so under `npm run dev` they stay on the demo.
+  relative to the site (`../`), so under `npm run dev` they stay on the playground.
 
 An npm workspace with one package, `@list-picker/core`, that builds, and the gate
 (`npm run verify`: Biome, `tsc`, Vitest with an 80% line floor, build) locally and in CI, plus the
@@ -133,7 +133,7 @@ title, review-section, size, frozen-files and secret checks.
 ## Modules
 - `packages/core`: `LinkedList`, `Node` (`src/linked-list.ts`); `Board`, `MoveEvent`, `BoardEvents`,
   `Snapshot` (`src/board.ts`); `Emitter` (`src/emitter.ts`, internal).
-- `playground/`: the demo board, a Vite page over the packages' source; not published, outside
+- `playground/`: the playground, a Vite page over the packages' source; not published, outside
   coverage.
 - `packages/vanilla`: `createDrag` (`src/drag.ts`, with `src/keyboard.ts` and `src/landed.ts`,
   internal), `mount` (`src/mount.ts`); imports only types
