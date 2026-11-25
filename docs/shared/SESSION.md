@@ -33,7 +33,9 @@ owner to confirm.
   slices list the operations they consume. "None" when there is no contract.
 - **Acceptance criteria:** numbered, observable; each becomes at least one test.
 - **Files:** the files it expects to add or change, docs included (PLAN, STATE and any it updates);
-  an estimate; over 15 → split it.
+  an estimate; over 15 → split it. An interaction slice budgets a browser test and a review round;
+  an element added to the user's container goes elsewhere first when it can (it churns every DOM
+  test).
 - **References:** design screens, decisions, docs sections.
 ```
 
@@ -102,7 +104,9 @@ Nothing reaches `main` except a squash-merged pull request (DEC-04). Its title b
 
    Merge with `gh pr merge <n> --squash --delete-branch`. Never `--admin`, never a merge commit or
    a rebase merge.
-5. `git switch main && git pull`, and check that the slice is `done (<today>)` on `main`.
+5. `git switch main && git pull`, and check that the slice is `done (<today>)` on `main`; when the
+   merge deploys (the site), check that the deploy run is green too, not only the pull request's
+   checks.
 6. Give the owner the merged pull request's link and the slices it unblocks, and stop, unless the
    owner said "keep going".
 

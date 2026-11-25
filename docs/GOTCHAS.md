@@ -68,3 +68,25 @@ Node 26 and npm 11 locally (pnpm is installed too, but the workspace uses npm).
   one released where it started; the engine still swallows the next click after a drag, for
   browsers that do fire it, so only the happy-dom test sees that path.
 - `elementFromPoint` returns the Clone itself unless the Clone has `pointer-events: none`.
+
+## Site and browser tests
+- Playwright's `toHaveText` reads `textContent`, hidden (`display: none`) text included; what a
+  copy takes, and what a person sees, is `innerText`.
+- Chrome reads a `<wbr>` as a space in the accessible name ("@list-picker/ vanilla"), and
+  Playwright's `ariaSnapshot` computes its own name and hides it; check Chrome's tree over CDP
+  (`Accessibility.getFullAXTree`). A zero-width space in CSS with empty alt text
+  (`content: "\200b" / ""`) breaks the line silently.
+- A browser that does not know `:has()` drops the whole rule that names it, selector list and all:
+  keep the fallback in its own rule. The minifier may split such a rule in the build and hide the
+  bug there; the e2e tests run on the dev servers.
+- Vite's dev server injects the CSS after the first paint, so CSS transitions run at load: a trace
+  or a test that starts at once measures them too.
+
+## Publishing
+- A `!` command in the Claude Code prompt keeps its working directory for the next one: a second
+  `cd packages/<name>` fails after the first; give the full path.
+- npm's browser 2FA cannot complete from a `!` command (it does not wait): `npm publish
+  --otp=<code>` with the authenticator's current code, a new code for each package.
+- A newly published package answers 404 on the registry for about two minutes.
+- A version number is published once: npm never reuses it, even after an unpublish.
+
