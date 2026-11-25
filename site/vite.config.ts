@@ -109,17 +109,18 @@ const copyButton = (label: string) =>
 /**
  * `<!-- code <file>… -->`: "The code" section, the files (in `site/`) that run a demo, read and
  * highlighted at build time (Shiki: no script in the page for it), one shown at a time by a radio
- * per file (`style.css`), each with a copy button.
+ * per file (`style.css`), each with a copy button. The scripts only: a page's markup and style are
+ * the site's.
  */
 export function code(): Plugin {
   return {
     name: "code",
     transformIndexHtml: async (html) => {
       const marker = /<!-- code ([^>]+?) -->/.exec(html);
-      if (!marker) {
-        if (/<!--\s*code\b/.test(html)) throw new Error("code: a marker not understood");
-        return html;
-      }
+      // One section a page; a misspelt marker or a second one fails the build.
+      if ((html.match(/<!--\s*code\b/g) ?? []).length !== (marker ? 1 : 0))
+        throw new Error("code: a marker not understood, or more than one");
+      if (!marker) return html;
       const files = (marker[1] as string).split(" ");
       const radios = files
         .map(
@@ -129,14 +130,14 @@ export function code(): Plugin {
         .join("");
       const blocks = await Promise.all(
         files.map(async (file, i) => {
-          const text = read(`site/${file}`);
-          const lang = file.endsWith(".tsx") ? "tsx" : "ts";
-          const pre = await codeToHtml(text, { lang, theme: "github-dark" });
-          // The button first, so it sits (sticky) in the block's top corner while the code scrolls.
-          return pre.replace(
-            /^<pre ([^>]*)>/,
-            `<pre data-file="${i}" $1>${copyButton(`Copy ${file}`)}`,
-          );
+          const lang = /\.(tsx?)$/.exec(file)?.[1];
+          if (!lang) throw new Error(`code: ${file} is not TypeScript`);
+          const pre = await codeToHtml(read(`site/${file}`), {
+            lang,
+            theme: "github-dark-default",
+          });
+          // The button beside the block, not in it: it stays in the corner while the code scrolls.
+          return `<div class="code-block" data-file="${i}">${copyButton(`Copy ${file}`)}${pre}</div>`;
         }),
       );
       const section = `<section class="code" aria-labelledby="code-title"><h2 id="code-title">The code</h2><div class="code-files" role="radiogroup" aria-label="Files">${radios}</div>${blocks.join("")}<span class="sr-only" role="status" id="copied"></span></section>`;

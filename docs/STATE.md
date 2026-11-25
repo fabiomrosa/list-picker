@@ -218,8 +218,10 @@ None.
 ## Last session
 - **2026-11-25, L5.15:** the demos' code. `<!-- code <file>… -->` (the site build's `code()`) puts
   "The code" under each demo: its files from `site/`, highlighted at build time by Shiki (a dev
-  dependency; `github-dark` on the terminal's background), one at a time by a radio per file, each
-  with a copy button (`copy.ts` now runs every `pre .copy`). Board: `board.ts` or `react-demo.tsx`,
+  dependency; `github-dark-default` on the terminal's background), one at a time by a radio per
+  file, each in a `.code-block` with its copy button in the corner (`copy.ts` runs every `.copy`; a
+  file is copied whole, the install command trimmed). Scripts only: the markup and style are the
+  site's skins. Board: `board.ts` or `react-demo.tsx`,
   `saving.ts`, `fake-server.ts`; Player: `player.ts` or `player-react.tsx` (their comments and
   imports written for a reader in #136).
   `e2e/code.e2e.ts` compares each file shown with the repository's. Next: the M5 close, after the

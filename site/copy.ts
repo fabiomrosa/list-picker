@@ -2,9 +2,10 @@
 // package manager chosen make it; the `$` is a CSS prompt, not text) and a demo's files (L5.15).
 const status = document.getElementById("copied");
 const timers = new Map<HTMLButtonElement, ReturnType<typeof setTimeout>>();
-for (const button of document.querySelectorAll<HTMLButtonElement>("pre .copy")) {
+for (const button of document.querySelectorAll<HTMLButtonElement>(".copy")) {
   button.addEventListener("click", async () => {
-    const command = button.parentElement?.querySelector("code")?.innerText.trim() ?? "";
+    const code = button.parentElement?.querySelector("code")?.innerText ?? "";
+    const command = button.closest(".install") ? code.trim() : code; // a file whole, to its last line
     try {
       await navigator.clipboard.writeText(command);
     } catch {
