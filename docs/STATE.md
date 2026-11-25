@@ -169,6 +169,8 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, close M4:** M4 done (26 slices, v1 on npm); the close lists the open retro
+  proposals for the owner (`docs(M4): close the milestone`); none applied. Next: plan M5.
 - **2026-11-24, L4.26:** v1 is on npm: `@list-picker/core@1.0.0` and `@list-picker/vanilla@1.0.0`,
   published by the owner; tag `v1.0.0` on `4384a16`. Criterion 1 checked against the registry:
   `npm install @list-picker/vanilla` in an empty folder brings both, and the vanilla README's
