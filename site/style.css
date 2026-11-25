@@ -278,10 +278,16 @@ pre code {
   background: none;
   color: inherit;
 }
+/* A table fills the width it is given; on a phone it scrolls inside itself instead of the page. */
 table {
   border-collapse: collapse;
-  display: block;
-  overflow-x: auto;
+  width: 100%;
+}
+@media (max-width: 40rem) {
+  table {
+    display: block;
+    overflow-x: auto;
+  }
 }
 th,
 td {
@@ -407,7 +413,7 @@ td code {
 main.doc {
   max-width: 64rem;
   display: grid;
-  grid-template-columns: 12rem minmax(0, 46rem);
+  grid-template-columns: 12rem minmax(0, 1fr);
   gap: 3rem;
 }
 .toc {
