@@ -62,6 +62,8 @@ test("a tick then a tick on another swaps them; the same one twice unpicks it", 
 });
 
 test("a drag or a keyboard move reorders it; a click or Enter plays a track", async ({ page }) => {
+  // The playlist in the middle of the window, away from the edges where a drag auto-scrolls.
+  await track(page, "Spies").evaluate((el) => el.scrollIntoView({ block: "center" }));
   const from = await track(page, "Sparks").locator(".track-title").boundingBox();
   const to = await track(page, "Shiver").boundingBox();
   if (!from || !to) throw new Error("not visible");
