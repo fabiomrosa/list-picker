@@ -169,6 +169,9 @@ None yet.
   review, not yet diagnosed; for the M4 close.
 
 ## Last session
+- **2026-11-24, M4 retro, proposal 8:** `.claude/hooks/guard-git.py` runs `npm run lint` and
+  `npm run typecheck` before a `git commit` and blocks it on a failure (about 1 s; the full `verify`
+  stays in CI); #87 had committed a type error whose failing `verify` went unseen.
 - **2026-11-24, M4 retro, proposal 2:** CI's `review` job (`scripts/check-pr-review.py`) fails a pull
   request whose "## Review" section is missing, empty or a placeholder (#83 merged that way);
   milestone plans and closes (`docs(M<n>): ...`) are exempt.

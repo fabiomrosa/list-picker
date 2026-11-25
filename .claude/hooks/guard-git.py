@@ -6,6 +6,8 @@ Blocks:
     while the current branch is main;
   - `git push --force` / `-f` (`--force-with-lease` is allowed on your own slice branch);
   - `git commit` while the current branch is main;
+  - `git commit` while `npm run lint` or `npm run typecheck` fails (#87 committed a type error
+    whose failing `verify` went unseen; CI caught it);
   - `gh pr merge` without `--squash`, or with `--admin` (it bypasses the checks).
 The CI job `main-via-pr` repeats the main rule for any agent. This is a guard rail, not a sandbox.
 Exit code 2 blocks the tool call; stderr is shown to Claude.
@@ -76,6 +78,20 @@ def check_push(args, directory):
             block(f"`{refspec}` pushes to main; only a merged pull request reaches main")
 
 
+def check_gate(directory):
+    """The fast part of the gate before a commit: lint and types (the full `verify` stays in CI)."""
+    top = subprocess.run(["git", "-C", directory, "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    root = top.stdout.strip()
+    if top.returncode != 0 or not os.path.exists(os.path.join(root, "package.json")):
+        return
+    for script in ("lint", "typecheck"):
+        env = {**os.environ, "NO_COLOR": "1", "FORCE_COLOR": "0"}
+        result = subprocess.run(["npm", "run", "--silent", script], cwd=root, capture_output=True, text=True, env=env)
+        if result.returncode != 0:
+            tail = "\n".join((result.stdout + result.stderr).strip().splitlines()[-15:])
+            block(f"`npm run {script}` fails; fix it before committing:\n{tail}")
+
+
 def check(tokens, directory):
     while tokens and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*=.*", tokens[0]):
         tokens = tokens[1:]  # leading VAR=value assignments
@@ -93,8 +109,10 @@ def check(tokens, directory):
         sub, rest = (tokens[i], tokens[i + 1:]) if i < len(tokens) else ("", [])
         if sub == "push":
             check_push(rest, directory)
-        elif sub == "commit" and current_branch(directory) in MAIN:
-            block("you are on main: branch `slice/<id>-<name>` before committing")
+        elif sub == "commit":
+            if current_branch(directory) in MAIN:
+                block("you are on main: branch `slice/<id>-<name>` before committing")
+            check_gate(directory)
     elif name == "gh" and tokens[1:3] == ["pr", "merge"]:
         flags = tokens[3:]
         if "--admin" in flags:
