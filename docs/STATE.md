@@ -206,7 +206,8 @@ None.
 ## Last session
 - **2026-11-25, fix (owner):** content wider: the home's text below the board takes the container's
   64rem (no 47rem cap; the lede keeps it); a package page's text takes all the room beside its
-  index (`12rem 1fr`); a table fills its width (rows too), scrolling inside itself only below 40rem.
+  index (`12rem 1fr`); a table fills its width (rows too); a README's table sits in a `.table-scroll` box
+  (added by the site build) that scrolls when the table is wider than the page.
 - **2026-11-25, L5.7:** the React README (install, a complete `tsx` example, the hooks, links to
   vanilla's hooks, keys and announcements) and its page; `npm run packed` packs react, installs
   React from the registry (the network, or a warm npm cache) and runs its example in Chrome like

@@ -278,16 +278,14 @@ pre code {
   background: none;
   color: inherit;
 }
-/* A table fills the width it is given; on a phone it scrolls inside itself instead of the page. */
+/* A table fills the width it is given; a README's table scrolls inside its box (`.table-scroll`,
+   added by the site build) when it is wider than the page, instead of the page. */
 table {
   border-collapse: collapse;
   width: 100%;
 }
-@media (max-width: 40rem) {
-  table {
-    display: block;
-    overflow-x: auto;
-  }
+.table-scroll {
+  overflow-x: auto;
 }
 th,
 td {
